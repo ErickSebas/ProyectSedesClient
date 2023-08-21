@@ -1,58 +1,53 @@
+
+import 'package:fluttapp/presentation/screens/SplashScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-void main() {
-  runApp(const MyApp());
+ 
+
+Future<void> main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(const MainApp());
+
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MainApp extends StatelessWidget {
 
-  // This widget is the root of your application.
+  const MainApp({Key? key}) : super(key: key);
+
+ 
+
   @override
+
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter SEDES',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Home Page'),
-    );
-  }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+    return  MaterialApp(
 
-  final String title;
+        debugShowCheckedModeBanner: false,
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+        theme: ThemeData(
 
-class _MyHomePageState extends State<MyHomePage> {
-late GoogleMapController mapController;
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF7E1670)),
 
-final LatLng _center = const LatLng(37.42796133580664, -122.085749655962);
+          primaryColor: const Color(0xFF7E1670),
 
-void _onMapCreated(GoogleMapController controller) {
-mapController = controller;
-}
-
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text('Google Maps en Flutter'),
-      ),
-      body: GoogleMap(
-      onMapCreated: _onMapCreated,
-      initialCameraPosition: CameraPosition(
-        target: _center,
-        zoom: 11.0,
         ),
-      ),
-    );
+
+        initialRoute: '/home',
+
+        routes: {
+
+          //Pantalla principal
+
+          '/home': (context) => const SplashScreen(),
+
+        },
+
+      );
+
   }
+
 }
+
+ 
