@@ -1,8 +1,14 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+<uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="fluttapp"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- Elemento para la configuración de Flutter -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -26,8 +32,6 @@
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
+
     </application>
 </manifest>
