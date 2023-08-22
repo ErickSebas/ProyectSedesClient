@@ -45,15 +45,15 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 350,
-              width: 350,
+              height: 500,
+              width: 500,
               child: Column(
                 children: [
-                  Image.asset("assets/univalle.png",height: 100 ,width: 100),
+                  Image.asset("assets/Gobernacion.png",height: 150 ,width: 150),
                   SizedBox(height: 10),
-                  Image.asset("assets/univalle.png",height: 100 ,width: 100),
+                  Image.asset("assets/LogoSedes.png",height: 150 ,width: 150),
                   SizedBox(height:10),
-                  Image.asset("assets/univalle.png",height: 100 ,width: 100),
+                  Image.asset("assets/univalle.png",height: 150 ,width: 150),
                   SizedBox(height: 10)
                 ],
               )),
