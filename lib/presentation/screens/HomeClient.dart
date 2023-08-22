@@ -30,7 +30,7 @@ class HomeClient extends StatelessWidget {
         children: [
           Expanded(
             child: FutureBuilder(
-              future: getLocations(),
+              future: getByFile(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -71,19 +71,37 @@ class HomeClient extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Row(
+
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
               children: [
-                Image.asset(
-                  "assets/LogoOficialVectorizado.png",
-                  height: 70,
-                  width: 200,
+
+                Expanded(
+
+                  child: Image.asset(
+
+                    "assets/LogoOficialVectorizado.png",
+
+                    fit: BoxFit.contain,
+
+                  ),
+
                 ),
-                Image.asset(
-                  "assets/MarcaDepartamental.png",
-                  height: 70,
-                  width: 200,
+
+                Expanded(
+
+                  child: Image.asset(
+
+                    "assets/MarcaDepartamental.png",
+
+                    fit: BoxFit.contain,
+
+                  ),
+
                 ),
+
               ],
+
             ),
           ),
         ],
