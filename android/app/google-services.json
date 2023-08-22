@@ -31,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "625724453137-fh1bpoct3h6khbaglntdh2ftg9iq6421.apps.googleusercontent.com",
+              "client_id": "625724453137-9bt3jba010a7ogp7bsrc1egv102l9luj.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.admin"
+                "bundle_id": "com.example.fluttapp"
               }
             }
           ]
@@ -67,10 +67,10 @@
               "client_type": 3
             },
             {
-              "client_id": "625724453137-fh1bpoct3h6khbaglntdh2ftg9iq6421.apps.googleusercontent.com",
+              "client_id": "625724453137-9bt3jba010a7ogp7bsrc1egv102l9luj.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.admin"
+                "bundle_id": "com.example.fluttapp"
               }
             }
           ]
@@ -103,10 +103,10 @@
               "client_type": 3
             },
             {
-              "client_id": "625724453137-fh1bpoct3h6khbaglntdh2ftg9iq6421.apps.googleusercontent.com",
+              "client_id": "625724453137-9bt3jba010a7ogp7bsrc1egv102l9luj.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.admin"
+                "bundle_id": "com.example.fluttapp"
               }
             }
           ]

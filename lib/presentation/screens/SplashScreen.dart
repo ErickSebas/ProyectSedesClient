@@ -1,5 +1,3 @@
-
-
 import 'package:fluttapp/presentation/screens/HomeClient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _navigateToMainScreen() async {
     await Future.delayed(const Duration(seconds: 2)); // Espera 2 segundos
+    // ignore: use_build_context_synchronously
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const HomeClient()),

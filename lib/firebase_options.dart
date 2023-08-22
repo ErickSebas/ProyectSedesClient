@@ -80,4 +80,3 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.fluttapp.RunnerTests',
   );
 }
-
