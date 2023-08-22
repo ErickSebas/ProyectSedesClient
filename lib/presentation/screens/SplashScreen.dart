@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
             //FlutterLogo(size: 150), // Puedes reemplazar esto con tu propio logo
             const SizedBox(height: 50),
             const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF7E1670)),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
             )
           ],
         ),

@@ -12,6 +12,7 @@ class HomeClient extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('CAMPAÑA DE VACUNACION 2023'),
+        backgroundColor: Color(0xFF86ABF9),
         centerTitle: true,
         leading: Padding(
           padding: const EdgeInsets.all(4.0),
@@ -34,7 +35,9 @@ class HomeClient extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)), // Usar el mismo color
+                    ),
                   );
                 } else if (snapshot.hasError) {
                   return Center(
