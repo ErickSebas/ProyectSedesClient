@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:fluttapp/firebase_options.dart';
 import 'package:fluttapp/services/firebase_service.dart';
+import 'package:flutter/services.dart';
 
 class HomeClient extends StatelessWidget {
   const HomeClient({super.key});
@@ -10,8 +9,8 @@ class HomeClient extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('CAMPAÑA DE VACUNACION 2023'),
+        appBar: AppBar(
+        title: const Text('MaYpiVaC'),
         backgroundColor: Color(0xFF86ABF9),
         centerTitle: true,
         leading: Padding(
@@ -19,13 +18,14 @@ class HomeClient extends StatelessWidget {
           child: Image.asset("assets/LogoSedes.png"),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
+  IconButton(
+    icon: Icon(Icons.close),
+    onPressed: () {
+      // Cierra la aplicación por completo
+      SystemNavigator.pop();
+    },
+  ),
+],
       ),
       body: Column(
         children: [
@@ -36,7 +36,7 @@ class HomeClient extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)), // Usar el mismo color
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
                     ),
                   );
                 } else if (snapshot.hasError) {
@@ -45,23 +45,36 @@ class HomeClient extends StatelessWidget {
                   );
                 } else if (snapshot.hasData) {
                   List? locations = snapshot.data;
-                  List<Marker> markers = locations
-                      !.map((location) => Marker(
-                            markerId: MarkerId(location['name']),
-                            position: LatLng(
-                              double.parse(location['latitude']),
-                              double.parse(location['longitude']),
-                            ),
-                            infoWindow: InfoWindow(title: location['name']),
-                          ))
-                      .toList();
 
-                  return GoogleMap(
-                    initialCameraPosition: const CameraPosition(
-                      target: LatLng(-17.3895000, -66.1568000 ), // Posición inicial del mapa
-                      zoom: 14.5,
-                    ),
-                    markers: Set<Marker>.of(markers),
+                  return FutureBuilder<List<Marker>>(
+                    // Build the list of markers asynchronously
+                    future: _createMarkers(locations),
+                    builder: (context, markersSnapshot) {
+                      if (markersSnapshot.connectionState == ConnectionState.waiting) {
+                        return GoogleMap(
+                          initialCameraPosition: const CameraPosition(
+                            target: LatLng(-17.3895000, -66.1568000),
+                            zoom: 14.5,
+                          ),
+                        );
+                      } else if (markersSnapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${markersSnapshot.error}'),
+                        );
+                      } else if (markersSnapshot.hasData) {
+                        return GoogleMap(
+                          initialCameraPosition: const CameraPosition(
+                            target: LatLng(-17.3895000, -66.1568000),
+                            zoom: 14.5,
+                          ),
+                          markers: Set<Marker>.of(markersSnapshot.data!),
+                        );
+                      } else {
+                        return const Center(
+                          child: Text('No hay datos disponibles.'),
+                        );
+                      }
+                    },
                   );
                 } else {
                   return const Center(
@@ -74,41 +87,48 @@ class HomeClient extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Row(
-
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
               children: [
-
                 Expanded(
-
                   child: Image.asset(
-
                     "assets/LogoOficialVectorizado.png",
-
                     fit: BoxFit.contain,
-
                   ),
-
                 ),
-
                 Expanded(
-
                   child: Image.asset(
-
                     "assets/MarcaDepartamental.png",
-
                     fit: BoxFit.contain,
-
                   ),
-
                 ),
-
               ],
-
             ),
           ),
         ],
       ),
     );
+  }
+
+  Future<List<Marker>> _createMarkers(List<dynamic>? locations) async {
+    List<Marker> markers = [];
+
+    for (var location in locations!) {
+BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
+  ImageConfiguration(size: Size(100, 100)), 'assets/Way.png');
+
+      markers.add(
+        Marker(
+          markerId: MarkerId(location['name']),
+          position: LatLng(
+            double.parse(location['latitude']),
+            double.parse(location['longitude']),
+          ),
+          icon: customIcon,
+          infoWindow: InfoWindow(title: location['name']),
+        ),
+      );
+    }
+
+    return markers;
   }
 }

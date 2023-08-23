@@ -1,4 +1,4 @@
-package com.example.fluttapp
+package com.sedes.maypivac
 
 import io.flutter.embedding.android.FlutterActivity
 

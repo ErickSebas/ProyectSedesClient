@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white, // Color de fondo del splash screen
+      backgroundColor: Colors.white, 
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -50,13 +50,12 @@ class _SplashScreenState extends State<SplashScreen> {
                 children: [
                   Image.asset("assets/Gobernacion.png",height: 150 ,width: 150),
                   SizedBox(height: 10),
-                  Image.asset("assets/LogoSedes.png",height: 150 ,width: 150),
+                  Image.asset("assets/LogoAplicacion.png",height: 150 ,width: 150),
                   SizedBox(height:10),
-                  Image.asset("assets/univalle.png",height: 150 ,width: 150),
+                  Image.asset("assets/LogoSedes.png",height: 150 ,width: 150),
                   SizedBox(height: 10)
                 ],
               )),
-            //FlutterLogo(size: 150), // Puedes reemplazar esto con tu propio logo
             const SizedBox(height: 50),
             const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
