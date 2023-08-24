@@ -13,10 +13,48 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 
 
-class HomeClient extends StatelessWidget {
+const MAPBOX_ACCESS_TOKEN='';
+
+class HomeClient extends StatefulWidget {
   const HomeClient({super.key});
+
+  @override
+  _HomeClientState createState() => _HomeClientState();
+}
+
+class _HomeClientState extends State<HomeClient> {
+LatLng? myPosition;
+
+  Future<Position> Determinar_Posicion() async {
+    LocationPermission permiso;
+    permiso = await Geolocator.checkPermission();
+    if(permiso == LocationPermission.denied){
+      permiso = await Geolocator.requestPermission();
+      if(permiso == LocationPermission.denied){
+        return Future.error('error');
+      }
+    }
+    return await Geolocator.getCurrentPosition();
+  }
+
+  Obtener_Ubicacion_Actual() async{
+    Position posicion = await Determinar_Posicion();
+    setState(() {
+      myPosition = LatLng(posicion.latitude, posicion.longitude);
+    });
+    print(myPosition);
+    return posicion;
+  }
+
+  @override
+  void initState(){
+    Obtener_Ubicacion_Actual();
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +77,7 @@ class HomeClient extends StatelessWidget {
   ),
 ],
       ),
-      body: Column(
+      body: myPosition == null ? CircularProgressIndicator(): Column(
         children: [
           Expanded(
             child: FutureBuilder(
