@@ -1,7 +1,19 @@
+/// <summary>
+/// Nombre de la aplicación: MaYpiVaC
+/// Nombre del desarrollador: Equipo-Sedes-Univalle
+/// Fecha de creación: 18/08/2023
+/// </summary>
+/// 
+// <copyright file="HomeClient.dart" company="Sedes-Univalle">
+// Esta clase está restringida para su uso, sin la previa autorización de Sedes-Univalle.
+// </copyright>
+
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/services.dart';
+
 
 class HomeClient extends StatelessWidget {
   const HomeClient({super.key});
@@ -31,7 +43,7 @@ class HomeClient extends StatelessWidget {
         children: [
           Expanded(
             child: FutureBuilder(
-              future: getByFile(),
+              future: Obtener_Archivo(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
