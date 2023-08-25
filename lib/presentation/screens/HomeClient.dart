@@ -96,6 +96,27 @@ Future<void> _goToUserLocation() async {
           child: Image.asset("assets/LogoSedes.png"),
         ),
         actions: [
+       IconButton(
+
+            icon: Image.asset(
+
+              "assets/LogoUnivalle2.png",
+
+              height: 50,
+
+              width: 50,
+
+            ),
+
+            onPressed: () {
+
+              // Informacion acerca de los desarrolladores
+
+              Mostrar_Confirmacion();
+
+            },
+
+          ),   
   IconButton(
     icon: Icon(Icons.close),
     onPressed: () {
@@ -157,37 +178,37 @@ Future<void> _goToUserLocation() async {
                             bottom: 16.0,
                             left: 16.0,
                             child: Align(
-            //alignment: Alignment.centerRight,
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              //width: estaExpandido ? 150 : 60,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (estaExpandido)
-                    FloatingActionButton(
-                      onPressed: () {
-                        _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
-                      },
-                      child: Icon(Icons.tiktok_rounded),
-                      backgroundColor: Color.fromRGBO(58,164,64,1),
-                    ),
-                  if (estaExpandido)
+                            //alignment: Alignment.centerRight,
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              //width: estaExpandido ? 150 : 60,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  if (estaExpandido)
+                                    FloatingActionButton(
+                                      onPressed: () {
+                                        _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+                                      },
+                                      child: Icon(Icons.tiktok_rounded),
+                                      backgroundColor: Color.fromRGBO(58,164,64,1),
+                                    ),
+                                  if (estaExpandido)
 
-                    SizedBox(height: 10),
-                    FloatingActionButton(
-                      onPressed: () {
-                        _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
-                      },
-                      child: Icon(Icons.tiktok_sharp),
-                      backgroundColor: Color.fromRGBO(58,164,64,1),
-                      //backgroundColor: Color.fromRGBO(251,234,3,1),
-                    ),
-                    SizedBox(height: 10),
-                ],
-              ),
-            ),
-          ),
+                                    SizedBox(height: 10),
+                                    FloatingActionButton(
+                                      onPressed: () {
+                                        _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+                                      },
+                                      child: Icon(Icons.tiktok_sharp),
+                                      backgroundColor: Color.fromRGBO(58,164,64,1),
+                                      //backgroundColor: Color.fromRGBO(251,234,3,1),
+                                    ),
+                                    SizedBox(height: 10),
+                                ],
+                              ),
+                            ),
+                          ),
                           ),
                         ],
                         );
@@ -210,38 +231,38 @@ Future<void> _goToUserLocation() async {
               },
             ),
           ),
-    Align(
-  alignment: Alignment.bottomCenter,
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    children: [
-      Expanded(
-        child: GestureDetector(
-          onTap: () {
-          _launchURL("https://gobernaciondecochabamba.bo");
-          
-          },
-          child: Image.asset(
-            "assets/LogoOficialVectorizado.png",
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
-      Expanded(
-        child: GestureDetector(
-          onTap: () {
-          _launchURL("https://sedescochabamba.gob.bo");
+            Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                    _launchURL("https://gobernaciondecochabamba.bo");
+                    
+                    },
+                    child: Image.asset(
+                      "assets/LogoOficialVectorizado.png",
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                    _launchURL("https://sedescochabamba.gob.bo");
 
-          },
-          child: Image.asset(
-            "assets/MarcaDepartamental.png",
-            fit: BoxFit.contain,
+                    },
+                    child: Image.asset(
+                      "assets/MarcaDepartamental.png",
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
-    ],
-  ),
-),
         ],
       ),
     );
@@ -265,5 +286,189 @@ Future<void> _goToUserLocation() async {
       );
     }
     return markers;
+  }
+
+  Future<void> Mostrar_Confirmacion() async {
+
+    await showDialog(
+
+      context: context,
+
+      barrierDismissible: false,
+
+      builder: (BuildContext context) {
+
+        return AlertDialog(
+
+          title: Center(child: Text('MaYpiVaC')),
+
+          content: Column(
+
+            mainAxisSize: MainAxisSize.min,
+
+            children: [
+
+              SizedBox(height: 10),
+
+              Image.asset("assets/LogoUnivalle.png", height: 150, width: 150),
+
+              SizedBox(height: 10),
+
+              Text(
+
+                'Responsables de desarrollo',
+
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+                textAlign: TextAlign.center,
+
+              ),
+
+              Card(
+
+                elevation: 4,
+
+                child: Padding(
+
+                    padding: const EdgeInsets.all(16.0),
+
+                    child: Column(
+
+                      children: [
+
+                        Text(
+
+                          'Docente Administrativo',
+
+                          style: TextStyle(
+
+                              fontSize: 18, fontWeight: FontWeight.bold),
+
+                          textAlign: TextAlign.center,
+
+                        ),
+
+                        SizedBox(height: 5),
+
+                        Text(' Christian Montaño Salvatierra'),
+
+                        Text('cmontanosa@univalle.edu'),
+
+                      ],
+
+                    )),
+
+              ),
+
+              Card(
+
+                elevation: 4,
+
+                child: Padding(
+
+                    padding: const EdgeInsets.all(16.0),
+
+                    child: Column(
+
+                      children: [
+
+                        Text(
+
+                          'Estudiantes:',
+
+                          style: TextStyle(
+
+                              fontSize: 18, fontWeight: FontWeight.bold),
+
+                          textAlign: TextAlign.center,
+
+                        ),
+
+                        SizedBox(height: 5),
+
+                        Text('Erick Urquiza Mendoza'),
+
+                        Text('Fabian Mendez Mejia'),
+
+                        Text('Pedro Conde Valdez'),
+
+                        Text('Jose Bascope Tejada'),
+
+                      ],
+
+                    )),
+
+              ),
+
+              SizedBox(height: 10),
+
+              Text('©Univalle-MaYpiVaC 2023', style: TextStyle(fontSize: 16)),
+
+              Text('Todos los derechos reservados',
+
+                  style: TextStyle(fontSize: 16)),
+
+            ],
+
+          ),
+
+          actions: <Widget>[
+
+            Card(
+
+              elevation: 4,
+
+              shape: RoundedRectangleBorder(
+
+                borderRadius: BorderRadius.circular(10),
+
+              ),
+
+              child: Container(
+
+                color: Color(0xFF86ABF9),
+
+                child: Center(
+
+                  child: SizedBox(
+
+                    width: 80, // Adjust width as needed
+
+                    height: 40, // Adjust height as needed
+
+                    child: TextButton(
+
+                      child: Text(
+
+                        'Cerrar',
+
+                        style: TextStyle(color: Colors.black),
+
+                      ),
+
+                      onPressed: () {
+
+                        Navigator.of(context).pop();
+
+                      },
+
+                    ),
+
+                  ),
+
+                ),
+
+              ),
+
+            ),
+
+          ],
+
+        );
+
+      },
+
+    );
+
   }
 }

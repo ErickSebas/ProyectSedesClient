@@ -114,20 +114,32 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              height: 500,
-              width: 500,
-              child: Column(
-                children: [
-                  Image.asset("assets/Gobernacion.png",height: 150 ,width: 150),
-                  SizedBox(height: 10),
-                  Image.asset("assets/LogoAplicacion.png",height: 150 ,width: 150),
-                  SizedBox(height:10),
-                  Image.asset("assets/LogoSedes.png",height: 150 ,width: 150),
-                  SizedBox(height: 10)
-                ],
-              ),
-            ),
+            LayoutBuilder(
+  builder: (BuildContext context, BoxConstraints constraints) {
+    double imageSize;
+    if (constraints.maxWidth < 400) { // Por ejemplo, para pantallas pequeñas
+      imageSize = 75;
+    } else if (constraints.maxWidth < 800) { // Pantallas medianas
+      imageSize = 125;
+    } else { // Pantallas grandes
+      imageSize = 150;
+    }
+
+    return Column(
+      children: [
+        Image.asset("assets/Gobernacion.png", height: imageSize, width: imageSize),
+        SizedBox(height: 10),
+        Image.asset("assets/LogoAplicacion.png", height: imageSize, width: imageSize),
+        SizedBox(height: 10),
+        Image.asset("assets/LogoSedes.png", height: imageSize, width: imageSize),
+        SizedBox(height: 10),
+        Image.asset("assets/LogoUnivalle.png", height: imageSize, width: imageSize),
+        SizedBox(height: 10),
+      ],
+    );
+  },
+)
+,
             SizedBox(height: 50),
             CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
