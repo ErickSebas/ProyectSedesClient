@@ -37,7 +37,7 @@ ValueNotifier<List<Marker>> markersNotifier = ValueNotifier(([]));
 ValueNotifier<LatLng> centerNotifier = ValueNotifier(LatLng(0, 0));
 
 void _onMapCreated(GoogleMapController controller) {
-  _controllerCompleter.complete(controller);
+  //_controllerCompleter.complete(controller);
 }
 
 _launchURL(String url) async {
@@ -57,14 +57,14 @@ Future<void> _goToUserLocation() async {
         return Future.error('error');
       }
   }
-  final GoogleMapController controller = await _controllerCompleter.future;
-  final Position position = await Geolocator.getCurrentPosition();
-  controller.animateCamera(CameraUpdate.newCameraPosition(
-    CameraPosition(
-      target: LatLng(position.latitude, position.longitude),
-      zoom: 14.5,
-    ),
-  ));
+  //final GoogleMapController controller = await _controllerCompleter.future;
+  //final Position position = await Geolocator.getCurrentPosition();
+  //controller.animateCamera(CameraUpdate.newCameraPosition(
+  //  CameraPosition(
+  //    target: LatLng(position.latitude, position.longitude),
+  //    zoom: 14.5,
+  //  ),
+  //));
 }
 
 
@@ -175,31 +175,24 @@ Future<void> _goToUserLocation() async {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  
-                  
-                  if (estaExpandido)
-                    FloatingActionButton(
-                      onPressed: () {
-                        
-                      },
-                      child: Icon(Icons.vaccines_sharp),
-                      backgroundColor: Color(0xFF86ABF9),
-                    ),
-                  if (estaExpandido)
-                    FloatingActionButton(
-                      onPressed: () {
-
-                      },
-                      child: Icon(Icons.facebook_sharp),
-                      backgroundColor: Color(0xFF86ABF9),
-                    ),
                   if (estaExpandido)
                     FloatingActionButton(
                       onPressed: () {
                         _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
                       },
+                      child: Icon(Icons.tiktok_rounded),
+                      backgroundColor: Color.fromRGBO(58,164,64,1),
+                    ),
+                  if (estaExpandido)
+
+                    SizedBox(height: 10),
+                    FloatingActionButton(
+                      onPressed: () {
+                        _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+                      },
                       child: Icon(Icons.tiktok_sharp),
-                      backgroundColor: Color(0xFF86ABF9),
+                      backgroundColor: Color.fromRGBO(58,164,64,1),
+                      //backgroundColor: Color.fromRGBO(251,234,3,1),
                     ),
                 ],
               ),
@@ -227,26 +220,36 @@ Future<void> _goToUserLocation() async {
               },
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: Image.asset(
-                    "assets/LogoOficialVectorizado.png",
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                Expanded(
-                  child: Image.asset(
-                    "assets/MarcaDepartamental.png",
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ],
-            ),
+    Align(
+  alignment: Alignment.bottomCenter,
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: [
+      Expanded(
+        child: GestureDetector(
+          onTap: () {
+  _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+          },
+          child: Image.asset(
+            "assets/LogoOficialVectorizado.png",
+            fit: BoxFit.contain,
           ),
+        ),
+      ),
+      Expanded(
+        child: GestureDetector(
+          onTap: () {
+  _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+          },
+          child: Image.asset(
+            "assets/MarcaDepartamental.png",
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+    ],
+  ),
+),
         ],
       ),
     );
