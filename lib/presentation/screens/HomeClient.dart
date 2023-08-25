@@ -49,7 +49,7 @@ _launchURL(String url) async {
   }
 }
 
-Future<void> _goToUserLocation() async {
+void Permisos() async{
   LocationPermission permiso;
     permiso = await Geolocator.checkPermission();
     if(permiso == LocationPermission.denied){
@@ -58,6 +58,10 @@ Future<void> _goToUserLocation() async {
         return Future.error('error');
       }
   }
+}
+
+Future<void> _goToUserLocation() async {
+  Permisos();
   final Position position = await Geolocator.getCurrentPosition();
   mapController.animateCamera(CameraUpdate.newCameraPosition(
     CameraPosition(
@@ -86,6 +90,7 @@ Future<void> _goToUserLocation() async {
   @override
   void initState(){
     super.initState();
+    Permisos();
     //_goToUserLocation();
   }
 
@@ -163,6 +168,7 @@ Future<void> _goToUserLocation() async {
                           ),
                           markers: Set<Marker>.of(markers),
                           onMapCreated: _onMapCreated,
+                          minMaxZoomPreference: MinMaxZoomPreference(12,18),
                         ),
                           Positioned(
                             bottom: 16.0,
@@ -179,6 +185,7 @@ Future<void> _goToUserLocation() async {
                     FloatingActionButton(
                       onPressed: () {
                         _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+                        Text("Esta entrando al tiktok");
                       },
                       child: Icon(Icons.tiktok_rounded),
                       backgroundColor: Color.fromRGBO(58,164,64,1),
@@ -189,6 +196,7 @@ Future<void> _goToUserLocation() async {
                     FloatingActionButton(
                       onPressed: () {
                         _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+                        Text("Esta entrando al tiktok 2");
                       },
                       child: Icon(Icons.tiktok_sharp),
                       backgroundColor: Color.fromRGBO(58,164,64,1),
@@ -228,7 +236,8 @@ Future<void> _goToUserLocation() async {
       Expanded(
         child: GestureDetector(
           onTap: () {
-  _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+          _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+          Text("Esta entrando a la gobernacion");
           },
           child: Image.asset(
             "assets/LogoOficialVectorizado.png",
@@ -239,7 +248,8 @@ Future<void> _goToUserLocation() async {
       Expanded(
         child: GestureDetector(
           onTap: () {
-  _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+          _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+          Text("Esta entrando a Departamento");
           },
           child: Image.asset(
             "assets/MarcaDepartamental.png",
