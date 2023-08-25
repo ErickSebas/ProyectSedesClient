@@ -15,7 +15,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeClient extends StatefulWidget {
@@ -28,7 +27,6 @@ class HomeClient extends StatefulWidget {
 class _HomeClientState extends State<HomeClient> {
 final Completer<GoogleMapController> _controllerCompleter = Completer<GoogleMapController>();
 List<Marker> markers = [];
-late StreamSubscription<LocationData>? locationSubscription;
 late LatLng? myPosition;
 late LatLng _center = const LatLng(0, 0);
 late GoogleMapController mapController;
@@ -96,7 +94,6 @@ Future<void> _goToUserLocation() async {
 
   @override
   void dispose() {
-    locationSubscription?.cancel();
     super.dispose();
   }
 
@@ -202,6 +199,7 @@ Future<void> _goToUserLocation() async {
                       backgroundColor: Color.fromRGBO(58,164,64,1),
                       //backgroundColor: Color.fromRGBO(251,234,3,1),
                     ),
+                    SizedBox(height: 10),
                 ],
               ),
             ),

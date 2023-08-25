@@ -6,7 +6,7 @@
         android:label="MaYpiVaC"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
-
+    <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyD8VxZxvKCkDbGNwfoCoTMDfUODjnccBlM"/>
         <!-- Elemento para la configuración de Flutter -->
         <meta-data
             android:name="flutterEmbedding"
