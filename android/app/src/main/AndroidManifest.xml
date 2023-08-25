@@ -2,11 +2,32 @@
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<!-- Provide required visibility configuration for API level 30 and above -->
+    <queries>
+    <!-- If your app checks for SMS support -->
+    <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="https" />
+    </intent>
+    <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="http" />
+    </intent>
+    <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="sms" />
+    </intent>
+    <!-- If your app checks for call support -->
+    <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="tel" />
+    </intent>
+    </queries>
     <application
         android:label="MaYpiVaC"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
-
+        android:icon="@mipmap/launcher_icon"
+        android:usesCleartextTraffic="true">
         <!-- Elemento para la configuración de Flutter -->
         <meta-data
             android:name="flutterEmbedding"

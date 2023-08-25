@@ -91,7 +91,6 @@ Future<void> _goToUserLocation() async {
   void initState(){
     super.initState();
     Permisos();
-    //_goToUserLocation();
   }
 
   @override
@@ -185,10 +184,9 @@ Future<void> _goToUserLocation() async {
                     FloatingActionButton(
                       onPressed: () {
                         _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
-                        Text("Esta entrando al tiktok");
                       },
                       child: Icon(Icons.tiktok_rounded),
-                      backgroundColor: Color.fromRGBO(58,164,64,1),
+                      backgroundColor: Color.fromRGBO(58, 164, 64, 1),
                     ),
                   if (estaExpandido)
 
@@ -196,7 +194,6 @@ Future<void> _goToUserLocation() async {
                     FloatingActionButton(
                       onPressed: () {
                         _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
-                        Text("Esta entrando al tiktok 2");
                       },
                       child: Icon(Icons.tiktok_sharp),
                       backgroundColor: Color.fromRGBO(58,164,64,1),
@@ -237,7 +234,6 @@ Future<void> _goToUserLocation() async {
         child: GestureDetector(
           onTap: () {
           _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
-          Text("Esta entrando a la gobernacion");
           },
           child: Image.asset(
             "assets/LogoOficialVectorizado.png",
@@ -249,7 +245,6 @@ Future<void> _goToUserLocation() async {
         child: GestureDetector(
           onTap: () {
           _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
-          Text("Esta entrando a Departamento");
           },
           child: Image.asset(
             "assets/MarcaDepartamental.png",
