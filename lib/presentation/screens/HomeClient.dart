@@ -9,14 +9,14 @@
 // </copyright>
 
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-
-
-const MAPBOX_ACCESS_TOKEN='';
+import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeClient extends StatefulWidget {
   const HomeClient({super.key});
@@ -26,28 +26,48 @@ class HomeClient extends StatefulWidget {
 }
 
 class _HomeClientState extends State<HomeClient> {
+final Completer<GoogleMapController> _controllerCompleter = Completer<GoogleMapController>();
+List<Marker> markers = [];
+late StreamSubscription<LocationData>? locationSubscription;
 late LatLng? myPosition;
 late LatLng _center = const LatLng(0, 0);
 late GoogleMapController mapController;
-bool estaExpandido = false;
+bool estaExpandido = true;
+ValueNotifier<List<Marker>> markersNotifier = ValueNotifier(([]));
+ValueNotifier<LatLng> centerNotifier = ValueNotifier(LatLng(0, 0));
 
 void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    mapController.animateCamera(CameraUpdate.newLatLng(_center));
-    mapController.moveCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(_center.latitude, _center.longitude),
-          zoom: 14.5,
-        ),
-      ),
-    );
-  }
-
-  Future<void> Actualizar_Ubicacion() async {
-  LatLng newLocation = LatLng(_center.latitude, _center.longitude);
-  mapController.animateCamera(CameraUpdate.newLatLng(newLocation));
+  _controllerCompleter.complete(controller);
 }
+
+_launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
+
+Future<void> _goToUserLocation() async {
+  LocationPermission permiso;
+    permiso = await Geolocator.checkPermission();
+    if(permiso == LocationPermission.denied){
+      permiso = await Geolocator.requestPermission();
+      if(permiso == LocationPermission.denied){
+        return Future.error('error');
+      }
+  }
+  final GoogleMapController controller = await _controllerCompleter.future;
+  final Position position = await Geolocator.getCurrentPosition();
+  controller.animateCamera(CameraUpdate.newCameraPosition(
+    CameraPosition(
+      target: LatLng(position.latitude, position.longitude),
+      zoom: 14.5,
+    ),
+  ));
+}
+
+
 
   Future<Position> Determinar_Posicion() async {
     LocationPermission permiso;
@@ -61,22 +81,18 @@ void _onMapCreated(GoogleMapController controller) {
     return await Geolocator.getCurrentPosition();
   }
 
-  Obtener_Ubicacion_Actual() async{
-    Position posicion = await Determinar_Posicion();
-
-    setState(() {
-      myPosition = LatLng(posicion.latitude, posicion.longitude);
-      _center = LatLng(posicion.latitude, posicion.longitude);
-      //mapController.animateCamera(CameraUpdate.newLatLng(_center));
-    });
-    return posicion;
-  }
+ 
 
   @override
   void initState(){
-    Obtener_Ubicacion_Actual(); // que este metodo se ejecute cuando el mapController no sea nullo, usa await o lo q sea
-    //_getLocation();
     super.initState();
+    _goToUserLocation();
+  }
+
+  @override
+  void dispose() {
+    locationSubscription?.cancel();
+    super.dispose();
   }
 
 
@@ -120,8 +136,7 @@ void _onMapCreated(GoogleMapController controller) {
                   );
                 } else if (snapshot.hasData) {
                   List? locations = snapshot.data;
-
-                  return FutureBuilder<List<Marker>>(
+                      return FutureBuilder<List<Marker>>(
                     // Build the list of markers asynchronously
                     future: Crear_Puntos(locations),
                     builder: (context, markersSnapshot) {
@@ -140,31 +155,23 @@ void _onMapCreated(GoogleMapController controller) {
                       } else if (markersSnapshot.hasData) {
                         return Stack(children: [
                           GoogleMap(
+                            myLocationEnabled: true,
+                            key: ValueKey("key"),
                           initialCameraPosition: const CameraPosition(
                             target: LatLng(-17.3895000, -66.1568000),
                             zoom: 14.5,
                           ),
-                          markers: Set<Marker>.of(markersSnapshot.data!),
+                          markers: Set<Marker>.of(markers),
                           onMapCreated: _onMapCreated,
                         ),
-                        Positioned(
-                            top: 16.0,
-                            left: 16.0,
-                            child: FloatingActionButton(
-                              onPressed: Actualizar_Ubicacion,
-                              tooltip: 'Update Location',
-                              child: Icon(Icons.location_searching),
-                              backgroundColor: Color(0xFF86ABF9), 
-                            ),
-                          ),
                           Positioned(
-                            top: 16.0,
-                            right: 16.0,
+                            bottom: 16.0,
+                            left: 16.0,
                             child: Align(
             //alignment: Alignment.centerRight,
             child: AnimatedContainer(
               duration: Duration(milliseconds: 300),
-              width: estaExpandido ? 150 : 60,
+              //width: estaExpandido ? 150 : 60,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -189,7 +196,7 @@ void _onMapCreated(GoogleMapController controller) {
                   if (estaExpandido)
                     FloatingActionButton(
                       onPressed: () {
-
+                        _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
                       },
                       child: Icon(Icons.tiktok_sharp),
                       backgroundColor: Color(0xFF86ABF9),
@@ -208,6 +215,10 @@ void _onMapCreated(GoogleMapController controller) {
                       }
                     },
                   );
+
+                  
+                  
+                  
                 } else {
                   return const Center(
                     child: Text('No hay datos disponibles.'),
@@ -242,12 +253,9 @@ void _onMapCreated(GoogleMapController controller) {
   }
 
   Future<List<Marker>> Crear_Puntos(List<dynamic>? locations) async {
-    List<Marker> markers = [];
-
     for (var location in locations!) {
-BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
-  ImageConfiguration(size: Size(100, 100)), 'assets/Way.png');
-
+    BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
+    ImageConfiguration(size: Size(100, 100)), 'assets/Way.png');
       markers.add(
         Marker(
           markerId: MarkerId(location['name']),
@@ -261,18 +269,6 @@ BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
         ),
       );
     }
-    BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
-  ImageConfiguration(size: Size(50, 50)), 'assets/imgUbicacionA.png');
-    markers.add(
-        Marker(
-          markerId: MarkerId("curr_loc"),
-          position: _center,
-          icon: customIcon,
-          infoWindow: InfoWindow(title: 'Tú'),
-        ),
-        
-      );
-
     return markers;
   }
 }
