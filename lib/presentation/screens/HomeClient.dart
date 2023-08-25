@@ -69,20 +69,6 @@ Future<void> _goToUserLocation() async {
   ));
 }
 
-
-
-  Future<Position> Determinar_Posicion() async {
-    LocationPermission permiso;
-    permiso = await Geolocator.checkPermission();
-    if(permiso == LocationPermission.denied){
-      permiso = await Geolocator.requestPermission();
-      if(permiso == LocationPermission.denied){
-        return Future.error('error');
-      }
-    }
-    return await Geolocator.getCurrentPosition();
-  }
-
  
 
   @override
