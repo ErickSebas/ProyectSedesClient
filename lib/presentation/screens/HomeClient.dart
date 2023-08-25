@@ -199,6 +199,7 @@ Future<void> _goToUserLocation() async {
                       backgroundColor: Color.fromRGBO(58,164,64,1),
                       //backgroundColor: Color.fromRGBO(251,234,3,1),
                     ),
+                    SizedBox(height: 10),
                 ],
               ),
             ),
