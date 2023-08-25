@@ -37,7 +37,8 @@ ValueNotifier<List<Marker>> markersNotifier = ValueNotifier(([]));
 ValueNotifier<LatLng> centerNotifier = ValueNotifier(LatLng(0, 0));
 
 void _onMapCreated(GoogleMapController controller) {
-  //_controllerCompleter.complete(controller);
+  mapController = controller;
+  _goToUserLocation();
 }
 
 _launchURL(String url) async {
@@ -57,14 +58,13 @@ Future<void> _goToUserLocation() async {
         return Future.error('error');
       }
   }
-  //final GoogleMapController controller = await _controllerCompleter.future;
-  //final Position position = await Geolocator.getCurrentPosition();
-  //controller.animateCamera(CameraUpdate.newCameraPosition(
-  //  CameraPosition(
-  //    target: LatLng(position.latitude, position.longitude),
-  //    zoom: 14.5,
-  //  ),
-  //));
+  final Position position = await Geolocator.getCurrentPosition();
+  mapController.animateCamera(CameraUpdate.newCameraPosition(
+    CameraPosition(
+      target: LatLng(position.latitude, position.longitude),
+      zoom: 14.5,
+    ),
+  ));
 }
 
 
@@ -86,7 +86,7 @@ Future<void> _goToUserLocation() async {
   @override
   void initState(){
     super.initState();
-    _goToUserLocation();
+    //_goToUserLocation();
   }
 
   @override
