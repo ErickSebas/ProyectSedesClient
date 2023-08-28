@@ -15,32 +15,29 @@ import 'HomeClient.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
-
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
-
 class _SplashScreenState extends State<SplashScreen> {
-  late SharedPreferences prefs;
+  late SharedPreferences preferencias;
   bool esPrimeraVez = true;
-
   @override
   void initState() {
     super.initState();
     Iniciar_Ver_Primera_Vez();
   }
-
+  ///Se usa para que la primera vez que se inicie la aplicacion en el
+  ///dispositivo abra una ventana de confirmacion y si no. ingresa 
+  ///de manera normal
   Future<void> Iniciar_Ver_Primera_Vez() async {
-    prefs = await SharedPreferences.getInstance();
-    esPrimeraVez = prefs.getBool('isFirstTime') ?? true;
-
+    preferencias = await SharedPreferences.getInstance();
+    esPrimeraVez = preferencias.getBool('isFirstTime') ?? true;
     if (esPrimeraVez) {
       Mostrar_Confirmacion();
     } else {
       Navegar_Pantalla_Main();
     }
   }
-
   Future<void> Mostrar_Confirmacion() async {
     await showDialog(
       context: context,
@@ -70,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
             TextButton(
               child: Text('Sí, permitir acceso'),
               onPressed: () {
-                prefs.setBool('isFirstTime', false);
+                preferencias.setBool('isFirstTime', false);
                 Navigator.of(context).pop();
                 Navegar_Pantalla_Main();
               },
@@ -78,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen> {
             TextButton(
               child: Text('No, denegar acceso'),
               onPressed: () {
-                prefs.setBool('isFirstTime', true);
+                preferencias.setBool('isFirstTime', true);
                 Navigator.of(context).pop();
                 SystemNavigator.pop();
               },
@@ -88,7 +85,6 @@ class _SplashScreenState extends State<SplashScreen> {
       },
     );
   }
-
   Future<void> Navegar_Pantalla_Main() async {
     await Future.delayed(const Duration(seconds: 2));
     Navigator.pushReplacement(
@@ -96,7 +92,6 @@ class _SplashScreenState extends State<SplashScreen> {
       MaterialPageRoute(builder: (context) => HomeClient()),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -107,7 +102,6 @@ class _SplashScreenState extends State<SplashScreen> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -115,34 +109,32 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             LayoutBuilder(
-  builder: (BuildContext context, BoxConstraints constraints) {
-    double imageSize;
-    if (constraints.maxWidth < 400) { // Por ejemplo, para pantallas pequeñas
-      imageSize = 75;
-    } else if (constraints.maxWidth < 800) { // Pantallas medianas
-      imageSize = 125;
-    } else { // Pantallas grandes
-      imageSize = 150;
-    }
-
-    return Column(
-      children: [
-        Image.asset("assets/Gobernacion.png", height: imageSize, width: imageSize),
-        SizedBox(height: 10),
-        Image.asset("assets/LogoAplicacion.png", height: imageSize, width: imageSize),
-        SizedBox(height: 10),
-        Image.asset("assets/LogoSedes.png", height: imageSize, width: imageSize),
-        SizedBox(height: 10),
-        Image.asset("assets/LogoUnivalle.png", height: imageSize, width: imageSize),
-        SizedBox(height: 10),
-      ],
-    );
-  },
-)
-,
-            SizedBox(height: 50),
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
+              builder: (BuildContext context, BoxConstraints constraints) {
+                double imageSize;
+                if (constraints.maxWidth < 400) { 
+                  imageSize = 75;
+                } else if (constraints.maxWidth < 800) { 
+                  imageSize = 125;
+                } else {
+                  imageSize = 150;
+                }
+                return Column(
+                  children: [
+                    Image.asset("assets/Gobernacion.png", height: imageSize, width: imageSize),
+                    SizedBox(height: 10),
+                    Image.asset("assets/LogoAplicacion.png", height: imageSize, width: imageSize),
+                    SizedBox(height: 10),
+                    Image.asset("assets/LogoSedes.png", height: imageSize, width: imageSize),
+                    SizedBox(height: 10),
+                    Image.asset("assets/LogoUnivalle.png", height: imageSize, width: imageSize),
+                    SizedBox(height: 10),
+                  ],
+                );
+              },
+            ),
+              SizedBox(height: 50),
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
             )
           ],
         ),

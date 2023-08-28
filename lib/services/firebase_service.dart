@@ -7,7 +7,7 @@
 // <copyright file="firebase_service.dart" company="Sedes-Univalle">
 // Esta clase está restringida para su uso, sin la previa autorización de Sedes-Univalle.
 // </copyright>
-
+// <author>Pedro Conde</author>
 
 import "dart:convert";
 import 'package:http/http.dart' as http;
@@ -29,5 +29,6 @@ Future<List> Obtener_Archivo() async {
   }
   return lstUbicaciones;
 }
+
 
  

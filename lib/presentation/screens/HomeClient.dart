@@ -10,6 +10,7 @@
 
 
 import 'dart:async';
+import 'package:fluttapp/presentation/littlescreens/Popout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fluttapp/services/firebase_service.dart';
@@ -23,27 +24,21 @@ class HomeClient extends StatefulWidget {
   @override
   _HomeClientState createState() => _HomeClientState();
 }
-
 class _HomeClientState extends State<HomeClient> {
-final Completer<GoogleMapController> _controllerCompleter = Completer<GoogleMapController>();
-List<Marker> markers = [];
-late LatLng? myPosition;
-late LatLng _center = const LatLng(0, 0);
+List<Marker> lstmarkers = [];
 late GoogleMapController mapController;
 bool estaExpandido = true;
-ValueNotifier<List<Marker>> markersNotifier = ValueNotifier(([]));
-ValueNotifier<LatLng> centerNotifier = ValueNotifier(LatLng(0, 0));
 
-void _onMapCreated(GoogleMapController controller) {
+void Creando_Mapa(GoogleMapController controller) {
   mapController = controller;
-  _goToUserLocation();
+  Localizacion_Usuario();
 }
 
-_launchURL(String url) async {
+Activar_Links(String url) async {
   if (await canLaunch(url)) {
     await launch(url);
   } else {
-    throw 'Could not launch $url';
+    throw 'No se encuentra un URL valido $url';
   }
 }
 
@@ -57,8 +52,7 @@ void Permisos() async{
       }
   }
 }
-
-Future<void> _goToUserLocation() async {
+Future<void> Localizacion_Usuario() async {
   Permisos();
   final Position position = await Geolocator.getCurrentPosition();
   mapController.animateCamera(CameraUpdate.newCameraPosition(
@@ -68,22 +62,18 @@ Future<void> _goToUserLocation() async {
     ),
   ));
 }
-
- 
-
   @override
   void initState(){
     super.initState();
     Permisos();
-    //_goToUserLocation();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  ///Vamos a llamar al metodo mostrar informacion que viene desde Popout.dart
+  ///en este metodo se tiene la pantalla emergente que aparece al dar click en el boton 
+  ///de univalle
+  Future<void> Mostrar_Informacion() async {
+    await InfoDialog.MostrarInformacion(context);
   }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,38 +87,25 @@ Future<void> _goToUserLocation() async {
         ),
         actions: [
        IconButton(
-
             icon: Image.asset(
-
               "assets/LogoUnivalle2.png",
-
               height: 50,
-
               width: 50,
-
             ),
-
             onPressed: () {
-
-              // Informacion acerca de los desarrolladores
-
-              Mostrar_Confirmacion();
-
+              Mostrar_Informacion();
             },
-
           ),   
-  IconButton(
-    icon: Icon(Icons.close),
-    onPressed: () {
-      // Cierra la aplicación por completo
-      SystemNavigator.pop();
-    },
-  ),
-],
+          IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              SystemNavigator.pop();
+            },
+          ),
+        ],
       ),
       body:Column(
         children: [
-          
           Expanded(
             child: FutureBuilder(
               future: Obtener_Archivo(),
@@ -146,7 +123,6 @@ Future<void> _goToUserLocation() async {
                 } else if (snapshot.hasData) {
                   List? locations = snapshot.data;
                       return FutureBuilder<List<Marker>>(
-                    // Build the list of markers asynchronously
                     future: Crear_Puntos(locations),
                     builder: (context, markersSnapshot) {
                       if (markersSnapshot.connectionState == ConnectionState.waiting) {
@@ -155,7 +131,7 @@ Future<void> _goToUserLocation() async {
                             target: LatLng(-17.3895000, -66.1568000),
                             zoom: 14.5,
                           ),
-                          onMapCreated: _onMapCreated,
+                          onMapCreated: Creando_Mapa,
                         );
                       } else if (markersSnapshot.hasError) {
                         return Center(
@@ -170,25 +146,23 @@ Future<void> _goToUserLocation() async {
                             target: LatLng(-17.3895000, -66.1568000),
                             zoom: 14.5,
                           ),
-                          markers: Set<Marker>.of(markers),
-                          onMapCreated: _onMapCreated,
+                          markers: Set<Marker>.of(lstmarkers),
+                          onMapCreated: Creando_Mapa,
                           minMaxZoomPreference: MinMaxZoomPreference(12,18),
                         ),
                           Positioned(
                             bottom: 16.0,
                             left: 16.0,
                             child: Align(
-                            //alignment: Alignment.centerRight,
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 300),
-                              //width: estaExpandido ? 150 : 60,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   if (estaExpandido)
                                     FloatingActionButton(
                                       onPressed: () {
-                                        _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+                                        Activar_Links("https://vm.tiktok.com/ZMjeVX9LC/");
                                       },
                                       child: Icon(Icons.tiktok_rounded),
                                       backgroundColor: Color.fromRGBO(58,164,64,1),
@@ -198,11 +172,10 @@ Future<void> _goToUserLocation() async {
                                     SizedBox(height: 10),
                                     FloatingActionButton(
                                       onPressed: () {
-                                        _launchURL("https://vm.tiktok.com/ZMjeVX9LC/");
+                                        Activar_Links("https://vm.tiktok.com/ZMjeVX9LC/");
                                       },
                                       child: Icon(Icons.tiktok_sharp),
                                       backgroundColor: Color.fromRGBO(58,164,64,1),
-                                      //backgroundColor: Color.fromRGBO(251,234,3,1),
                                     ),
                                     SizedBox(height: 10),
                                 ],
@@ -219,10 +192,6 @@ Future<void> _goToUserLocation() async {
                       }
                     },
                   );
-
-                  
-                  
-                  
                 } else {
                   return const Center(
                     child: Text('No hay datos disponibles.'),
@@ -239,8 +208,7 @@ Future<void> _goToUserLocation() async {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                    _launchURL("https://gobernaciondecochabamba.bo");
-                    
+                    Activar_Links("https://gobernaciondecochabamba.bo");
                     },
                     child: Image.asset(
                       "assets/LogoOficialVectorizado.png",
@@ -251,8 +219,7 @@ Future<void> _goToUserLocation() async {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                    _launchURL("https://sedescochabamba.gob.bo");
-
+                    Activar_Links("https://sedescochabamba.gob.bo");
                     },
                     child: Image.asset(
                       "assets/MarcaDepartamental.png",
@@ -267,12 +234,11 @@ Future<void> _goToUserLocation() async {
       ),
     );
   }
-
   Future<List<Marker>> Crear_Puntos(List<dynamic>? locations) async {
     for (var location in locations!) {
     BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
     ImageConfiguration(size: Size(100, 100)), 'assets/Way.png');
-      markers.add(
+      lstmarkers.add(
         Marker(
           markerId: MarkerId(location['name']),
           position: LatLng(
@@ -281,194 +247,9 @@ Future<void> _goToUserLocation() async {
           ),
           icon: customIcon,
           infoWindow: InfoWindow(title: location['name']),
-          
         ),
       );
     }
-    return markers;
-  }
-
-  Future<void> Mostrar_Confirmacion() async {
-
-    await showDialog(
-
-      context: context,
-
-      barrierDismissible: false,
-
-      builder: (BuildContext context) {
-
-        return AlertDialog(
-
-          title: Center(child: Text('MaYpiVaC')),
-
-          content: Column(
-
-            mainAxisSize: MainAxisSize.min,
-
-            children: [
-
-              SizedBox(height: 10),
-
-              Image.asset("assets/LogoUnivalle.png", height: 150, width: 150),
-
-              SizedBox(height: 10),
-
-              Text(
-
-                'Responsables de desarrollo',
-
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-
-                textAlign: TextAlign.center,
-
-              ),
-
-              Card(
-
-                elevation: 4,
-
-                child: Padding(
-
-                    padding: const EdgeInsets.all(16.0),
-
-                    child: Column(
-
-                      children: [
-
-                        Text(
-
-                          'Docente Administrativo',
-
-                          style: TextStyle(
-
-                              fontSize: 18, fontWeight: FontWeight.bold),
-
-                          textAlign: TextAlign.center,
-
-                        ),
-
-                        SizedBox(height: 5),
-
-                        Text(' Christian Montaño Salvatierra'),
-
-                        Text('cmontanosa@univalle.edu'),
-
-                      ],
-
-                    )),
-
-              ),
-
-              Card(
-
-                elevation: 4,
-
-                child: Padding(
-
-                    padding: const EdgeInsets.all(16.0),
-
-                    child: Column(
-
-                      children: [
-
-                        Text(
-
-                          'Estudiantes:',
-
-                          style: TextStyle(
-
-                              fontSize: 18, fontWeight: FontWeight.bold),
-
-                          textAlign: TextAlign.center,
-
-                        ),
-
-                        SizedBox(height: 5),
-
-                        Text('Erick Urquiza Mendoza'),
-
-                        Text('Fabian Mendez Mejia'),
-
-                        Text('Pedro Conde Valdez'),
-
-                        Text('Jose Bascope Tejada'),
-
-                      ],
-
-                    )),
-
-              ),
-
-              SizedBox(height: 10),
-
-              Text('©Univalle-MaYpiVaC 2023', style: TextStyle(fontSize: 16)),
-
-              Text('Todos los derechos reservados',
-
-                  style: TextStyle(fontSize: 16)),
-
-            ],
-
-          ),
-
-          actions: <Widget>[
-
-            Card(
-
-              elevation: 4,
-
-              shape: RoundedRectangleBorder(
-
-                borderRadius: BorderRadius.circular(10),
-
-              ),
-
-              child: Container(
-
-                color: Color(0xFF86ABF9),
-
-                child: Center(
-
-                  child: SizedBox(
-
-                    width: 80, // Adjust width as needed
-
-                    height: 40, // Adjust height as needed
-
-                    child: TextButton(
-
-                      child: Text(
-
-                        'Cerrar',
-
-                        style: TextStyle(color: Colors.black),
-
-                      ),
-
-                      onPressed: () {
-
-                        Navigator.of(context).pop();
-
-                      },
-
-                    ),
-
-                  ),
-
-                ),
-
-              ),
-
-            ),
-
-          ],
-
-        );
-
-      },
-
-    );
-
+    return lstmarkers;
   }
 }
