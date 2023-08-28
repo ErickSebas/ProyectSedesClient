@@ -29,29 +29,13 @@ List<Marker> lstmarkers = [];
 late GoogleMapController mapController;
 bool estaExpandido = true;
 
+///Llama al mapa que usamos de la libreria de google
 void Creando_Mapa(GoogleMapController controller) {
   mapController = controller;
   Localizacion_Usuario();
 }
 
-Activar_Links(String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'No se encuentra un URL valido $url';
-  }
-}
-
-void Permisos() async{
-  LocationPermission permiso;
-    permiso = await Geolocator.checkPermission();
-    if(permiso == LocationPermission.denied){
-      permiso = await Geolocator.requestPermission();
-      if(permiso == LocationPermission.denied){
-        return Future.error('error');
-      }
-  }
-}
+/// Localizamos la ubicacion exacta del usuario
 Future<void> Localizacion_Usuario() async {
   Permisos();
   final Position position = await Geolocator.getCurrentPosition();
@@ -62,6 +46,28 @@ Future<void> Localizacion_Usuario() async {
     ),
   ));
 }
+
+/// Llamamos al metodo al inicio del programa para poder usar los URLs de la aplicacion
+Activar_Links(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'No se encuentra un URL valido $url';
+  }
+}
+
+/// Al inicio de la pantalla de inicio te pediran permisos para el uso de la aplicacion
+void Permisos() async{
+  LocationPermission permiso;
+    permiso = await Geolocator.checkPermission();
+    if(permiso == LocationPermission.denied){
+      permiso = await Geolocator.requestPermission();
+      if(permiso == LocationPermission.denied){
+        return Future.error('error');
+      }
+  }
+}
+
   @override
   void initState(){
     super.initState();
@@ -94,12 +100,6 @@ Future<void> Localizacion_Usuario() async {
             ),
             onPressed: () {
               Mostrar_Informacion();
-            },
-          ),   
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              SystemNavigator.pop();
             },
           ),
         ],
@@ -208,10 +208,10 @@ Future<void> Localizacion_Usuario() async {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                    Activar_Links("https://gobernaciondecochabamba.bo");
+                    Activar_Links("https://sedescochabamba.gob.bo");
                     },
                     child: Image.asset(
-                      "assets/LogoOficialVectorizado.png",
+                      "assets/LogoSede.png",
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -219,7 +219,7 @@ Future<void> Localizacion_Usuario() async {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                    Activar_Links("https://sedescochabamba.gob.bo");
+                    Activar_Links("https://gobernaciondecochabamba.bo");
                     },
                     child: Image.asset(
                       "assets/MarcaDepartamental.png",
@@ -234,10 +234,13 @@ Future<void> Localizacion_Usuario() async {
       ),
     );
   }
+
+  /// Crea las ubicaciones para que aparezcan en el mapa , heredando
+  /// los puntos que llegan desde Firebase
   Future<List<Marker>> Crear_Puntos(List<dynamic>? locations) async {
     for (var location in locations!) {
     BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
-    ImageConfiguration(size: Size(100, 100)), 'assets/Way.png');
+    ImageConfiguration(size: Size(100, 100)), 'assets/Waypoint.png');
       lstmarkers.add(
         Marker(
           markerId: MarkerId(location['name']),
