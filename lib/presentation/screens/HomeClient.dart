@@ -369,12 +369,13 @@ Future<void> getPolyPoints(LatLng destination) async {
   }
 
   Future<List<Marker>> Crear_Puntos(List<dynamic>? locations) async {
+    var cont = 1;
     for (var location in locations!) {
     BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
     ImageConfiguration(size: Size(100, 100)), 'assets/Way.png');
       markers.add(
         Marker(
-          markerId: MarkerId(location['name']),
+          markerId: MarkerId(cont.toString()),
           position: LatLng(
             double.parse(location['latitude']),
             double.parse(location['longitude']),
@@ -389,7 +390,7 @@ Future<void> getPolyPoints(LatLng destination) async {
           },
         )
       );
-      
+      cont ++;
     }
     //
     
