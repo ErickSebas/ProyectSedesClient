@@ -27,18 +27,17 @@ class HomeClient extends StatefulWidget {
   _HomeClientState createState() => _HomeClientState();
 }
 class _HomeClientState extends State<HomeClient> {
-static const Color primaryColor = Color(0xFF7B61FF);
-List<Marker> markers = [];
-List<LatLng> polylinePointsCoordinates = [];
-static LatLng myPosition = LatLng(0, 0);
-late GoogleMapController mapController;
+List<Marker> lstMarcadores = [];
+List<LatLng> lstPuntosdeCoordenadas = [];
+static LatLng miPosicion = LatLng(0, 0);
+late GoogleMapController controlMapa;
 bool estaExpandido = true;
-bool follow = false;
-double currentZoom = 14.5;
+bool estaSiguiendo = false;
+double zoomActual = 14.5;
 
 ///Llama al mapa que usamos de la libreria de google
 void Creando_Mapa(GoogleMapController controller) {
-  mapController = controller;
+  controlMapa = controller;
   Localizacion_Usuario();
 
   Location location = Location();
@@ -48,25 +47,22 @@ void Creando_Mapa(GoogleMapController controller) {
   });
 
   location.onLocationChanged.listen((newLoc) {
-    myPosition =LatLng(newLoc.latitude!, newLoc.longitude!);
-    if(follow){
-      mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+    miPosicion =LatLng(newLoc.latitude!, newLoc.longitude!);
+    if(estaSiguiendo){
+      controlMapa.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       target: LatLng(newLoc.latitude!, newLoc.longitude!),
-      zoom: currentZoom,
+      zoom: zoomActual,
       )));
     }
   });
-
-  
 }
-
 ///se tiene que agregar una excepcio si el usuario deniega el servicio 
 ///IMPORTANTE
 /// Localizamos la ubicacion exacta del usuario
 Future<void> Localizacion_Usuario() async {
   Permisos();
   final Position position = await Geolocator.getCurrentPosition();
-  mapController.animateCamera(CameraUpdate.newCameraPosition(
+  controlMapa.animateCamera(CameraUpdate.newCameraPosition(
     CameraPosition(
       target: LatLng(position.latitude, position.longitude),
       zoom: 14.5,
@@ -101,27 +97,27 @@ void Permisos() async{
     Permisos();
   }
 
-  Future<void> getPolyPoints(LatLng destination) async {
-    polylinePointsCoordinates.clear();
+  ///Metodo que obtiene las distancias acordadas entre los puntos: Direccion actual
+  ///del usuario y la direccion a la que quiera llegar
+  Future<void> Obtener_Distancias_Acordadas(LatLng destination) async {
+    lstPuntosdeCoordenadas.clear();
     PolylinePoints polylinePoints = PolylinePoints();
-    
-
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      "AIzaSyD8VxZxvKCkDbGNwfoCoTMDfUODjnccBlM", 
-      PointLatLng(myPosition.latitude, myPosition.longitude),
-      PointLatLng(destination.latitude, destination.longitude)
-    );
+    "AIzaSyD8VxZxvKCkDbGNwfoCoTMDfUODjnccBlM", 
+    PointLatLng(miPosicion.latitude, miPosicion.longitude),
+    PointLatLng(destination.latitude, destination.longitude)
+  );
 
-    if(result.points.isNotEmpty){
-      result.points.forEach(
-        (PointLatLng point) => polylinePointsCoordinates.add(
-          LatLng(point.latitude, point.longitude),
-        ),
-      );
-      follow = true;
-      setState(() {  });
-    }
+  if(result.points.isNotEmpty){
+    result.points.forEach(
+      (PointLatLng point) => lstPuntosdeCoordenadas.add(
+        LatLng(point.latitude, point.longitude),
+      ),
+    );
+    estaSiguiendo = true;
+    setState(() {  });
   }
+}
 
 
   ///Vamos a llamar al metodo mostrar informacion que viene desde Popout.dart
@@ -191,7 +187,7 @@ void Permisos() async{
                         return Stack(children: [
                           GoogleMap(
                           onCameraMove: (CameraPosition position) {
-                            currentZoom = position.zoom;
+                            zoomActual = position.zoom;
                           },
                           myLocationEnabled: true,
                           key: ValueKey("key"),
@@ -199,14 +195,14 @@ void Permisos() async{
                             target: LatLng(-17.3895000, -66.1568000),
                             zoom: 14.5,
                           ),
-                          markers: Set<Marker>.of(markers),
+                          markers: Set<Marker>.of(lstMarcadores),
                           onMapCreated: Creando_Mapa,
                           minMaxZoomPreference: MinMaxZoomPreference(12,18),
                           polylines: {
                             Polyline(
                               polylineId: PolylineId("route"),
-                              points: polylinePointsCoordinates,
-                              color: primaryColor,
+                              points: lstPuntosdeCoordenadas,
+                              color: Color(0xFF7B61FF),
                               width: 6,
                             ),
                           },
@@ -220,71 +216,70 @@ void Permisos() async{
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                    follow ? ElevatedButton(
+                                    estaSiguiendo ? ElevatedButton(
                                       onPressed: () {
                                         setState(() {
-                                          follow = false;
-                                          polylinePointsCoordinates.clear();
+                                          estaSiguiendo = false;
+                                          lstPuntosdeCoordenadas.clear();
                                         });
                                         
                                       },
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.close, color: Colors.white), // Icono de una "X"
-                                          SizedBox(width: 5), // Espacio entre el ícono y el texto
-                                          Text('Cancelar', style: TextStyle(color: Colors.white)), // Texto "Cancelar"
+                                          Icon(Icons.close, color: Colors.white),
+                                          SizedBox(width: 5), 
+                                          Text('Cancelar', style: TextStyle(color: Colors.white)),
                                         ],
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        primary: Color(0xFF5A7999), // Color de fondo
-                                        shape: RoundedRectangleBorder( // Forma cuadrada con bordes redondeados
+                                        primary: Color(0xFF5A7999),
+                                        shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
-                                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Espaciado interno
+                                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), 
                                       ),
                                     )
                                     : Container(),
-                                    SizedBox(height: 10),
+                                  SizedBox(height: 10),
                                 ],
                               ),
                             ),
                           ),
-                          ),
+                        ),
                           Positioned(
                             bottom: 16.0,
                             left: 16.0,
                             child: Align(
                             child: AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  if (estaExpandido)
-                                    FloatingActionButton(
-                                      onPressed: () {
-                                        Activar_Links("https://vm.tiktok.com/ZMjeVX9LC/");
+                            duration: Duration(milliseconds: 300),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                if (estaExpandido)
+                                  FloatingActionButton(
+                                    onPressed: () {
+                                      Activar_Links("https://vm.tiktok.com/ZMjeVX9LC/");
                                       },
                                       child: Icon(Icons.tiktok_rounded),
-                                      backgroundColor: Color.fromRGBO(58,164,64,1),
-                                    ),
-                                  if (estaExpandido)
-
-                                    SizedBox(height: 10),
+                                       backgroundColor: Color.fromRGBO(58,164,64,1),
+                                        ),
+                                if (estaExpandido)
+                                  SizedBox(height: 10),
                                     FloatingActionButton(
                                       onPressed: () {
                                         Activar_Links("https://vm.tiktok.com/ZMjeVX9LC/");
-                                      },
-                                      child: Icon(Icons.tiktok_sharp),
-                                      backgroundColor: Color.fromRGBO(58,164,64,1),
-                                    ),
-                                    SizedBox(height: 10),
-                                ],
+                                        },
+                                        child: Icon(Icons.tiktok_sharp),
+                                        backgroundColor: Color.fromRGBO(58,164,64,1),
+                                      ),
+                                      SizedBox(height: 10),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                          ),
-                        ],
+                          ],
                         );
                       } else {
                         return const Center(
@@ -335,7 +330,6 @@ void Permisos() async{
       ),
     );
   }
-
   /// Crea las ubicaciones para que aparezcan en el mapa , heredando
   /// los puntos que llegan desde Firebase
     Future<List<Marker>> Crear_Puntos(List<dynamic>? locations) async {
@@ -343,7 +337,7 @@ void Permisos() async{
     for (var location in locations!) {
     BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
     ImageConfiguration(size: Size(100, 100)), 'assets/Waypoint.png');
-      markers.add(
+      lstMarcadores.add(
         Marker(
           markerId: MarkerId(cont.toString()),
           position: LatLng(
@@ -353,7 +347,7 @@ void Permisos() async{
           icon: customIcon,
           infoWindow: InfoWindow(title: location['name']),
           onTap: () {
-            _showDirectionsButton(LatLng(
+            Mostrar_Direccion_Destino(LatLng(
               double.parse(location['latitude']),
               double.parse(location['longitude']),
             ), location['name']);
@@ -362,17 +356,17 @@ void Permisos() async{
       );
       cont ++;
     }
-    //
-    
-    return markers;
+    return lstMarcadores;
   }
 
-  void _showDirectionsButton(LatLng destination, String nombre) {
+  /// Apartado que muestra la distancia entre el usuario y el punto establecido antes
+  /// de trazar la ruta.
+  void Mostrar_Direccion_Destino(LatLng destination, String nombre) {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.transparent, // Hacerlo transparente para permitir interacciones con el fondo
+      barrierColor: Colors.transparent,
       transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (BuildContext buildContext, Animation animation, Animation secondaryAnimation) {
         return SafeArea(
@@ -408,7 +402,6 @@ void Permisos() async{
                         Text('Tu Ubicación', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                       ],
                     ),
-                    
                   ),
                   SizedBox(height: 10),
                   Card(
@@ -425,10 +418,9 @@ void Permisos() async{
                           child: Text(
                             '${nombre}',
                             overflow: TextOverflow.ellipsis,
-                            maxLines: 2, // Puedes ajustar esto según tus necesidades
+                            maxLines: 2, 
                           ),
                         )
-
                       ],
                     ),
                   ),
@@ -436,7 +428,7 @@ void Permisos() async{
                   ElevatedButton(
                     onPressed: () async {
                       Navigator.pop(context);
-                      await getPolyPoints(LatLng(destination.latitude, destination.longitude));
+                      await Obtener_Distancias_Acordadas(LatLng(destination.latitude, destination.longitude));
                       
                     },
                     child: Text('Cómo llegar'),
