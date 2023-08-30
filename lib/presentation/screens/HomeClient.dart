@@ -104,22 +104,31 @@ Future<void> Mostrar_Informacion() async {
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      backgroundColor: Color(0xFF86ABF9),
-      centerTitle: true,
-      title: Expanded(
-        child: Image.asset("assets/Univallenavbar.png"),
+  backgroundColor: Color.fromARGB(255, 241, 245, 255),
+  centerTitle: true,
+  title: Row(
+    children: [
+      Expanded(
+        child: GestureDetector(
+          child: Image.asset("assets/Univallenavbar.png"),
+        ),
       ),
-      actions: [
-        IconButton(
-          icon: Expanded(
-            child: Image.asset("assets/LogoU.png"),
+      GestureDetector(
+        onTap: () {
+          Mostrar_Informacion();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset(
+            "assets/LogoU.png",
+            height: 32,
+            width: 32,
           ),
-            onPressed: () {
-              Mostrar_Informacion();
-            },
-          ),
-        ],
+        ),
       ),
+    ],
+  ),
+),
       body:Column(
         children: [
           Expanded(
@@ -398,7 +407,6 @@ Widget build(BuildContext context) {
                     onPressed: () async {
                       Navigator.pop(context);
                       await Obtener_Distancias_Acordadas(LatLng(destination.latitude, destination.longitude));
-                      
                     },
                     child: Text('Cómo llegar'),
                     style: ElevatedButton.styleFrom(

@@ -107,7 +107,7 @@ void Permisos() async{
   }
   /// Te lleva a la pantalla de inicio
   Future<void> Navegar_Pantalla_Main() async {
-    await Future.delayed(const Duration(seconds: 30));
+    await Future.delayed(const Duration(seconds: 3));
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => HomeClient()),
