@@ -112,24 +112,26 @@ Activar_Links(String url) async {
   Future<void> Mostrar_Informacion() async {
     await InfoDialog.MostrarInformacion(context);
   }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF86ABF9),
-        centerTitle: true,
-        leading: Padding(
-          padding: const EdgeInsets.all(9.0),
-          child: Image.asset("assets/LogoSedes.png", height: 40),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Color(0xFF86ABF9),
+      centerTitle: true,
+      leading: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Expanded(
+          child: Image.asset("assets/LogoSe.png"),
         ),
-        title: Image.asset("assets/Univallenavbar.png", height: 26),
-        actions: [
-          IconButton(
-            icon: Image.asset(
-              "assets/LogosUnivalle.png",
-              height: 100,
-              width: 100, 
-            ),
+      ),
+      title: Expanded(
+        child: Image.asset("assets/Univallenavbar.png"),
+      ),
+      actions: [
+        IconButton(
+          icon: Expanded(
+            child: Image.asset("assets/LogoU.png"),
+          ),
             onPressed: () {
               Mostrar_Informacion();
             },
