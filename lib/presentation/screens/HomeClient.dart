@@ -59,7 +59,6 @@ void Creando_Mapa(GoogleMapController controller) {
 ///IMPORTANTE
 /// Localizamos la ubicacion exacta del usuario
 Future<void> Localizacion_Usuario() async {
-  Permisos();
   final Position position = await Geolocator.getCurrentPosition();
   controlMapa.animateCamera(CameraUpdate.newCameraPosition(
     CameraPosition(
@@ -78,22 +77,10 @@ Activar_Links(String url) async {
   }
 }
 
-/// Al inicio de la pantalla de inicio te pediran permisos para el uso de la aplicacion
-void Permisos() async{
-  LocationPermission permiso;
-    permiso = await Geolocator.checkPermission();
-    if(permiso == LocationPermission.denied){
-      permiso = await Geolocator.requestPermission();
-      if(permiso == LocationPermission.denied){
-        return Future.error('error');
-      }
-  }
-}
 
   @override
   void initState(){
     super.initState();
-    Permisos();
   }
 
   ///Metodo que obtiene las distancias acordadas entre los puntos: Direccion actual

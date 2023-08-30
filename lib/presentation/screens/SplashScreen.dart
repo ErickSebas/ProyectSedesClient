@@ -10,6 +10,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'HomeClient.dart';
 //import 'package:fluttapp/presentation/littlescreens/SpashScreenUtils.dart';
@@ -27,6 +28,20 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Iniciar_Ver_Primera_Vez();
   }
+
+  
+/// Al inicio de la pantalla de inicio te pediran permisos para el uso de la aplicacion
+void Permisos() async{
+  LocationPermission permiso;
+    permiso = await Geolocator.checkPermission();
+    if(permiso == LocationPermission.denied){
+      permiso = await Geolocator.requestPermission();
+      if(permiso == LocationPermission.denied){
+        return Future.error('error');
+      }
+  }
+}
+
   ///Se usa para que la primera vez que se inicie la aplicacion en el
   ///dispositivo abra una ventana de confirmacion y si no. ingresa 
   ///de manera normal
@@ -36,6 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (esPrimeraVez) {
       Mostrar_Confirmacion();
     } else {
+      
       Navegar_Pantalla_Main();
     }
   }
@@ -71,6 +87,7 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Text('Sí, permitir acceso'),
               onPressed: () {
                 preferencias.setBool('isFirstTime', false);
+                Permisos();
                 Navigator.of(context).pop();
                 Navegar_Pantalla_Main();
               },
@@ -90,7 +107,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
   /// Te lleva a la pantalla de inicio
   Future<void> Navegar_Pantalla_Main() async {
-    await Future.delayed(const Duration(seconds: 30));
+    await Future.delayed(const Duration(seconds: 3));
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => HomeClient()),
