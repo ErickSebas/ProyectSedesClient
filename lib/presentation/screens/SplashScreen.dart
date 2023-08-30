@@ -90,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
   /// Te lleva a la pantalla de inicio
   Future<void> Navegar_Pantalla_Main() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 30));
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => HomeClient()),
@@ -114,7 +114,7 @@ class _SplashScreenState extends State<SplashScreen> {
           decoration: BoxDecoration(
             image: DecorationImage(
               image: AssetImage(
-                  "assets/background3.png"), 
+                  "assets/Splash.png"), 
               fit: BoxFit.cover,
             ),
           ),
@@ -138,7 +138,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       Image.asset("assets/Gobernacion.png",
                           height: imageSize, width: imageSize),
                       SizedBox(height: 10),
-                      Image.asset("assets/LogoAplicacion.png",
+                      Image.asset("assets/SplashMaypivac.png",
                           height: imageSize, width: imageSize),
                       SizedBox(height: 10),
                       Image.asset("assets/LogoSedes.png",
