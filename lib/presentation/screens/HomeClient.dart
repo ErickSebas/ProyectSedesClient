@@ -25,6 +25,7 @@ class HomeClient extends StatefulWidget {
   @override
   _HomeClientState createState() => _HomeClientState();
 }
+
 class _HomeClientState extends State<HomeClient> {
 List<Marker> lstMarcadores = [];
 List<LatLng> lstPuntosdeCoordenadas = [];
@@ -55,8 +56,7 @@ void Creando_Mapa(GoogleMapController controller) {
     }
   });
 }
-///se tiene que agregar una excepcio si el usuario deniega el servicio 
-///IMPORTANTE
+
 /// Localizamos la ubicacion exacta del usuario
 Future<void> Localizacion_Usuario() async {
   final Position position = await Geolocator.getCurrentPosition();
@@ -115,21 +115,20 @@ Activar_Links(String url) async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-        title: Image.asset("assets/Univallenavbar.png",
-        height: 26),
+      appBar: AppBar(
         backgroundColor: Color(0xFF86ABF9),
         centerTitle: true,
         leading: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Image.asset("assets/LogoSedes.png"),
+          padding: const EdgeInsets.all(9.0),
+          child: Image.asset("assets/LogoSedes.png", height: 40),
         ),
+        title: Image.asset("assets/Univallenavbar.png", height: 26),
         actions: [
-       IconButton(
+          IconButton(
             icon: Image.asset(
               "assets/LogosUnivalle.png",
-              height: 200,
-              width: 200,
+              height: 100,
+              width: 100, 
             ),
             onPressed: () {
               Mostrar_Informacion();

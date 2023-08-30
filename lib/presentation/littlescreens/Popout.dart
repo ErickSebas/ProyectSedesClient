@@ -19,7 +19,7 @@ class InfoDialog {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Center(child: Text('MaYpiVaC')),
-          content: SingleChildScrollView( // Wrap content in SingleChildScrollView
+          content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -80,7 +80,6 @@ class InfoDialog {
                   ),
                 ),
                 SizedBox(height: 10),
-                // Create clickable links using RichText
                 RichText(
                   text: TextSpan(
                     children: [
