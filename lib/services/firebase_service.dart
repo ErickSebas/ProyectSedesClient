@@ -17,6 +17,8 @@ import "package:firebase_storage/firebase_storage.dart";
 FirebaseFirestore db  = FirebaseFirestore.instance;
 FirebaseStorage storage  = FirebaseStorage.instance;
 
+List<dynamic> lstlinks = [];
+
 // Obtener el archivo de Firebase Storage
 Future<List> Obtener_Archivo() async {
   List lstUbicaciones = [];
@@ -28,6 +30,19 @@ Future<List> Obtener_Archivo() async {
     lstUbicaciones = jsonList.map((item) => item).toList();
   }
   return lstUbicaciones;
+}
+
+// Obtener el archivo de Firebase Storage
+Future<List> Obtener_Links() async {
+  List lstLinks = [];
+  Reference ref = storage.ref().child('links.json');
+  var datosUrl = await ref.getDownloadURL();
+  var response = await http.get(Uri.parse(datosUrl));
+  if (response.statusCode == 200) {
+    var jsonList = jsonDecode(response.body) as List;
+    lstLinks = jsonList.map((item) => item).toList();
+  }
+  return lstLinks;
 }
 
 

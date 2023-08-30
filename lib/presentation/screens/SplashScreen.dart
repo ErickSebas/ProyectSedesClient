@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'HomeClient.dart';
+import 'package:fluttapp/services/firebase_service.dart';
 //import 'package:fluttapp/presentation/littlescreens/SpashScreenUtils.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -85,7 +86,7 @@ void Permisos() async{
           actions: <Widget>[
             TextButton(
               child: Text('Sí, permitir acceso'),
-              onPressed: () {
+              onPressed: () async {
                 preferencias.setBool('isFirstTime', false);
                 Permisos();
                 Navigator.of(context).pop();
@@ -107,7 +108,8 @@ void Permisos() async{
   }
   /// Te lleva a la pantalla de inicio
   Future<void> Navegar_Pantalla_Main() async {
-    await Future.delayed(const Duration(seconds: 3));
+    lstlinks = await Obtener_Links();
+    //await Future.delayed(const Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => HomeClient()),

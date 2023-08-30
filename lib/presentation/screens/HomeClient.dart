@@ -35,6 +35,12 @@ bool estaExpandido = true;
 bool estaSiguiendo = false;
 double zoomActual = 14.5;
 
+
+@override
+void initState(){
+  super.initState();
+}
+
 ///Llama al mapa que usamos de la libreria de google
 void Creando_Mapa(GoogleMapController controller) {
   controlMapa = controller;
@@ -236,7 +242,7 @@ Widget build(BuildContext context) {
                                 if (estaExpandido)
                                   FloatingActionButton(
                                     onPressed: () {
-                                      Activar_Links("https://vm.tiktok.com/ZMjeVX9LC/");
+                                      Activar_Links(lstlinks[0]["link"]);
                                       },
                                       child: Icon(Icons.tiktok_rounded),
                                        backgroundColor: Color.fromRGBO(58,164,64,1),
@@ -245,7 +251,7 @@ Widget build(BuildContext context) {
                                   SizedBox(height: 10),
                                     FloatingActionButton(
                                       onPressed: () {
-                                        Activar_Links("https://vm.tiktok.com/ZMjeVX9LC/");
+                                        Activar_Links(lstlinks[1]["link"]);
                                         },
                                         child: Icon(Icons.tiktok_sharp),
                                         backgroundColor: Color.fromRGBO(58,164,64,1),
