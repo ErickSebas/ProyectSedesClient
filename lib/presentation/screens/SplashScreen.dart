@@ -107,7 +107,7 @@ void Permisos() async{
   }
   /// Te lleva a la pantalla de inicio
   Future<void> Navegar_Pantalla_Main() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 30));
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => HomeClient()),
@@ -125,48 +125,38 @@ Widget build(BuildContext context) {
     ),
   );
 
-  final imageSizeMultiplier = MediaQuery.of(context).size.width / 4;
-
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/Splash.png"), 
-                fit: BoxFit.cover,
+  return Scaffold(
+    body: Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/Splash.png"),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  Image.asset("assets/Salud.png", width: MediaQuery.of(context).size.width * 0.8, height: 150, fit: BoxFit.contain),
+                  Image.asset("assets/Univallenavbar.png", width: MediaQuery.of(context).size.width * 0.8, height: 150, fit: BoxFit.contain),
+                  Image.asset("assets/LogoSede.png", width: MediaQuery.of(context).size.width * 0.8, height: 150, fit: BoxFit.contain),
+                  Image.asset("assets/LogoUniv.png", width: MediaQuery.of(context).size.width * 0.8, height: 150, fit: BoxFit.contain),
+                ],
               ),
-            ),
+              SizedBox(height: 50),
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
+              ),
+            ],
           ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    Image.asset("assets/Gobernacion.png",
-                        height: imageSizeMultiplier, width: imageSizeMultiplier),
-                    SizedBox(height: 10),
-                    Image.asset("assets/SplashMaypivac.png",
-                        height: imageSizeMultiplier, width: imageSizeMultiplier),
-                    SizedBox(height: 10),
-                    Image.asset("assets/LogoSedes.png",
-                        height: imageSizeMultiplier, width: imageSizeMultiplier),
-                    SizedBox(height: 10),
-                    Image.asset("assets/LogoUnivalle.png",
-                        height: imageSizeMultiplier, width: imageSizeMultiplier),
-                    SizedBox(height: 10),
-                  ],
-                ),
-                SizedBox(height: 50),
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }

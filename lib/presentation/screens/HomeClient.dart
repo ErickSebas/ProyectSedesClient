@@ -39,13 +39,9 @@ double zoomActual = 14.5;
 void Creando_Mapa(GoogleMapController controller) {
   controlMapa = controller;
   Localizacion_Usuario();
-
   Location location = Location();
-
   location.getLocation().then((location){
-
   });
-
   location.onLocationChanged.listen((newLoc) {
     miPosicion =LatLng(newLoc.latitude!, newLoc.longitude!);
     if(estaSiguiendo){
@@ -77,12 +73,6 @@ Activar_Links(String url) async {
   }
 }
 
-
-  @override
-  void initState(){
-    super.initState();
-  }
-
   ///Metodo que obtiene las distancias acordadas entre los puntos: Direccion actual
   ///del usuario y la direccion a la que quiera llegar
   Future<void> Obtener_Distancias_Acordadas(LatLng destination) async {
@@ -104,12 +94,10 @@ Activar_Links(String url) async {
     setState(() {  });
   }
 }
-
-
   ///Vamos a llamar al metodo mostrar informacion que viene desde Popout.dart
   ///en este metodo se tiene la pantalla emergente que aparece al dar click en el boton 
   ///de univalle
-  Future<void> Mostrar_Informacion() async {
+Future<void> Mostrar_Informacion() async {
     await InfoDialog.MostrarInformacion(context);
   }
 @override
@@ -118,12 +106,6 @@ Widget build(BuildContext context) {
     appBar: AppBar(
       backgroundColor: Color(0xFF86ABF9),
       centerTitle: true,
-      leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Expanded(
-          child: Image.asset("assets/LogoSe.png"),
-        ),
-      ),
       title: Expanded(
         child: Image.asset("assets/Univallenavbar.png"),
       ),
@@ -209,7 +191,6 @@ Widget build(BuildContext context) {
                                           estaSiguiendo = false;
                                           lstPuntosdeCoordenadas.clear();
                                         });
-                                        
                                       },
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
@@ -291,10 +272,10 @@ Widget build(BuildContext context) {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                    Activar_Links("https://sedescochabamba.gob.bo");
+                    Activar_Links("https://gobernaciondecochabamba.bo");
                     },
                     child: Image.asset(
-                      "assets/LogoSede.png",
+                      "assets/MarcaDepartamental.png",
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -302,10 +283,10 @@ Widget build(BuildContext context) {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                    Activar_Links("https://gobernaciondecochabamba.bo");
+                    Activar_Links("https://sedescochabamba.gob.bo");
                     },
                     child: Image.asset(
-                      "assets/MarcaDepartamental.png",
+                      "assets/LogoSede.png",
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -317,6 +298,7 @@ Widget build(BuildContext context) {
       ),
     );
   }
+
   /// Crea las ubicaciones para que aparezcan en el mapa , heredando
   /// los puntos que llegan desde Firebase
     Future<List<Marker>> Crear_Puntos(List<dynamic>? locations) async {
