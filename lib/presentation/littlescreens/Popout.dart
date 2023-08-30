@@ -135,7 +135,7 @@ class InfoDialog {
                 color: Color(0xFF86ABF9),
                 child: Center(
                   child: SizedBox(
-                    width: 80,
+                    width: 300,
                     height: 40,
                     child: TextButton(
                       child: Text(

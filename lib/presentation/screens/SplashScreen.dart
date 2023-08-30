@@ -115,67 +115,58 @@ void Permisos() async{
   }
 
 @override
-  Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
-    );
+Widget build(BuildContext context) {
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
+
+  final imageSizeMultiplier = MediaQuery.of(context).size.width / 4;
+
     return Scaffold(
-        body: Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                  "assets/Splash.png"), 
-              fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/Splash.png"), 
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-                  double imageSize;
-                  if (constraints.maxWidth < 400) {
-                    imageSize = 75;
-                  } else if (constraints.maxWidth < 800) {
-                    imageSize = 125;
-                  } else {
-                    imageSize = 150;
-                  }
-                  return Column(
-                    children: [
-                      Image.asset("assets/Gobernacion.png",
-                          height: imageSize, width: imageSize),
-                      SizedBox(height: 10),
-                      Image.asset("assets/SplashMaypivac.png",
-                          height: imageSize, width: imageSize),
-                      SizedBox(height: 10),
-                      Image.asset("assets/LogoSedes.png",
-                          height: imageSize, width: imageSize),
-                      SizedBox(height: 10),
-                      Image.asset("assets/LogoUnivalle.png",
-                          height: imageSize, width: imageSize),
-                      SizedBox(height: 10),
-                    ],
-                  );
-                },
-              ),
-              SizedBox(height: 50),
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
-              )
-            ],
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    Image.asset("assets/Gobernacion.png",
+                        height: imageSizeMultiplier, width: imageSizeMultiplier),
+                    SizedBox(height: 10),
+                    Image.asset("assets/SplashMaypivac.png",
+                        height: imageSizeMultiplier, width: imageSizeMultiplier),
+                    SizedBox(height: 10),
+                    Image.asset("assets/LogoSedes.png",
+                        height: imageSizeMultiplier, width: imageSizeMultiplier),
+                    SizedBox(height: 10),
+                    Image.asset("assets/LogoUnivalle.png",
+                        height: imageSizeMultiplier, width: imageSizeMultiplier),
+                    SizedBox(height: 10),
+                  ],
+                ),
+                SizedBox(height: 50),
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
+                )
+              ],
+            ),
           ),
-        ),
-      ],
-    ));
+        ],
+      ),
+    );
   }
 }

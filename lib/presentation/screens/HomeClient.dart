@@ -100,7 +100,7 @@ Activar_Links(String url) async {
         LatLng(point.latitude, point.longitude),
       ),
     );
-    estaSiguiendo = true;
+    estaSiguiendo = false;//cambiar true
     setState(() {  });
   }
 }
