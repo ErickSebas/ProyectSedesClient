@@ -138,22 +138,7 @@ Widget build(BuildContext context) {
       body:Column(
         children: [
           Expanded(
-            child: FutureBuilder(
-              future: Obtener_Archivo(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else if (snapshot.hasData) {
-                  List? locations = snapshot.data;
-                      return FutureBuilder<List<Marker>>(
+            child:  FutureBuilder<List<Marker>>(
                     future: Crear_Puntos(locations),
                     builder: (context, markersSnapshot) {
                       if (markersSnapshot.connectionState == ConnectionState.waiting) {
@@ -270,13 +255,6 @@ Widget build(BuildContext context) {
                         );
                       }
                     },
-                  );
-                } else {
-                  return const Center(
-                    child: Text('No hay datos disponibles.'),
-                  );
-                }
-              },
             ),
           ),
             Align(

@@ -13,11 +13,14 @@ import "dart:convert";
 import 'package:http/http.dart' as http;
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_storage/firebase_storage.dart";
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 FirebaseFirestore db  = FirebaseFirestore.instance;
 FirebaseStorage storage  = FirebaseStorage.instance;
 
 List<dynamic> lstlinks = [];
+List<dynamic> locations = [];
+List<Marker> lstMarcadores = [];
 
 // Obtener el archivo de Firebase Storage
 Future<List> Obtener_Archivo() async {
@@ -44,6 +47,8 @@ Future<List> Obtener_Links() async {
   }
   return lstLinks;
 }
+
+
 
 
  

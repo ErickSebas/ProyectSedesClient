@@ -109,6 +109,7 @@ void Permisos() async{
   /// Te lleva a la pantalla de inicio
   Future<void> Navegar_Pantalla_Main() async {
     lstlinks = await Obtener_Links();
+    locations = await Obtener_Archivo();
     //await Future.delayed(const Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
