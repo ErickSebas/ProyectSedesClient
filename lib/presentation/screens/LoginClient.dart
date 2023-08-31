@@ -1,4 +1,5 @@
 import 'package:fluttapp/presentation/screens/HomeClient.dart';
+import 'package:fluttapp/presentation/screens/RegisterClient.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttapp/presentation/littlescreens/ValidationField.dart';
 
@@ -49,10 +50,13 @@ class LoginPage extends StatelessWidget {
                 children: [
                   InkWell(
                     onTap: () {
-                      //preparado para llevarte a la pagina de registro 
+                    Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterClient()),
+                  );
                     },
                     child: Text(
-                      '¿Olvidaste tu contraseña?',
+                      'Regístrate!',                      
                       style: TextStyle(decoration: TextDecoration.underline),
                     ),
                   ),
@@ -61,22 +65,34 @@ class LoginPage extends StatelessWidget {
                       //preparado para llevarte a la pagina de recuperacion de contrasenia
                     },
                     child: Text(
-                      'Regístrate!',
+                      '¿Olvidaste tu contraseña?',
                       style: TextStyle(decoration: TextDecoration.underline),
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeClient()),
-                  );
-                },
-                child: Text('Iniciar sesión'),
-              ),
+ElevatedButton(
+  onPressed: () {
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => HomeClient(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+      ),
+    );
+  },
+  child: Text('Iniciar sesión'),
+)
             ],
           ),
         ),
