@@ -100,9 +100,9 @@ Activar_Links(String url) async {
     setState(() {  });
   }
 }
-  ///Vamos a llamar al metodo mostrar informacion que viene desde Popout.dart
-  ///en este metodo se tiene la pantalla emergente que aparece al dar click en el boton 
-  ///de univalle
+///Vamos a llamar al metodo mostrar informacion que viene desde Popout.dart
+///en este metodo se tiene la pantalla emergente que aparece al dar click en el boton 
+///de univalle
 Future<void> Mostrar_Informacion() async {
     await InfoDialog.MostrarInformacion(context);
   }

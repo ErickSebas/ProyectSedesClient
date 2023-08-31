@@ -13,8 +13,8 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'HomeClient.dart';
+import 'LoginClient.dart';
 import 'package:fluttapp/services/firebase_service.dart';
-//import 'package:fluttapp/presentation/littlescreens/SpashScreenUtils.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -112,7 +112,7 @@ void Permisos() async{
     //await Future.delayed(const Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomeClient()),
+      MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
 
