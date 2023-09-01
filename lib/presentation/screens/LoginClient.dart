@@ -72,27 +72,15 @@ class LoginPage extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 20),
-ElevatedButton(
-  onPressed: () {
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => HomeClient(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(1.0, 0.0);
-          const end = Offset.zero;
-          const curve = Curves.easeInOut;
-
-          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-          var offsetAnimation = animation.drive(tween);
-
-          return SlideTransition(position: offsetAnimation, child: child);
-        },
-      ),
-    );
-  },
-  child: Text('Iniciar sesión'),
-)
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeClient()),
+                  );
+                },
+                child: Text('Iniciar sesión'),
+              ),
             ],
           ),
         ),

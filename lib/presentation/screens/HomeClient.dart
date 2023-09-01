@@ -96,7 +96,7 @@ Activar_Links(String url) async {
         LatLng(point.latitude, point.longitude),
       ),
     );
-    estaSiguiendo = false;//cambiar true
+    estaSiguiendo = true;//cambiar true
     setState(() {  });
   }
 }
