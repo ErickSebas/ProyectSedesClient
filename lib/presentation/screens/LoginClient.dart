@@ -1,6 +1,5 @@
-import 'package:fluttapp/presentation/screens/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/RegisterClient.dart';
-import 'package:fluttapp/presentation/screens/RegisterPet.dart';
+import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 
@@ -15,7 +14,9 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
+
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -51,37 +52,39 @@ class LoginPage extends StatelessWidget {
                 children: [
                   InkWell(
                     onTap: () {
-                    Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => RegisterClient()),
-                  );
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RegisterClient()),
+                      );
                     },
                     child: Text(
-                      'Regístrate!',                      
+                      'Regístrate!',
                       style: TextStyle(decoration: TextDecoration.underline),
                     ),
                   ),
                   InkWell(
                     onTap: () {
-                    Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => RegisterPet()),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => ViewClient()),
                       );
                     },
                     child: Text(
                       '¿Olvidaste tu contraseña?',
                       style: TextStyle(decoration: TextDecoration.underline),
                     ),
-                  ), 
+                  ),
                 ],
               ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  await mostrarFinalizar.Mostrar_Finalizados(context, "Registro Con Éxito!");
+                  await mostrarFinalizar.Mostrar_Finalizados(
+                      context, "Registro Con Éxito!");
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => HomeClient()),
+                    MaterialPageRoute(builder: (context) => ViewClient()),
                   );
                 },
                 child: Text('Iniciar sesión'),

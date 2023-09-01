@@ -1,5 +1,5 @@
-import 'package:fluttapp/presentation/screens/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/LoginClient.dart';
+import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 
 class ActualizarCliente extends StatelessWidget {
@@ -13,7 +13,8 @@ class ActualizarCliente extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset("assets/SplashMaypivac.png", height: 130, width: 130),
+                Image.asset("assets/SplashMaypivac.png",
+                    height: 130, width: 130),
                 TextField(
                   decoration: InputDecoration(
                     labelText: 'Nombre',
@@ -63,12 +64,13 @@ class ActualizarCliente extends StatelessWidget {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                  await mostrarFinalizar.Mostrar_Finalizados(context, "Datos Actualizados con Exito!");
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeClient()),
-                  );
-                },
+                    await mostrarFinalizar.Mostrar_Finalizados(
+                        context, "Datos Actualizados con Exito!");
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => ViewClient()),
+                    );
+                  },
                   child: Text('Actualiza'),
                 ),
               ],

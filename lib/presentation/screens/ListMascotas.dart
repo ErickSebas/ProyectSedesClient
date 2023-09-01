@@ -1,4 +1,4 @@
-import 'package:fluttapp/presentation/screens/HomeClient.dart';
+import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(ListMascotas());
@@ -48,7 +48,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -69,7 +69,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -90,7 +90,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -111,7 +111,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -132,7 +132,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -153,7 +153,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -174,7 +174,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -195,7 +195,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -216,7 +216,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -237,7 +237,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -258,7 +258,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
               Card(
@@ -279,7 +279,7 @@ class CampaignPage extends StatelessWidget {
                     ),
                     onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeClient()),
+                          MaterialPageRoute(builder: (context) => ViewClient()),
                         )),
               ),
             ],

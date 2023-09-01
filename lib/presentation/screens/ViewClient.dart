@@ -1,3 +1,7 @@
+import 'package:fluttapp/presentation/screens/ActualizarCliente.dart';
+import 'package:fluttapp/presentation/screens/HomeClient.dart';
+import 'package:fluttapp/presentation/screens/ListMascotas.dart';
+import 'package:fluttapp/presentation/screens/RegisterPet.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(ViewClient());
@@ -48,7 +52,13 @@ class CampaignPage extends StatelessWidget {
                               size: 60,
                               color: Colors.white,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegisterPet()),
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -73,14 +83,19 @@ class CampaignPage extends StatelessWidget {
                               120, // Ajusta el tamaño del Container según tus preferencias
                           height:
                               120, // Ajusta el tamaño del Container según tus preferencias
-
                           child: IconButton(
                             icon: Icon(
                               Icons.pets,
                               size: 60,
                               color: Colors.white,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListMascotas()),
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -117,7 +132,13 @@ class CampaignPage extends StatelessWidget {
                               size: 60,
                               color: Colors.white,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomeClient()),
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -149,8 +170,14 @@ class CampaignPage extends StatelessWidget {
                               size: 60,
                               color: Colors.white,
                             ),
-                            onPressed: () {},
-                          ), // Espacio entre el icono y el texto
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ActualizarCliente()),
+                              );
+                            },
+                          ),
                         ),
                       ),
                       Text(

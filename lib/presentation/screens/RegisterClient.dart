@@ -1,5 +1,5 @@
-import 'package:fluttapp/presentation/screens/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/LoginClient.dart';
+import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 
 class RegisterClient extends StatelessWidget {
@@ -13,7 +13,8 @@ class RegisterClient extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset("assets/SplashMaypivac.png", height: 130, width: 130),
+                Image.asset("assets/SplashMaypivac.png",
+                    height: 130, width: 130),
                 TextField(
                   decoration: InputDecoration(
                     labelText: 'Nombre',
@@ -77,8 +78,8 @@ class RegisterClient extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
                         );
                       },
                       child: Text(
@@ -92,8 +93,8 @@ class RegisterClient extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeClient()),
+                      context,
+                      MaterialPageRoute(builder: (context) => ViewClient()),
                     );
                   },
                   child: Text('Registrarse'),

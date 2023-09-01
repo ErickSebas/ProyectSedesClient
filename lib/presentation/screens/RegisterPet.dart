@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:fluttapp/presentation/screens/HomeClient.dart';
+import 'package:fluttapp/presentation/screens/ListMascotas.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,7 +10,7 @@ class RegisterPet extends StatefulWidget {
 }
 
 class _RegisterPetState extends State<RegisterPet> {
-  List<File?> _selectedImages = []; 
+  List<File?> _selectedImages = [];
   MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
   Future<void> Confirmacion_Eliminar_Imagen(int index) async {
     return showDialog<void>(
@@ -33,7 +33,7 @@ class _RegisterPetState extends State<RegisterPet> {
             TextButton(
               child: Text('No'),
               onPressed: () {
-                Navigator.of(context).pop(); 
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -102,7 +102,7 @@ class _RegisterPetState extends State<RegisterPet> {
                 },
                 child: Text('Cargar Foto del Animal'),
               ),
-                            SizedBox(height: 20),
+              SizedBox(height: 20),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -130,10 +130,11 @@ class _RegisterPetState extends State<RegisterPet> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  await mostrarFinalizar.Mostrar_Finalizados(context, "Registro Con Éxito!");
+                  await mostrarFinalizar.Mostrar_Finalizados(
+                      context, "Registro Con Éxito!");
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => HomeClient()),
+                    MaterialPageRoute(builder: (context) => ListMascotas()),
                   );
                 },
                 child: Text('Registrar Mascota'),
