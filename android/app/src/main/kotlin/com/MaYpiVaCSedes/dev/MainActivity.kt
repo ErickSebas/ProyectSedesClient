@@ -1,4 +1,4 @@
-package com.sedes.maypivac
+package com.MaYpiVaCSedes.dev
 
 import io.flutter.embedding.android.FlutterActivity
 
