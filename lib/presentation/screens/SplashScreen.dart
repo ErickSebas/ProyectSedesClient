@@ -113,7 +113,7 @@ void Permisos() async{
     //await Future.delayed(const Duration(seconds: 2));
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomeClient()),
+      MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
 

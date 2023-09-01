@@ -1,5 +1,6 @@
+import 'package:fluttapp/presentation/screens/HomeClient.dart';
+import 'package:fluttapp/presentation/screens/LoginClient.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttapp/presentation/littlescreens/ValidationField.dart';
 
 class RegisterClient extends StatelessWidget {
   @override
@@ -75,7 +76,10 @@ class RegisterClient extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: () {
-                        // Preparado para llevar a la página de inicio de sesión
+                        Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
                       },
                       child: Text(
                         '¿Ya tienes cuenta? Inicia sesión aquí',
@@ -87,7 +91,10 @@ class RegisterClient extends StatelessWidget {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    // Lógica para registrar al cliente
+                    Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeClient()),
+                    );
                   },
                   child: Text('Registrarse'),
                 ),

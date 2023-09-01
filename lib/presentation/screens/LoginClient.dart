@@ -1,7 +1,6 @@
 import 'package:fluttapp/presentation/screens/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/RegisterClient.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttapp/presentation/littlescreens/ValidationField.dart';
 
 void main() => runApp(MyApp());
 

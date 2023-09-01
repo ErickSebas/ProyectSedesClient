@@ -50,12 +50,12 @@ void Creando_Mapa(GoogleMapController controller) {
   });
   location.onLocationChanged.listen((newLoc) {
     miPosicion =LatLng(newLoc.latitude!, newLoc.longitude!);
-    if(estaSiguiendo){
-      controlMapa.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(newLoc.latitude!, newLoc.longitude!),
-      zoom: zoomActual,
-      )));
-    }
+    //if(estaSiguiendo){
+    //  controlMapa.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+    //  target: LatLng(newLoc.latitude!, newLoc.longitude!),
+    //  zoom: zoomActual,
+    //  )));
+    //}
   });
 }
 
