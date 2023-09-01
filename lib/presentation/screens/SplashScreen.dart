@@ -69,7 +69,7 @@ void Permisos() async{
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: 10),
-              Image.asset("assets/LogoAplicacion.png",height: 150 ,width: 150),
+              Image.asset("assets/Univallenavbar.png",height: 150 ,width: 150),
               Text(
                 'MaYpiVaC necesita acceder a tu ubicación para mostrarte los puntos de vacunación en la ciudad de Cochabamba.',
                 style: TextStyle(fontSize: 16),

@@ -1,6 +1,8 @@
 import 'package:fluttapp/presentation/screens/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/RegisterClient.dart';
+import 'package:fluttapp/presentation/screens/RegisterPet.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttapp/presentation/services/alert.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,7 +15,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
+MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -61,18 +63,22 @@ class LoginPage extends StatelessWidget {
                   ),
                   InkWell(
                     onTap: () {
-                      //preparado para llevarte a la pagina de recuperacion de contrasenia
+                    Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterPet()),
+                      );
                     },
                     child: Text(
                       '¿Olvidaste tu contraseña?',
                       style: TextStyle(decoration: TextDecoration.underline),
                     ),
-                  ),
+                  ), 
                 ],
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  await mostrarFinalizar.Mostrar_Finalizados(context, "Registro Con Éxito!");
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => HomeClient()),
