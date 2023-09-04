@@ -71,7 +71,7 @@ Future<void> Localizacion_Usuario() async {
   controlMapa.animateCamera(CameraUpdate.newCameraPosition(
     CameraPosition(
       target: LatLng(position.latitude, position.longitude),
-      zoom: 16,
+      zoom: 14.5,
     ),
   ));
 }
