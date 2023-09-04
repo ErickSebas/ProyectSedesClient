@@ -29,10 +29,12 @@ class HomeClient extends StatefulWidget {
 class _HomeClientState extends State<HomeClient> {
 List<Marker> lstMarcadores = [];
 List<LatLng> lstPuntosdeCoordenadas = [];
+LatLng destination_load = LatLng(0, 0);
 static LatLng miPosicion = LatLng(0, 0);
 late GoogleMapController controlMapa;
 bool estaExpandido = true;
 bool estaSiguiendo = false;
+bool estaCentrado = false;
 double zoomActual = 14.5;
 
 
@@ -48,16 +50,20 @@ void Creando_Mapa(GoogleMapController controller) {
   Location location = Location();
   location.getLocation().then((location){
   });
-  location.onLocationChanged.listen((newLoc) {
+  location.onLocationChanged.listen((newLoc) async {
     miPosicion =LatLng(newLoc.latitude!, newLoc.longitude!);
-    if(estaSiguiendo){
-      controlMapa.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(newLoc.latitude!, newLoc.longitude!),
-      zoom: zoomActual,
+    if(estaCentrado){
+      //await Obtener_Distancias_Acordadas(destination_load);
+      await controlMapa.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(newLoc.latitude!, newLoc.longitude!),
+        zoom: zoomActual,
       )));
+      
     }
   });
 }
+
+
 
 /// Localizamos la ubicacion exacta del usuario
 Future<void> Localizacion_Usuario() async {
@@ -65,7 +71,7 @@ Future<void> Localizacion_Usuario() async {
   controlMapa.animateCamera(CameraUpdate.newCameraPosition(
     CameraPosition(
       target: LatLng(position.latitude, position.longitude),
-      zoom: 14.5,
+      zoom: 16,
     ),
   ));
 }
@@ -100,6 +106,18 @@ Activar_Links(String url) async {
     setState(() {  });
   }
 }
+
+
+Future<void> Cancelar_Rutas() async{
+  setState(() {
+    estaCentrado = false;
+    estaSiguiendo = false;
+    lstPuntosdeCoordenadas.clear();
+  });
+  
+}
+
+
 ///Vamos a llamar al metodo mostrar informacion que viene desde Popout.dart
 ///en este metodo se tiene la pantalla emergente que aparece al dar click en el boton 
 ///de univalle
@@ -141,18 +159,7 @@ Widget build(BuildContext context) {
             child:  FutureBuilder<List<Marker>>(
                     future: Crear_Puntos(locations),
                     builder: (context, markersSnapshot) {
-                      if (markersSnapshot.connectionState == ConnectionState.waiting) {
-                        return GoogleMap(
-                          initialCameraPosition: const CameraPosition(
-                            target: LatLng(-17.3895000, -66.1568000),
-                            zoom: 14.5,
-                          ),
-                        );
-                      } else if (markersSnapshot.hasError) {
-                        return Center(
-                          child: Text('Error: ${markersSnapshot.error}'),
-                        );
-                      } else if (markersSnapshot.hasData) {
+                      if (markersSnapshot.hasData) {
                         return Stack(children: [
                           GoogleMap(
                           onCameraMove: (CameraPosition position) {
@@ -185,14 +192,16 @@ Widget build(BuildContext context) {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                    estaSiguiendo ? ElevatedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          estaSiguiendo = false;
-                                          lstPuntosdeCoordenadas.clear();
-                                        });
+                                    estaSiguiendo ? 
+                                    Column(
+                                      children: [
+                                        SizedBox(height: 30),
+                                        ElevatedButton(
+                                      onPressed: ()  {
+                                        Cancelar_Rutas();
                                       },
-                                      child: Row(
+                                      child: 
+                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(Icons.close, color: Colors.white),
@@ -207,7 +216,11 @@ Widget build(BuildContext context) {
                                         ),
                                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), 
                                       ),
+                                    ),
+                                    
+                                      ],
                                     )
+                                    
                                     : Container(),
                                   SizedBox(height: 10),
                                 ],
@@ -390,7 +403,8 @@ Widget build(BuildContext context) {
                   ElevatedButton(
                     onPressed: () async {
                       Navigator.pop(context);
-                      await Obtener_Distancias_Acordadas(LatLng(destination.latitude, destination.longitude));
+                      destination_load = destination;
+                      Obtener_Distancias_Acordadas(LatLng(destination.latitude, destination.longitude));
                     },
                     child: Text('Cómo llegar'),
                     style: ElevatedButton.styleFrom(
