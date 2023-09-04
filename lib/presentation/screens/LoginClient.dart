@@ -113,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                 },*/
                   onPressed: () async {
                   await mostrarFinalizar.Mostrar_Finalizados(
-                      context, "Registro Con Éxito!");
+                      context, "Loggeo Con Éxito!");
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => ViewClient()),

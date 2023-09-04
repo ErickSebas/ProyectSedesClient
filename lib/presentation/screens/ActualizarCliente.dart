@@ -133,21 +133,22 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
     );
   }
 
-  // Función para seleccionar la fecha de nacimiento
+   // Función para seleccionar la fecha de nacimiento
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = (await showDatePicker(
-      context: context,
-      initialDate: fechaNacimiento ?? DateTime.now(),
-      firstDate: DateTime(1920),
-      lastDate: DateTime.now(),
-    ))!;
-    if (picked != null && picked != fechaNacimiento) {
-      setState(() {
-        fechaNacimiento = picked;
-        fechaNacimientoController.text = "${picked.day}/${picked.month}/${picked.year}";
-      });
-    }
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: fechaNacimiento ?? DateTime.now(),
+    firstDate: DateTime(1920),
+    lastDate: DateTime.now(),
+  );
+
+  if (picked != null) {
+    setState(() {
+      fechaNacimiento = picked;
+      fechaNacimientoController.text = "${picked.day}/${picked.month}/${picked.year}";
+    });
   }
+}
 
   bool validarCampos() {
     bool nombreValido = validador.validarNombre(nombreController.text);
@@ -157,7 +158,14 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
     bool fechaNacimientoValida = fechaNacimiento != null
         ? validador.validarFechaNacimiento(fechaNacimiento!)
         : false; // Verificar fecha de nacimiento
-
+    setState(() {
+    validador.mensajeErrorNombre = nombreValido ? null : validador.mensajeErrorNombre;
+    validador.mensajeErrorApellido = apellidoValido ? null : validador.mensajeErrorApellido;
+    validador.mensajeErrorCorreo = correoValido ? null : validador.mensajeErrorCorreo;
+    validador.mensajeErrorContrasena = contrasenaValida ? null : validador.mensajeErrorContrasena;
+    validador.mensajeErrorContrasena = contrasenaValida ? null : validador.mensajeErrorContrasena;
+    validador.mensajeErrorFechaNacimiento = fechaNacimientoValida ? null : validador.mensajeErrorFechaNacimiento;
+  });
     return nombreValido && apellidoValido && correoValido && contrasenaValida && fechaNacimientoValida;
   }
 }

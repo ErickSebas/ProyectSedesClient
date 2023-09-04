@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'LoginClient.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 
@@ -20,8 +21,16 @@ class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
-
+/// Llamamos al metodo al inicio del programa para poder usar los URLs de la aplicacion
+Activar_Links(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'No se encuentra un URL valido $url';
+  }
+}
 class _SplashScreenState extends State<SplashScreen> {
+  static const versionactual = 3 ;
   late SharedPreferences preferencias;
   bool esPrimeraVez = true;
   @override
@@ -106,15 +115,55 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
+   Future<void> Verificar_Version() async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(child: Text('Error MaYpiVaC')),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 10),
+              Image.asset("assets/Univallenavbar.png", height: 150, width: 150),
+              Text(
+                'Parece que estas usando una version antigua de la aplicacion , Necesitas actualizarla',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            TextButton(
+              child: Text('Aceptar'),
+              onPressed: () {
+                Activar_Links("https://sedescochabamba.gob.bo");
+              },
+            ),
+          ],
+        )
+        );
+      },
+    );
+  }
+
   /// Te lleva a la pantalla de inicio
   Future<void> Navegar_Pantalla_Main() async {
     lstlinks = await Obtener_Links();
     locations = await Obtener_Archivo();
-    //await Future.delayed(const Duration(seconds: 2));
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+    lstVersions = await Obtener_Version();
+      print("lstVersions: $lstVersions");
+if (int.tryParse(lstVersions[0]["version"]) != 1) {
+  print("La versión NO es igual a 1 inicializando verificarversion");
+  Verificar_Version();
+} else {
+  print("La versión es igual a 1, navegando a la pantalla de inicio.");
+// Continuar con la navegación normal
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => LoginPage()),
+        //await Future.delayed(const Duration(seconds: 2));
     );
+}
+
   }
 
   @override
