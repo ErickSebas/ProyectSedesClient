@@ -42,9 +42,9 @@ class CampaignPage extends StatelessWidget {
                         color: Colors.transparent,
                         child: Container(
                           width:
-                              120, // Ajusta el tamaño del Container según tus preferencias
+                              120,
                           height:
-                              120, // Ajusta el tamaño del Container según tus preferencias
+                              120,
 
                           child: IconButton(
                             icon: Icon(
@@ -66,9 +66,9 @@ class CampaignPage extends StatelessWidget {
                         'Crear Mascota',
                         style: TextStyle(
                           fontSize:
-                              16, // Ajusta el tamaño del texto según tus preferencias
+                              16,
                           color: Colors
-                              .white, // Cambia el color del texto según tus preferencias
+                              .white, 
                         ),
                       ),
                     ],
@@ -80,9 +80,9 @@ class CampaignPage extends StatelessWidget {
                         color: Colors.transparent,
                         child: Container(
                           width:
-                              120, // Ajusta el tamaño del Container según tus preferencias
+                              120,
                           height:
-                              120, // Ajusta el tamaño del Container según tus preferencias
+                              120,
                           child: IconButton(
                             icon: Icon(
                               Icons.pets,
@@ -103,9 +103,9 @@ class CampaignPage extends StatelessWidget {
                         'Ver Mascotas',
                         style: TextStyle(
                           fontSize:
-                              16, // Ajusta el tamaño del texto según tus preferencias
+                              16,
                           color: Colors
-                              .white, // Cambia el color del texto según tus preferencias
+                              .white, 
                         ),
                       ),
                     ],
@@ -113,7 +113,7 @@ class CampaignPage extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: 20), // Espacio entre filas de botones
+              SizedBox(height: 20), 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -123,9 +123,9 @@ class CampaignPage extends StatelessWidget {
                         color: Colors.transparent,
                         child: Container(
                           width:
-                              120, // Ajusta el tamaño del Container según tus preferencias
+                              120, 
                           height:
-                              120, // Ajusta el tamaño del Container según tus preferencias
+                              120, 
                           child: IconButton(
                             icon: Icon(
                               Icons.flag,
@@ -146,23 +146,23 @@ class CampaignPage extends StatelessWidget {
                         'Ver Campañas',
                         style: TextStyle(
                           fontSize:
-                              16, // Ajusta el tamaño del texto según tus preferencias
+                              16,
                           color: Colors
-                              .white, // Cambia el color del texto según tus preferencias
+                              .white,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(width: 20), // Espacio entre botones
+                  SizedBox(width: 20), 
                   Column(
                     children: <Widget>[
                       Card(
                         color: Colors.transparent,
                         child: Container(
                           width:
-                              120, // Ajusta el tamaño del Container según tus preferencias
+                              120,
                           height:
-                              120, // Ajusta el tamaño del Container según tus preferencias
+                              120,
 
                           child: IconButton(
                             icon: Icon(
@@ -184,9 +184,9 @@ class CampaignPage extends StatelessWidget {
                         'Editar Perfil',
                         style: TextStyle(
                           fontSize:
-                              16, // Ajusta el tamaño del texto según tus preferencias
+                              16,
                           color: Colors
-                              .white, // Cambia el color del texto según tus preferencias
+                              .white,
                         ),
                       ),
                     ],

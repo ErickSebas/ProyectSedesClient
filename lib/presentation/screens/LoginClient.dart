@@ -1,6 +1,7 @@
+import 'package:fluttapp/presentation/littlescreens/validator.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttapp/presentation/screens/RegisterClient.dart';
 import 'package:fluttapp/presentation/screens/ViewClient.dart';
-import 'package:flutter/material.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 
 void main() => runApp(MyApp());
@@ -17,7 +18,18 @@ class MyApp extends StatelessWidget {
 
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  ValidadorCampos validador = ValidadorCampos();
+  TextEditingController correoController = TextEditingController();
+  TextEditingController contrasenaController = TextEditingController();
+  String? mensajeErrorCorreo;
+  String? mensajeErrorContrasena;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,8 +41,10 @@ class LoginPage extends StatelessWidget {
             children: <Widget>[
               Image.asset("assets/SplashMaypivac.png", height: 130, width: 130),
               TextField(
+                controller: correoController,
                 decoration: InputDecoration(
                   labelText: 'Correo electrónico',
+                  errorText: mensajeErrorCorreo, // Muestra el mensaje de error en rojo
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.lightBlueAccent),
                   ),
@@ -38,9 +52,11 @@ class LoginPage extends StatelessWidget {
               ),
               SizedBox(height: 20),
               TextField(
+                controller: contrasenaController,
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Contraseña',
+                  errorText: mensajeErrorContrasena, // Muestra el mensaje de error en rojo
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.lightBlueAccent),
                   ),
@@ -55,7 +71,8 @@ class LoginPage extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RegisterClient()),
+                          builder: (context) => RegisterClient(),
+                        ),
                       );
                     },
                     child: Text(
@@ -67,7 +84,9 @@ class LoginPage extends StatelessWidget {
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => ViewClient()),
+                        MaterialPageRoute(
+                          builder: (context) => ViewClient(),
+                        ),
                       );
                     },
                     child: Text(
@@ -79,7 +98,20 @@ class LoginPage extends StatelessWidget {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
+                /*onPressed: () async {
+                  bool camposValidos = validarCampos();
+                  if (camposValidos) {
+                    await mostrarFinalizar.Mostrar_Finalizados(
+                      context,
+                      "Inicio de Sesión Exitoso!",
+                    );
+                    Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => ViewClient()),
+                  );
+                  }
+                },*/
+                  onPressed: () async {
                   await mostrarFinalizar.Mostrar_Finalizados(
                       context, "Registro Con Éxito!");
                   Navigator.pushReplacement(
@@ -94,5 +126,18 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Función para validar los campos
+  bool validarCampos() {
+    bool correoValido = validador.validarCorreo(correoController.text);
+    bool contrasenaValida = validador.validarContrasena(contrasenaController.text);
+
+    setState(() {
+      mensajeErrorCorreo = correoValido ? null : validador.mensajeErrorCorreo;
+      mensajeErrorContrasena = contrasenaValida ? null : validador.mensajeErrorContrasena;
+    });
+
+    return correoValido && contrasenaValida;
   }
 }

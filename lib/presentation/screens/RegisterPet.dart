@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/ListMascotas.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,13 @@ class RegisterPet extends StatefulWidget {
 }
 
 class _RegisterPetState extends State<RegisterPet> {
+  ValidadorCamposMascota validador = ValidadorCamposMascota();
+  TextEditingController nombreController = TextEditingController();
+  TextEditingController edadController = TextEditingController();
+  TextEditingController descripcionController = TextEditingController();
+  TextEditingController razaController = TextEditingController();
+  TextEditingController colorController = TextEditingController();
+  String? mensajeError;
   List<File?> _selectedImages = [];
   MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
   Future<void> Confirmacion_Eliminar_Imagen(int index) async {
@@ -56,29 +64,39 @@ class _RegisterPetState extends State<RegisterPet> {
             children: <Widget>[
               Image.asset("assets/SplashMaypivac.png", height: 130, width: 130),
               TextField(
+                controller: nombreController,
                 decoration: InputDecoration(
                   labelText: 'Nombre de la Mascota',
+                  errorText: validador.mensajeErrorNombreMascota, // Muestra el mensaje de error en rojo
                 ),
               ),
               TextField(
+                controller: descripcionController,
                 decoration: InputDecoration(
                   labelText: 'Descripción de la Mascota',
+                  errorText: validador.mensajeErrorDescripcionMascota, // Muestra el mensaje de error en rojo
                 ),
               ),
               TextField(
+                controller: edadController,
                 decoration: InputDecoration(
                   labelText: 'Edad de la Mascota',
+                  errorText: validador.mensajeErrorEdadMascota, // Muestra el mensaje de error en rojo
                 ),
                 keyboardType: TextInputType.number,
               ),
               TextField(
+                controller: razaController,
                 decoration: InputDecoration(
                   labelText: 'Raza de la Mascota',
+                  errorText: validador.mensajeErrorRazaMascota, // Muestra el mensaje de error en rojo
                 ),
               ),
               TextField(
+                controller: colorController,
                 decoration: InputDecoration(
                   labelText: 'Color del Animal',
+                  errorText: validador.mensajeErrorColorMascota, // Muestra el mensaje de error en rojo
                 ),
               ),
               SizedBox(height: 10),
@@ -129,14 +147,17 @@ class _RegisterPetState extends State<RegisterPet> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  await mostrarFinalizar.Mostrar_Finalizados(
-                      context, "Registro Con Éxito!");
-                  Navigator.pushReplacement(
+                 onPressed: () async {
+                    bool camposValidos = validarCampos();
+                    if (camposValidos) {
+                      await mostrarFinalizar.Mostrar_Finalizados(
+                          context, "Registro Con Éxito!");
+                     Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => ListMascotas()),
-                  );
-                },
+                    MaterialPageRoute(builder: (context) => ListMascotas()));
+                    }
+
+                  },
                 child: Text('Registrar Mascota'),
               ),
             ],
@@ -145,4 +166,21 @@ class _RegisterPetState extends State<RegisterPet> {
       ),
     );
   }
+ bool validarCampos() {
+  bool nombreValido = validador.validarNombreMascota(nombreController.text);
+  bool descripcionValido = validador.validarDescripcionMascota(descripcionController.text);
+  bool edadValido = validador.validarEdadMascota(edadController.text);
+  bool razaValido = validador.validarRazaMascota(razaController.text);
+  bool colorValido = validador.validarColorMascota(colorController.text);
+
+  setState(() {
+    validador.mensajeErrorNombreMascota = nombreValido ? null : validador.mensajeErrorNombreMascota;
+    validador.mensajeErrorDescripcionMascota = descripcionValido ? null : validador.mensajeErrorDescripcionMascota;
+    validador.mensajeErrorEdadMascota = edadValido ? null : validador.mensajeErrorEdadMascota;
+    validador.mensajeErrorRazaMascota = razaValido ? null : validador.mensajeErrorRazaMascota;
+    validador.mensajeErrorColorMascota = colorValido ? null : validador.mensajeErrorColorMascota;
+  });
+
+  return nombreValido && descripcionValido && edadValido && razaValido && colorValido;
+}
 }

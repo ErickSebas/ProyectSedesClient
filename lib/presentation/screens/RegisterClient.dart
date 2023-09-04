@@ -1,8 +1,23 @@
+import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/LoginClient.dart';
-import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 
-class RegisterClient extends StatelessWidget {
+class RegisterClient extends StatefulWidget {
+  @override
+  _RegisterClientState createState() => _RegisterClientState();
+}
+
+class _RegisterClientState extends State<RegisterClient> {
+  ValidadorCampos validador = ValidadorCampos();
+  TextEditingController nombreController = TextEditingController();
+  TextEditingController apellidoController = TextEditingController();
+  TextEditingController fechaNacimientoController = TextEditingController();
+  DateTime? fechaNacimiento;
+  TextEditingController correoController = TextEditingController();
+  TextEditingController contrasenaController = TextEditingController();
+  TextEditingController repetirContrasenaController = TextEditingController();
+  String? mensajeError;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,11 +28,12 @@ class RegisterClient extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset("assets/SplashMaypivac.png",
-                    height: 130, width: 130),
+                Image.asset("assets/SplashMaypivac.png", height: 130, width: 130),
                 TextField(
+                  controller: nombreController,
                   decoration: InputDecoration(
                     labelText: 'Nombre',
+                    errorText: validador.mensajeErrorNombre, // Muestra el mensaje de error en rojo
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
@@ -25,8 +41,10 @@ class RegisterClient extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 TextField(
+                  controller: apellidoController,
                   decoration: InputDecoration(
                     labelText: 'Apellido',
+                    errorText: validador.mensajeErrorApellido, // Muestra el mensaje de error en rojo
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
@@ -34,18 +52,32 @@ class RegisterClient extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 TextField(
+                  controller: fechaNacimientoController,
+                  readOnly: true, // Para evitar la edición manual
+                  onTap: () {
+                    _selectDate(context); // Abre el DatePicker para seleccionar la fecha de nacimiento
+                  },
                   decoration: InputDecoration(
                     labelText: 'Fecha de nacimiento',
+                    hintText: fechaNacimiento != null
+                        ? "${fechaNacimiento!.day}/${fechaNacimiento!.month}/${fechaNacimiento!.year}" // Formatea la fecha
+                        : 'Seleccionar fecha de nacimiento',
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
                   ),
-                  keyboardType: TextInputType.datetime,
                 ),
+                if (validador.mensajeErrorFechaNacimiento != null)
+                  Text(
+                    validador.mensajeErrorFechaNacimiento!,
+                    style: TextStyle(color: Colors.red),
+                  ),
                 SizedBox(height: 10),
                 TextField(
+                  controller: correoController,
                   decoration: InputDecoration(
                     labelText: 'Correo electrónico',
+                    errorText: validador.mensajeErrorCorreo, // Muestra el mensaje de error en rojo
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
@@ -54,8 +86,10 @@ class RegisterClient extends StatelessWidget {
                 SizedBox(height: 10),
                 TextField(
                   obscureText: true,
+                  controller: contrasenaController,
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
+                    errorText: validador.mensajeErrorContrasena, // Muestra el mensaje de error en rojo
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
@@ -64,13 +98,21 @@ class RegisterClient extends StatelessWidget {
                 SizedBox(height: 10),
                 TextField(
                   obscureText: true,
+                  controller: repetirContrasenaController,
                   decoration: InputDecoration(
                     labelText: 'Repite Contraseña',
+                    errorText: validador.mensajeErrorContrasena, 
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
                   ),
                 ),
+                // Mostrar mensaje de error general si existe
+                if (mensajeError != null)
+                  Text(
+                    mensajeError!,
+                    style: TextStyle(color: Colors.red),
+                  ),
                 SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -91,11 +133,13 @@ class RegisterClient extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => ViewClient()),
-                    );
+                  onPressed: () async {
+                    bool camposValidos = validarCampos();
+                    if (camposValidos) {
+                      await mostrarFinalizar.Mostrar_Finalizados(
+                          context, "Registro Con Éxito!");
+                      // Agregar aquí la lógica para registrar al usuario
+                    }
                   },
                   child: Text('Registrarse'),
                 ),
@@ -106,11 +150,32 @@ class RegisterClient extends StatelessWidget {
       ),
     );
   }
-}
 
-void main() {
-  runApp(MaterialApp(
-    home: RegisterClient(),
-    debugShowCheckedModeBanner: false,
-  ));
+  // Función para seleccionar la fecha de nacimiento
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = (await showDatePicker(
+      context: context,
+      initialDate: fechaNacimiento ?? DateTime.now(),
+      firstDate: DateTime(1920),
+      lastDate: DateTime.now(),
+    ))!;
+    if (picked != null && picked != fechaNacimiento) {
+      setState(() {
+        fechaNacimiento = picked;
+        fechaNacimientoController.text = "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
+  }
+
+  bool validarCampos() {
+    bool nombreValido = validador.validarNombre(nombreController.text);
+    bool apellidoValido = validador.validarApellido(apellidoController.text);
+    bool correoValido = validador.validarCorreo(correoController.text);
+    bool contrasenaValida = validador.validarContrasena(contrasenaController.text);
+    bool fechaNacimientoValida = fechaNacimiento != null
+        ? validador.validarFechaNacimiento(fechaNacimiento!)
+        : false; // Verificar fecha de nacimiento
+
+    return nombreValido && apellidoValido && correoValido && contrasenaValida && fechaNacimientoValida;
+  }
 }
