@@ -141,18 +141,7 @@ Widget build(BuildContext context) {
             child:  FutureBuilder<List<Marker>>(
                     future: Crear_Puntos(locations),
                     builder: (context, markersSnapshot) {
-                      if (markersSnapshot.connectionState == ConnectionState.waiting) {
-                        return GoogleMap(
-                          initialCameraPosition: const CameraPosition(
-                            target: LatLng(-17.3895000, -66.1568000),
-                            zoom: 14.5,
-                          ),
-                        );
-                      } else if (markersSnapshot.hasError) {
-                        return Center(
-                          child: Text('Error: ${markersSnapshot.error}'),
-                        );
-                      } else if (markersSnapshot.hasData) {
+                       if (markersSnapshot.hasData) {
                         return Stack(children: [
                           GoogleMap(
                           onCameraMove: (CameraPosition position) {
