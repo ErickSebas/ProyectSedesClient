@@ -50,12 +50,12 @@ void Creando_Mapa(GoogleMapController controller) {
   });
   location.onLocationChanged.listen((newLoc) {
     miPosicion =LatLng(newLoc.latitude!, newLoc.longitude!);
-    if(estaSiguiendo){
-      controlMapa.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(newLoc.latitude!, newLoc.longitude!),
-      zoom: zoomActual,
-      )));
-    }
+    //if(estaSiguiendo){
+    //  controlMapa.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+    //  target: LatLng(newLoc.latitude!, newLoc.longitude!),
+    //  zoom: zoomActual,
+    //  )));
+    //}
   });
 }
 
@@ -173,7 +173,7 @@ Widget build(BuildContext context) {
                               duration: Duration(milliseconds: 300),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
+                                children: [SizedBox(height: 30),
                                     estaSiguiendo ? ElevatedButton(
                                       onPressed: () {
                                         setState(() {
