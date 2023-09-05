@@ -1,4 +1,4 @@
-import 'package:fluttapp/presentation/screens/ViewClient.dart';
+import 'package:fluttapp/presentation/screens/ListMascotas.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(ViewMascotas());
@@ -43,9 +43,9 @@ class InfoMascotas extends StatelessWidget {
                         Expanded(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(
-                                20.0), // Ajusta el radio según tus preferencias
+                                20.0),
                             child: Image.asset(
-                                'assets/Perro.png'), // Imagen con radio de contorno
+                                'assets/Perro.png'), 
                           ),
                         ),
                         Expanded(
@@ -90,7 +90,6 @@ class InfoMascotas extends StatelessWidget {
                                 'Vacuna Antirrabica',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              // Otros widgets de información
                             ],
                           ),
                         ),
@@ -161,7 +160,7 @@ class InfoMascotas extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 20, // Espacio entre el Card y el botón
+                height: 20,
               ),
               Column(
                 children: <Widget>[
@@ -169,7 +168,7 @@ class InfoMascotas extends StatelessWidget {
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => ViewClient()),
+                        MaterialPageRoute(builder: (context) => ListMascotas()),
                       );
                     },
                     child: Card(

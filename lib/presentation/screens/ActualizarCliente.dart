@@ -1,5 +1,6 @@
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/LoginClient.dart';
+import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 
 class ActualizarCliente extends StatefulWidget {
@@ -119,11 +120,23 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
                     bool camposValidos = validarCampos();
                     if (camposValidos) {
                       await mostrarFinalizar.Mostrar_Finalizados(
-                          context, "Registro Con Éxito!");
+                          context, "Actualizado con Exito!");
                       // Agregar aquí la lógica para registrar al usuario
                     }
                   },
-                  child: Text('Registrarse'),
+                  child: Text('Actualizar Datos'),
+                ),
+                SizedBox(height: 5),
+                ElevatedButton(
+                           onPressed: () async {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ViewClient(),
+              ),
+            );
+          },
+                  child: Text('Cancelar'),
                 ),
               ],
             ),

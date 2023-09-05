@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/ListMascotas.dart';
+import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RegisterPet extends StatefulWidget {
@@ -67,21 +69,26 @@ class _RegisterPetState extends State<RegisterPet> {
                 controller: nombreController,
                 decoration: InputDecoration(
                   labelText: 'Nombre de la Mascota',
-                  errorText: validador.mensajeErrorNombreMascota, // Muestra el mensaje de error en rojo
+                  errorText: validador.mensajeErrorNombreMascota,
                 ),
               ),
-              TextField(
+              TextFormField(
                 controller: descripcionController,
                 decoration: InputDecoration(
                   labelText: 'Descripción de la Mascota',
-                  errorText: validador.mensajeErrorDescripcionMascota, // Muestra el mensaje de error en rojo
+                  errorText: validador.mensajeErrorDescripcionMascota,
+                  counterText: '',
                 ),
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                maxLength: 200,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
               ),
               TextField(
                 controller: edadController,
                 decoration: InputDecoration(
                   labelText: 'Edad de la Mascota',
-                  errorText: validador.mensajeErrorEdadMascota, // Muestra el mensaje de error en rojo
+                  errorText: validador.mensajeErrorEdadMascota,
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -89,14 +96,14 @@ class _RegisterPetState extends State<RegisterPet> {
                 controller: razaController,
                 decoration: InputDecoration(
                   labelText: 'Raza de la Mascota',
-                  errorText: validador.mensajeErrorRazaMascota, // Muestra el mensaje de error en rojo
+                  errorText: validador.mensajeErrorRazaMascota,
                 ),
               ),
               TextField(
                 controller: colorController,
                 decoration: InputDecoration(
                   labelText: 'Color del Animal',
-                  errorText: validador.mensajeErrorColorMascota, // Muestra el mensaje de error en rojo
+                  errorText: validador.mensajeErrorColorMascota,
                 ),
               ),
               SizedBox(height: 10),
@@ -147,18 +154,26 @@ class _RegisterPetState extends State<RegisterPet> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                 onPressed: () async {
-                    bool camposValidos = validarCampos();
-                    if (camposValidos) {
-                      await mostrarFinalizar.Mostrar_Finalizados(
-                          context, "Registro Con Éxito!");
-                     Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => ListMascotas()));
-                    }
-
-                  },
+                onPressed: () async {
+                  bool camposValidos = validarCampos();
+                  if (camposValidos) {
+                    await mostrarFinalizar.Mostrar_Finalizados(
+                        context, "Registro Con Éxito!");
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ListMascotas()));
+                  }
+                },
                 child: Text('Registrar Mascota'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => ViewClient()));
+                },
+                child: Text('Cancelar'),
               ),
             ],
           ),
@@ -166,21 +181,32 @@ class _RegisterPetState extends State<RegisterPet> {
       ),
     );
   }
- bool validarCampos() {
-  bool nombreValido = validador.validarNombreMascota(nombreController.text);
-  bool descripcionValido = validador.validarDescripcionMascota(descripcionController.text);
-  bool edadValido = validador.validarEdadMascota(edadController.text);
-  bool razaValido = validador.validarRazaMascota(razaController.text);
-  bool colorValido = validador.validarColorMascota(colorController.text);
 
-  setState(() {
-    validador.mensajeErrorNombreMascota = nombreValido ? null : validador.mensajeErrorNombreMascota;
-    validador.mensajeErrorDescripcionMascota = descripcionValido ? null : validador.mensajeErrorDescripcionMascota;
-    validador.mensajeErrorEdadMascota = edadValido ? null : validador.mensajeErrorEdadMascota;
-    validador.mensajeErrorRazaMascota = razaValido ? null : validador.mensajeErrorRazaMascota;
-    validador.mensajeErrorColorMascota = colorValido ? null : validador.mensajeErrorColorMascota;
-  });
+  bool validarCampos() {
+    bool nombreValido = validador.validarNombreMascota(nombreController.text);
+    bool descripcionValido =
+        validador.validarDescripcionMascota(descripcionController.text);
+    bool edadValido = validador.validarEdadMascota(edadController.text);
+    bool razaValido = validador.validarRazaMascota(razaController.text);
+    bool colorValido = validador.validarColorMascota(colorController.text);
 
-  return nombreValido && descripcionValido && edadValido && razaValido && colorValido;
-}
+    setState(() {
+      validador.mensajeErrorNombreMascota =
+          nombreValido ? null : validador.mensajeErrorNombreMascota;
+      validador.mensajeErrorDescripcionMascota =
+          descripcionValido ? null : validador.mensajeErrorDescripcionMascota;
+      validador.mensajeErrorEdadMascota =
+          edadValido ? null : validador.mensajeErrorEdadMascota;
+      validador.mensajeErrorRazaMascota =
+          razaValido ? null : validador.mensajeErrorRazaMascota;
+      validador.mensajeErrorColorMascota =
+          colorValido ? null : validador.mensajeErrorColorMascota;
+    });
+
+    return nombreValido &&
+        descripcionValido &&
+        edadValido &&
+        razaValido &&
+        colorValido;
+  }
 }

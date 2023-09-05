@@ -2,7 +2,7 @@ import 'package:fluttapp/presentation/screens/RegisterPet.dart';
 import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
+import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
 void main() => runApp(ListMascotas());
 
 class ListMascotas extends StatelessWidget {
@@ -85,7 +85,6 @@ class _CampaignPageState extends State<CampaignPage> {
           ),
           Expanded(
             child: SlidableAutoCloseBehavior(
-              // Envuelve tu ListView.builder con SlidableAutoCloseBehavior
               child: ListView.builder(
                 itemCount: mascotas.length,
                 itemBuilder: (context, index) {
@@ -93,7 +92,7 @@ class _CampaignPageState extends State<CampaignPage> {
                   final mascotaLowerCase = mascota.toLowerCase();
 
                   if (filtro.isNotEmpty && !mascotaLowerCase.contains(filtro)) {
-                    return Container(); // Ocultar elementos que no coincidan con la búsqueda
+                    return Container(); 
                   }
 
                   return Slidable(
@@ -143,7 +142,7 @@ class _CampaignPageState extends State<CampaignPage> {
                         onTap: () => Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ViewClient(),
+                            builder: (context) => InfoMascotas(),
                           ),
                         ),
                       ),
@@ -152,6 +151,28 @@ class _CampaignPageState extends State<CampaignPage> {
                 },
               ),
             ),
+          ),
+           Container(
+  height: 120.0, // Establece la altura fija del botón
+  child: Center(
+    child: FractionallySizedBox(
+      widthFactor: 0.8, // Ajusta el ancho del botón al 80% del ancho de la pantalla
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: ElevatedButton(
+          onPressed: () async {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ViewClient(),
+              ),
+            );
+          },
+          child: Text('Atras'),
+        ),
+      ),
+    ),
+  ),
           ),
         ],
       ),

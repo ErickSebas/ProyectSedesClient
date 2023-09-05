@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: correoController,
                 decoration: InputDecoration(
                   labelText: 'Correo electrónico',
-                  errorText: mensajeErrorCorreo, // Muestra el mensaje de error en rojo
+                  errorText: mensajeErrorCorreo, 
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.lightBlueAccent),
                   ),
@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Contraseña',
-                  errorText: mensajeErrorContrasena, // Muestra el mensaje de error en rojo
+                  errorText: mensajeErrorContrasena, 
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.lightBlueAccent),
                   ),
@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Función para validar los campos
+  // Función para validar los campos de texto 
   bool validarCampos() {
     bool correoValido = validador.validarCorreo(correoController.text);
     bool contrasenaValida = validador.validarContrasena(contrasenaController.text);
