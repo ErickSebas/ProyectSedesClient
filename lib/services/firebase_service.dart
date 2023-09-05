@@ -21,7 +21,7 @@ FirebaseStorage storage  = FirebaseStorage.instance;
 List<dynamic> lstlinks = [];
 List<dynamic> locations = [];
 List<Marker> lstMarcadores = [];
-
+List<dynamic> lstVersions = [];
 // Obtener el archivo de Firebase Storage
 Future<List> Obtener_Archivo() async {
   List lstUbicaciones = [];
@@ -48,6 +48,18 @@ Future<List> Obtener_Links() async {
   return lstLinks;
 }
 
+// Obtener el archivo de Firebase Storage
+Future<List> Obtener_Version() async {
+  List lstVersions = [];
+  Reference ref = storage.ref().child('version.json');
+  var datosUrl = await ref.getDownloadURL();
+  var response = await http.get(Uri.parse(datosUrl));
+  if (response.statusCode == 200) {
+    var jsonList = jsonDecode(response.body) as List;
+    lstVersions = jsonList.map((item) => item).toList();
+  }
+  return lstVersions;
+}
 
 
 
