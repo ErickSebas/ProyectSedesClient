@@ -190,7 +190,7 @@ Widget build(BuildContext context) {
                                         ],
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        primary: Color(0xFF5A7999),
+                                        primary: Color(0xFF5C8ECB),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -383,7 +383,7 @@ Widget build(BuildContext context) {
                     },
                     child: Text('Cómo llegar'),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
+                      primary: Color(0xFF5C8ECB),
                       onPrimary: Colors.white,
                     ),
                   ),

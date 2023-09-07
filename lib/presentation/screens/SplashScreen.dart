@@ -32,16 +32,17 @@ class _SplashScreenState extends State<SplashScreen> {
 
   
 /// Al inicio de la pantalla de inicio te pediran permisos para el uso de la aplicacion
-void Permisos() async{
-  LocationPermission permiso;
+Future<void> Permisos() async {
+    LocationPermission permiso;
     permiso = await Geolocator.checkPermission();
-    if(permiso == LocationPermission.denied){
+    if (permiso == LocationPermission.denied) {
       permiso = await Geolocator.requestPermission();
-      if(permiso == LocationPermission.denied){
-        return Future.error('error');
+      if (permiso == LocationPermission.denied) {
+        preferencias.setBool('isFirstTime', true);
+        SystemNavigator.pop();
       }
+    }
   }
-}
 
   ///Se usa para que la primera vez que se inicie la aplicacion en el
   ///dispositivo abra una ventana de confirmacion y si no. ingresa 
@@ -87,9 +88,9 @@ void Permisos() async{
             TextButton(
               child: Text('Sí, permitir acceso'),
               onPressed: () async {
-                preferencias.setBool('isFirstTime', false);
-                Permisos();
                 Navigator.of(context).pop();
+                preferencias.setBool('isFirstTime', false);
+                await Permisos();
                 Navegar_Pantalla_Main();
               },
             ),

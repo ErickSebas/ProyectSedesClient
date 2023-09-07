@@ -3,7 +3,7 @@
 /// Nombre del desarrollador: Equipo-Sedes-Univalle
 /// Fecha de creación: 28/08/2023
 /// </summary>
-/// 
+///
 // <copyright file="Popout.dart" company="Sedes-Univalle">
 // Esta clase está restringida para su uso, sin la previa autorización de Sedes-Univalle.
 // </copyright>
@@ -121,7 +121,8 @@ class InfoDialog {
                 ),
                 SizedBox(height: 10),
                 Text('©Univalle-MaYpiVaC 2023', style: TextStyle(fontSize: 16)),
-                Text('Todos los derechos reservados', style: TextStyle(fontSize: 16)),
+                Text('Todos los derechos reservados',
+                    style: TextStyle(fontSize: 16)),
               ],
             ),
           ),
@@ -132,7 +133,11 @@ class InfoDialog {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Container(
-                color: Color(0xFF86ABF9),
+                decoration: BoxDecoration(
+                  color: Color(0xFF5C8ECB),
+                  borderRadius: BorderRadius.circular(
+                      10), // Ajusta el radio según tu preferencia
+                ),
                 child: Center(
                   child: SizedBox(
                     width: 300,
@@ -140,7 +145,7 @@ class InfoDialog {
                     child: TextButton(
                       child: Text(
                         'Cerrar',
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Colors.white),
                       ),
                       onPressed: () {
                         Navigator.of(context).pop();
