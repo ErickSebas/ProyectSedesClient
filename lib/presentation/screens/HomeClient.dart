@@ -36,6 +36,9 @@ bool estaExpandido = true;
 bool estaSiguiendo = false;
 bool estaCentrado = false;
 double zoomActual = 14.5;
+TextEditingController searchController = TextEditingController();
+List<dynamic> searchResults = [];
+
 
 
 @override
@@ -71,7 +74,16 @@ Future<void> Localizacion_Usuario() async {
   controlMapa.animateCamera(CameraUpdate.newCameraPosition(
     CameraPosition(
       target: LatLng(position.latitude, position.longitude),
-      zoom: 14.5,
+      zoom: zoomActual,
+    ),
+  ));
+}
+
+Future<void> Camara_TO_Location(LatLng location) async {
+  controlMapa.animateCamera(CameraUpdate.newCameraPosition(
+    CameraPosition(
+      target: LatLng(location.latitude, location.longitude),
+      zoom: zoomActual,
     ),
   ));
 }
@@ -154,10 +166,59 @@ Widget build(BuildContext context) {
   ),
 ),
       body:Column(
-        children: [
-          Expanded(
+  children: [
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        controller: searchController,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.search),
+          hintText: 'Buscar por nombre...',
+        ),
+        onChanged: (value) {
+          setState(() {
+            searchResults = locations
+                .where((location) => location['name']
+                    .toLowerCase()
+                    .contains(value.toLowerCase()))
+                .toList();
+          });
+        },
+      ),
+    ),
+    if (searchResults.isNotEmpty)
+      Container(
+        height: 200, 
+        child: ListView.builder(
+          itemCount: searchResults.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(searchResults[index]['name']),
+              onTap: () {
+                Camara_TO_Location(LatLng(
+                    double.parse(searchResults[index]['latitude']),
+                    double.parse(searchResults[index]['longitude']),
+                  ));
+                Mostrar_Direccion_Destino(
+                  LatLng(
+                    double.parse(searchResults[index]['latitude']),
+                    double.parse(searchResults[index]['longitude']),
+                  ),
+                  searchResults[index]['name'],
+                );
+                
+                searchController.clear();
+                setState(() {
+                  searchResults.clear();
+                });
+              },
+            );
+          },
+        ),
+      ),
+    Expanded(
             child:  FutureBuilder<List<Marker>>(
-                    future: Crear_Puntos(locations),
+                    future: Crear_Puntos(searchResults.isEmpty ? locations : searchResults),
                     builder: (context, markersSnapshot) {
                       if (markersSnapshot.hasData) {
                         return Stack(children: [
