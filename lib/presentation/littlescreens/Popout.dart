@@ -26,6 +26,20 @@ class InfoDialog {
                 SizedBox(height: 10),
                 Image.asset("assets/LogoUnivalle.png", height: 150, width: 150),
                 SizedBox(height: 10),
+                RichText(
+                    text: TextSpan(children: [
+                  TextSpan(
+                    text: '-Política y Privacidad-\n',
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launch(
+                            'https://sedescbba.blogspot.com/2023/08/terminos-y-condiciones-de-politica-y.html');
+                      },
+                  ),
+                ])),
                 Text(
                   'Responsables de desarrollo',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
