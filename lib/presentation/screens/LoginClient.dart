@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeClient()),
+                        MaterialPageRoute(builder: (context) => LoginPage()),
                       );
                     },
                     child: Text(
@@ -123,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                       context, "Loggeo Con Éxito!");
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => HomeClient()),
+                    MaterialPageRoute(builder: (context) => ViewClient()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

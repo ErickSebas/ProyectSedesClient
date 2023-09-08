@@ -10,6 +10,7 @@
 
 import 'dart:async';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -108,7 +109,10 @@ class _HomeClientState extends State<HomeClient> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          Navigator.of(context).pushNamed("/viewClient");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ViewClient()),
+          );
           return false; // Devuelve 'true' si quieres prevenir el cierre de la aplicación
         },
         child: Scaffold(

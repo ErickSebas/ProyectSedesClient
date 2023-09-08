@@ -139,7 +139,7 @@ class _RegisterClientState extends State<RegisterClient> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => RegisterPet(),
+                              builder: (context) => LoginPage(),
                             ),
                           );
                         },
