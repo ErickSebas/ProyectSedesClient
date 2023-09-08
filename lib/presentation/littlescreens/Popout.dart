@@ -146,7 +146,7 @@ class InfoDialog {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Container(
-                color: Color(0xFF86ABF9),
+                color: Color(0xFF5C8ECB),
                 child: Center(
                   child: SizedBox(
                     width: 300,

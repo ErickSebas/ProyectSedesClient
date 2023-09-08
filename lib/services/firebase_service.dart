@@ -23,14 +23,16 @@ List<dynamic> locations = [];
 List<Marker> lstMarcadores = [];
 List<dynamic> lstVersions = [];
 // Obtener el archivo de Firebase Storage
-Future<List> Obtener_Archivo() async {
-  List lstUbicaciones = [];
+Future<List<Map<String, dynamic>>> Obtener_Archivo() async {
+  List<Map<String, dynamic>> lstUbicaciones = [];
   Reference ref = storage.ref().child('ubications.json');
   var datosUrl = await ref.getDownloadURL();
   var response = await http.get(Uri.parse(datosUrl));
   if (response.statusCode == 200) {
-    var jsonList = jsonDecode(response.body) as List;
-    lstUbicaciones = jsonList.map((item) => item).toList();
+    final jsonText = utf8.decode(response.bodyBytes);
+    var jsonList = jsonDecode(jsonText) as List;
+    lstUbicaciones =
+      jsonList.map((item) => item as Map<String, dynamic>).toList();
   }
   return lstUbicaciones;
 }

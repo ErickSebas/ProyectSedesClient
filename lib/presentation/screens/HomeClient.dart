@@ -18,6 +18,7 @@ import 'package:fluttapp/services/firebase_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:rxdart/rxdart.dart';
 
 class HomeClient extends StatefulWidget {
   const HomeClient({super.key});
@@ -36,15 +37,37 @@ bool estaExpandido = true;
 bool estaSiguiendo = false;
 bool estaCentrado = false;
 double zoomActual = 14.5;
-TextEditingController searchController = TextEditingController();
-List<dynamic> searchResults = [];
+late TextEditingController searchController = TextEditingController();
+late List<dynamic> searchResults = [];
+final _searchSubject = BehaviorSubject<String>();
+FocusNode _searchFocusNode = FocusNode();
+bool mostrarSearch = false;
+
 
 
 
 @override
 void initState(){
   super.initState();
+  _searchSubject.stream
+    .debounceTime(Duration(milliseconds: 500))
+    .listen((value) {
+      setState(() {
+        searchResults = locations
+            .where((location) =>
+                location['name'].toLowerCase().contains(value.toLowerCase()))
+            .take(10) 
+            .toList();
+      });
+  });
 }
+
+@override
+  void dispose() {
+    searchController.dispose();
+    _searchSubject.close();
+    super.dispose();
+  }
 
 ///Llama al mapa que usamos de la libreria de google
 void Creando_Mapa(GoogleMapController controller) {
@@ -83,7 +106,7 @@ Future<void> Camara_TO_Location(LatLng location) async {
   controlMapa.animateCamera(CameraUpdate.newCameraPosition(
     CameraPosition(
       target: LatLng(location.latitude, location.longitude),
-      zoom: zoomActual,
+      zoom: 17.5,
     ),
   ));
 }
@@ -139,6 +162,7 @@ Future<void> Mostrar_Informacion() async {
 @override
 Widget build(BuildContext context) {
   return Scaffold(
+    resizeToAvoidBottomInset: false,
     appBar: AppBar(
   backgroundColor: Color.fromARGB(255, 241, 245, 255),
   centerTitle: true,
@@ -167,55 +191,9 @@ Widget build(BuildContext context) {
 ),
       body:Column(
   children: [
-    Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        controller: searchController,
-        decoration: InputDecoration(
-          prefixIcon: Icon(Icons.search),
-          hintText: 'Buscar por nombre...',
-        ),
-        onChanged: (value) {
-          setState(() {
-            searchResults = locations
-                .where((location) => location['name']
-                    .toLowerCase()
-                    .contains(value.toLowerCase()))
-                .toList();
-          });
-        },
-      ),
-    ),
-    if (searchResults.isNotEmpty)
-      Container(
-        height: 200, 
-        child: ListView.builder(
-          itemCount: searchResults.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(searchResults[index]['name']),
-              onTap: () {
-                Camara_TO_Location(LatLng(
-                    double.parse(searchResults[index]['latitude']),
-                    double.parse(searchResults[index]['longitude']),
-                  ));
-                Mostrar_Direccion_Destino(
-                  LatLng(
-                    double.parse(searchResults[index]['latitude']),
-                    double.parse(searchResults[index]['longitude']),
-                  ),
-                  searchResults[index]['name'],
-                );
-                
-                searchController.clear();
-                setState(() {
-                  searchResults.clear();
-                });
-              },
-            );
-          },
-        ),
-      ),
+    
+
+
     Expanded(
             child:  FutureBuilder<List<Marker>>(
                     future: Crear_Puntos(searchResults.isEmpty ? locations : searchResults),
@@ -244,51 +222,140 @@ Widget build(BuildContext context) {
                             ),
                           },
                         ),
-                        Positioned(
-                            top: 16.0,
-                            left: 16.0,
-                            child: Align(
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                    estaSiguiendo ? 
-                                    Column(
-                                      children: [
-                                        SizedBox(height: 30),
-                                        ElevatedButton(
-                                      onPressed: ()  {
-                                        Cancelar_Rutas();
-                                      },
-                                      child: 
-                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.close, color: Colors.white),
-                                          SizedBox(width: 5), 
-                                          Text('Cancelar', style: TextStyle(color: Colors.white)),
-                                        ],
-                                      ),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Color(0xFF5A7999),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), 
-                                      ),
-                                    ),
-                                    
-                                      ],
-                                    )
-                                    
-                                    : Container(),
-                                  SizedBox(height: 10),
-                                ],
-                              ),
-                            ),
-                          ),
+                        Column(
+                          children: [
+Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 50.0),
+        child: TextField(
+          focusNode: _searchFocusNode,
+          controller: searchController,
+          decoration: InputDecoration(
+            fillColor: Colors.white, 
+            filled: true,
+            prefixIcon: Icon(Icons.search, color: Color(0xFF5C8ECB),),
+            hintText: 'Buscar por nombre...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(18.0)),  
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(18.0)), 
+              borderSide: BorderSide(color: Color(0xFF5C8ECB), width: 2.0),
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(Icons.close, color: Color(0xFF5C8ECB),),
+              onPressed: () {
+                searchController.text="";
+                _searchFocusNode.unfocus();
+                //searchController.clear(); 
+                setState(() {
+                  mostrarSearch=false;
+                  //searchResults.clear();   
+                });
+              },
+            ),
+          ),
+          onChanged: (value) {
+            if(value.isEmpty){
+              setState(() {
+                mostrarSearch=false;  
+              }); 
+            }else{
+              mostrarSearch=true;
+              setState(() {
+                _searchSubject.add(value);
+              });
+            }
+            
+          },
+        ),
+      ),
+    ),
+    if (searchResults.isNotEmpty&&mostrarSearch)
+      Container(
+        margin: EdgeInsets.symmetric(horizontal: 60.0),
+        //padding: EdgeInsets.all(5.0),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.5), 
+          borderRadius: BorderRadius.circular(10.0), 
+          boxShadow: [ 
+            BoxShadow(
+              color: Colors.black12,
+              spreadRadius: 3,
+              blurRadius: 5,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        height: 150,
+        child: ListView.builder(
+          itemCount: searchResults.length,
+          itemBuilder: (context, index) {
+            return Card(
+              elevation: 2.0, 
+              margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: ListTile(
+                contentPadding: EdgeInsets.all(10.0), 
+                title: Text(searchResults[index]['name']),
+                //subtitle: Text('Lat: ${searchResults[index]['latitude']} - Long: ${searchResults[index]['longitude']}'),
+                onTap: () async {
+                  
+                  await Camara_TO_Location(LatLng(
+                      double.parse(searchResults[index]['latitude']),
+                      double.parse(searchResults[index]['longitude']),
+                    ));
+                  
+                  _searchFocusNode.unfocus();
+                  //searchController.clear();
+                  //setState(() {
+                  //  searchResults.clear();
+                  //});
+                },
+              ),
+            );
+          },
+        ),
+      ),if(estaSiguiendo)
+      Column(
+        children: [
+          SizedBox(height: 10),
+          Container(
+        
+        margin: EdgeInsets.symmetric(horizontal: 80.0),
+        child: ElevatedButton(
+  onPressed: () {
+    Cancelar_Rutas();
+  },
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Icon(Icons.close, color: Colors.white),
+      SizedBox(width: 5), 
+      Text('Cancelar', style: TextStyle(color: Colors.white)),
+    ],
+  ),
+  style: ElevatedButton.styleFrom(
+    primary: Color(0xFF5C8ECB),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10), 
+  ),
+),
+      ),
+      
+        ],
+      )
+      
+
+                          ],
                         ),
+                        
+                        
                           Positioned(
                             bottom: 16.0,
                             left: 16.0,
@@ -298,6 +365,7 @@ Widget build(BuildContext context) {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
+                                
                                 if (estaExpandido)
                                   FloatingActionButton(
                                     onPressed: () {
@@ -382,8 +450,9 @@ Widget build(BuildContext context) {
           ),
           icon: customIcon,
           infoWindow: InfoWindow(title: location['name']),
-          onTap: () {
-            Mostrar_Direccion_Destino(LatLng(
+          onTap: () async {
+            _searchFocusNode.unfocus();
+            await Mostrar_Direccion_Destino(LatLng(
               double.parse(location['latitude']),
               double.parse(location['longitude']),
             ), location['name']);
@@ -397,7 +466,7 @@ Widget build(BuildContext context) {
 
   /// Apartado que muestra la distancia entre el usuario y el punto establecido antes
   /// de trazar la ruta.
-  void Mostrar_Direccion_Destino(LatLng destination, String nombre) {
+  Future<void> Mostrar_Direccion_Destino(LatLng destination, String nombre) async {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -469,7 +538,7 @@ Widget build(BuildContext context) {
                     },
                     child: Text('Cómo llegar'),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
+                      primary: Color(0xFF5C8ECB),
                       onPrimary: Colors.white,
                     ),
                   ),
