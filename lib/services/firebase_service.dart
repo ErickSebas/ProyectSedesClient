@@ -31,7 +31,7 @@ Future<List<Map<String, dynamic>>> Obtener_Archivo() async {
   if (response.statusCode == 200) {
     var jsonList = jsonDecode(response.body) as List;
     lstUbicaciones = 
-        jsonList.map((item) => item).toList();
+        jsonList.map((item) => item as Map<String, dynamic>).toList();
   }
   return lstUbicaciones;
 }
