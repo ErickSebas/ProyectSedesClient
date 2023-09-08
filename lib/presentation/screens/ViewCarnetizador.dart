@@ -1,7 +1,7 @@
 import 'package:fluttapp/presentation/screens/ActualizarCliente.dart';
 import 'package:fluttapp/presentation/screens/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/ListMascotas.dart';
-import 'package:fluttapp/presentation/screens/SearchClient.dart';
+import 'package:fluttapp/presentation/screens/RegisterPet.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(ViewClient());
@@ -41,8 +41,11 @@ class CampaignPage extends StatelessWidget {
                       Card(
                         color: Colors.transparent,
                         child: Container(
-                          width: 120,
-                          height: 120,
+                          width:
+                              120,
+                          height:
+                              120,
+
                           child: IconButton(
                             icon: Icon(
                               Icons.add,
@@ -53,7 +56,7 @@ class CampaignPage extends StatelessWidget {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ListClient()),
+                                    builder: (context) => RegisterPet()),
                               );
                             },
                           ),
@@ -62,8 +65,10 @@ class CampaignPage extends StatelessWidget {
                       Text(
                         'Crear Mascota',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
+                          fontSize:
+                              16,
+                          color: Colors
+                              .white, 
                         ),
                       ),
                     ],
@@ -74,8 +79,10 @@ class CampaignPage extends StatelessWidget {
                       Card(
                         color: Colors.transparent,
                         child: Container(
-                          width: 120,
-                          height: 120,
+                          width:
+                              120,
+                          height:
+                              120,
                           child: IconButton(
                             icon: Icon(
                               Icons.pets,
@@ -95,15 +102,18 @@ class CampaignPage extends StatelessWidget {
                       Text(
                         'Ver Mascotas',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
+                          fontSize:
+                              16,
+                          color: Colors
+                              .white, 
                         ),
                       ),
                     ],
                   )
                 ],
               ),
-              SizedBox(height: 20),
+
+              SizedBox(height: 20), 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -112,8 +122,10 @@ class CampaignPage extends StatelessWidget {
                       Card(
                         color: Colors.transparent,
                         child: Container(
-                          width: 120,
-                          height: 120,
+                          width:
+                              120, 
+                          height:
+                              120, 
                           child: IconButton(
                             icon: Icon(
                               Icons.flag,
@@ -133,20 +145,25 @@ class CampaignPage extends StatelessWidget {
                       Text(
                         'Ver Campañas',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
+                          fontSize:
+                              16,
+                          color: Colors
+                              .white,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(width: 20),
+                  SizedBox(width: 20), 
                   Column(
                     children: <Widget>[
                       Card(
                         color: Colors.transparent,
                         child: Container(
-                          width: 120,
-                          height: 120,
+                          width:
+                              120,
+                          height:
+                              120,
+
                           child: IconButton(
                             icon: Icon(
                               Icons.edit,
@@ -166,8 +183,10 @@ class CampaignPage extends StatelessWidget {
                       Text(
                         'Editar Perfil',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
+                          fontSize:
+                              16,
+                          color: Colors
+                              .white,
                         ),
                       ),
                     ],
