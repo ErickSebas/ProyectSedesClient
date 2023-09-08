@@ -205,7 +205,7 @@ class _RegisterPetState extends State<RegisterPet> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ListClient(),
+                          builder: (context) => ListMascotas(),
                         ),
                       );
                     },
