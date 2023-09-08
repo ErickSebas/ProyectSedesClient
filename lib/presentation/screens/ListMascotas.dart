@@ -3,6 +3,7 @@ import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
+
 void main() => runApp(ListMascotas());
 
 class ListMascotas extends StatelessWidget {
@@ -12,8 +13,9 @@ class ListMascotas extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 11, 29, 61),
-          title: Text('Mascotas', style: TextStyle(color: Colors.white)),
+          backgroundColor: Color.fromARGB(255, 241, 245, 255),
+          title: Text('Mascotas',
+              style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65))),
           centerTitle: true,
         ),
         body: CampaignPage(),
@@ -62,7 +64,7 @@ class _CampaignPageState extends State<CampaignPage> {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/BackGround.png'),
+          image: AssetImage('assets/Splash.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -92,7 +94,7 @@ class _CampaignPageState extends State<CampaignPage> {
                   final mascotaLowerCase = mascota.toLowerCase();
 
                   if (filtro.isNotEmpty && !mascotaLowerCase.contains(filtro)) {
-                    return Container(); 
+                    return Container();
                   }
 
                   return Slidable(
@@ -113,18 +115,19 @@ class _CampaignPageState extends State<CampaignPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => RegisterPet()),
+                                builder: (context) => RegisterPet(),
+                              ),
                             );
                           }),
                           borderRadius: BorderRadius.circular(20),
-                          backgroundColor: Colors.transparent,
+                          backgroundColor: Color(0xFF5C8ECB),
                           icon: Icons.edit,
                         ),
                       ],
                     ),
                     child: Card(
                       margin: EdgeInsets.all(10),
-                      color: Color.fromARGB(255, 85, 144, 189),
+                      color: Colors.transparent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -152,27 +155,32 @@ class _CampaignPageState extends State<CampaignPage> {
               ),
             ),
           ),
-           Container(
-  height: 120.0, // Establece la altura fija del botón
-  child: Center(
-    child: FractionallySizedBox(
-      widthFactor: 0.8, // Ajusta el ancho del botón al 80% del ancho de la pantalla
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: ElevatedButton(
-          onPressed: () async {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ViewClient(),
+          Container(
+            height: 120.0, // Establece la altura fija del botón
+            child: Center(
+              child: FractionallySizedBox(
+                widthFactor:
+                    0.8, // Ajusta el ancho del botón al 80% del ancho de la pantalla
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewClient(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary:
+                          Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                    ),
+                    child: Text('Atras'),
+                  ),
+                ),
               ),
-            );
-          },
-          child: Text('Atras'),
-        ),
-      ),
-    ),
-  ),
+            ),
           ),
         ],
       ),

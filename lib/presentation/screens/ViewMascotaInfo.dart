@@ -1,9 +1,9 @@
 import 'package:fluttapp/presentation/screens/ListMascotas.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(ViewMascotas());
+void main() => runApp(ViewMascotasInfo());
 
-class ViewMascotas extends StatelessWidget {
+class ViewMascotasInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InfoMascotas();
@@ -15,15 +15,15 @@ class InfoMascotas extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 11, 29, 61),
-        title:
-            Text('Datos de la Mascota', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color.fromARGB(255, 241, 245, 255),
+        title: Text('Datos de la Mascota',
+            style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65))),
         centerTitle: true,
       ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/BackGround.png'),
+            image: AssetImage('assets/Splash.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -32,7 +32,7 @@ class InfoMascotas extends StatelessWidget {
             children: [
               Card(
                 margin: EdgeInsets.all(10),
-                color: Color.fromARGB(255, 18, 58, 88),
+                color: Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -42,10 +42,8 @@ class InfoMascotas extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                                20.0),
-                            child: Image.asset(
-                                'assets/Perro.png'), 
+                            borderRadius: BorderRadius.circular(20.0),
+                            child: Image.asset('assets/Perro.png'),
                           ),
                         ),
                         Expanded(
@@ -53,42 +51,42 @@ class InfoMascotas extends StatelessWidget {
                             children: [
                               Text(
                                 'Doggy',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
                                 'French Mastiff',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
                                 '8 meses',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
                                 'Naranja',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
                                 'Tiene una patita coja',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
                                 'Vacuna Antirrabica',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.black),
                               ),
                             ],
                           ),
@@ -106,7 +104,7 @@ class InfoMascotas extends StatelessWidget {
                               Text(
                                 'Dueño',
                                 style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
+                                    color: Colors.black, fontSize: 20),
                               ),
                               SizedBox(
                                 height: 10,
@@ -114,10 +112,8 @@ class InfoMascotas extends StatelessWidget {
                               Container(
                                 margin: EdgeInsets.all(10),
                                 child: Card(
-                                  color: Color.fromARGB(255, 18, 58, 88),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
+                                  color: Colors.transparent,
+                                  shape: RoundedRectangleBorder(),
                                   child: SizedBox(
                                     child: Column(
                                       children: [
@@ -179,7 +175,7 @@ class InfoMascotas extends StatelessWidget {
                         child: Center(
                           child: Text(
                             'Volver',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black),
                             textAlign: TextAlign.center,
                           ),
                         ),

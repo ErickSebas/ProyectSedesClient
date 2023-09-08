@@ -13,22 +13,23 @@ class ListClient extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 11, 29, 61),
-          title: Text('Mascotas', style: TextStyle(color: Colors.white)),
+          backgroundColor: Color.fromARGB(255, 241, 245, 255),
+          title: Text('Clientes',
+              style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65))),
           centerTitle: true,
         ),
         body: CampaignPage(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => RegisterPet(),
+                builder: (context) => RegisterClient(),
               ),
             );
           },
           child: Icon(Icons.add),
-          backgroundColor: Color.fromARGB(255, 11, 29, 61),
+          backgroundColor: Color(0xFF5C8ECB),
         ),
       ),
     );
@@ -49,14 +50,14 @@ class CampaignPage extends StatefulWidget {
 
 class _CampaignPageState extends State<CampaignPage> {
   List<Client> mascotas = [
-    Client('Doggy', 812323423),
-    Client('Tommy', 1232234),
-    Client('Doggy', 8123234),
-    Client('Tommy', 21232342),
-    Client('Doggy', 81232342),
+    Client('Juan', 812323423),
+    Client('Pedro', 1232234),
+    Client('Lucas', 8123234),
+    Client('Antonio', 21232342),
+    Client('Enrrique', 81232342),
     Client('Tommy', 212312234),
-    Client('Doggy', 81232323),
-    Client('Tommy', 21231234),
+    Client('Lucho', 81232323),
+    Client('Pepe', 21231234),
     // Agrega el resto de las mascotas aquí
   ];
 
@@ -126,7 +127,7 @@ class _CampaignPageState extends State<CampaignPage> {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/BackGround.png'),
+          image: AssetImage('assets/Splash.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -173,7 +174,7 @@ class _CampaignPageState extends State<CampaignPage> {
 
                   return Card(
                     margin: EdgeInsets.all(10),
-                    color: Color.fromARGB(255, 85, 144, 189),
+                    color: Colors.transparent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),

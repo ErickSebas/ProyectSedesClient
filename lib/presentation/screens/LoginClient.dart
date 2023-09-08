@@ -1,4 +1,5 @@
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
+import 'package:fluttapp/presentation/screens/HomeClient.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttapp/presentation/screens/RegisterClient.dart';
 import 'package:fluttapp/presentation/screens/ViewClient.dart';
@@ -33,18 +34,27 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/Splash.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.asset("assets/SplashMaypivac.png", height: 130, width: 130),
+              Image.asset(
+                "assets/Univallenavbar.png",
+              ),
+              SizedBox(height: 20),
               TextField(
                 controller: correoController,
                 decoration: InputDecoration(
                   labelText: 'Correo electrónico',
-                  errorText: mensajeErrorCorreo, 
+                  errorText: mensajeErrorCorreo,
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.lightBlueAccent),
                   ),
@@ -56,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Contraseña',
-                  errorText: mensajeErrorContrasena, 
+                  errorText: mensajeErrorContrasena,
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.lightBlueAccent),
                   ),
@@ -71,8 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RegisterClient(),
-                        ),
+                            builder: (context) => RegisterClient()),
                       );
                     },
                     child: Text(
@@ -84,9 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewClient(),
-                        ),
+                        MaterialPageRoute(builder: (context) => HomeClient()),
                       );
                     },
                     child: Text(
@@ -111,14 +118,17 @@ class _LoginPageState extends State<LoginPage> {
                   );
                   }
                 },*/
-                  onPressed: () async {
+                onPressed: () async {
                   await mostrarFinalizar.Mostrar_Finalizados(
                       context, "Loggeo Con Éxito!");
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => ViewClient()),
+                    MaterialPageRoute(builder: (context) => HomeClient()),
                   );
                 },
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                ),
                 child: Text('Iniciar sesión'),
               ),
             ],
@@ -128,14 +138,16 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Función para validar los campos de texto 
+  // Función para validar los campos de texto
   bool validarCampos() {
     bool correoValido = validador.validarCorreo(correoController.text);
-    bool contrasenaValida = validador.validarContrasena(contrasenaController.text);
+    bool contrasenaValida =
+        validador.validarContrasena(contrasenaController.text);
 
     setState(() {
       mensajeErrorCorreo = correoValido ? null : validador.mensajeErrorCorreo;
-      mensajeErrorContrasena = contrasenaValida ? null : validador.mensajeErrorContrasena;
+      mensajeErrorContrasena =
+          contrasenaValida ? null : validador.mensajeErrorContrasena;
     });
 
     return correoValido && contrasenaValida;

@@ -1,3 +1,4 @@
+import 'package:fluttapp/presentation/littlescreens/Popout.dart';
 import 'package:fluttapp/presentation/screens/ActualizarCliente.dart';
 import 'package:fluttapp/presentation/screens/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/ListMascotas.dart';
@@ -13,19 +14,44 @@ class ViewClient extends StatelessWidget {
   }
 }
 
+Future<void> Mostrar_Informacion(BuildContext context) async {
+  await InfoDialog.MostrarInformacion(context);
+}
+
 class CampaignPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 11, 29, 61),
-        title: Text('MAYPIVAC', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color.fromARGB(255, 241, 245, 255),
         centerTitle: true,
+        title: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                child: Image.asset("assets/Univallenavbar.png"),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Mostrar_Informacion(context);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(
+                  "assets/LogoU.png",
+                  height: 32,
+                  width: 32,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/BackGround.png'),
+            image: AssetImage('assets/Splash.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -47,13 +73,14 @@ class CampaignPage extends StatelessWidget {
                             icon: Icon(
                               Icons.add,
                               size: 60,
-                              color: Colors.white,
+                              color: const Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ListClient()),
+                                  builder: (context) => ListClient(),
+                                ),
                               );
                             },
                           ),
@@ -63,7 +90,7 @@ class CampaignPage extends StatelessWidget {
                         'Crear Mascota',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white,
+                          color: const Color(0xFF5C8ECB),
                         ),
                       ),
                     ],
@@ -80,7 +107,7 @@ class CampaignPage extends StatelessWidget {
                             icon: Icon(
                               Icons.pets,
                               size: 60,
-                              color: Colors.white,
+                              color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
                               Navigator.pushReplacement(
@@ -96,7 +123,7 @@ class CampaignPage extends StatelessWidget {
                         'Ver Mascotas',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white,
+                          color: Colors.blueAccent,
                         ),
                       ),
                     ],
@@ -118,7 +145,7 @@ class CampaignPage extends StatelessWidget {
                             icon: Icon(
                               Icons.flag,
                               size: 60,
-                              color: Colors.white,
+                              color: const Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
                               Navigator.pushReplacement(
@@ -134,7 +161,7 @@ class CampaignPage extends StatelessWidget {
                         'Ver Campañas',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white,
+                          color: Color(0xFF5C8ECB),
                         ),
                       ),
                     ],
@@ -151,7 +178,7 @@ class CampaignPage extends StatelessWidget {
                             icon: Icon(
                               Icons.edit,
                               size: 60,
-                              color: Colors.white,
+                              color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
                               Navigator.pushReplacement(
@@ -167,7 +194,7 @@ class CampaignPage extends StatelessWidget {
                         'Editar Perfil',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white,
+                          color: Color(0xFF5C8ECB),
                         ),
                       ),
                     ],

@@ -3,18 +3,24 @@
 /// Nombre del desarrollador: Equipo-Sedes-Univalle
 /// Fecha de creación: 18/08/2023
 /// </summary>
-/// 
+///
 // <copyright file="main.dart" company="Sedes-Univalle">
 // Esta clase está restringida para su uso, sin la previa autorización de Sedes-Univalle.
 // </copyright>
 
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttapp/firebase_options.dart';
+import 'package:fluttapp/presentation/screens/ActualizarCliente.dart';
+import 'package:fluttapp/presentation/screens/HomeClient.dart';
+import 'package:fluttapp/presentation/screens/ListMascotas.dart';
+import 'package:fluttapp/presentation/screens/LoginClient.dart';
+import 'package:fluttapp/presentation/screens/RegisterClient.dart';
+import 'package:fluttapp/presentation/screens/RegisterPet.dart';
+import 'package:fluttapp/presentation/screens/SearchClient.dart';
 import 'package:fluttapp/presentation/screens/SplashScreen.dart';
+import 'package:fluttapp/presentation/screens/ViewClient.dart';
+import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
 import 'package:flutter/material.dart';
-
- 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,19 +35,26 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF7E1670)),
-          primaryColor: const Color(0xFF7E1670),
-        ),
-        initialRoute: '/home',
-        routes: {
-          //Pantalla principal
-          '/home': (context) => const SplashScreen(),
-        },
-      );
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF5C8ECB)),
+        primaryColor: Color(0xFF5C8ECB),
+      ),
+      initialRoute: '/home',
+      routes: {
+        //Pantalla principal
+        '/home': (context) => const SplashScreen(),
+        '/login': (context) => LoginPage(),
+        '/viewClient': (context) => ViewClient(),
+        '/createClient': (context) => RegisterClient(),
+        '/createPet': (context) => RegisterPet(),
+        '/viewMap': (context) => HomeClient(),
+        '/updateClient': (context) => ActualizarCliente(),
+        '/listPets': (context) => ListMascotas(),
+        '/listClients': (context) => ListClient(),
+        '/viewPetInfo': (context) => ViewMascotasInfo(),
+      },
+    );
   }
 }
-
- 
