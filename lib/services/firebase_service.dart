@@ -29,11 +29,13 @@ Future<List<Map<String, dynamic>>> Obtener_Archivo() async {
   var datosUrl = await ref.getDownloadURL();
   var response = await http.get(Uri.parse(datosUrl));
   if (response.statusCode == 200) {
-    var jsonList = jsonDecode(response.body) as List;
-    lstUbicaciones = 
+    final jsonText = utf8.decode(response.bodyBytes);
+    var jsonList = jsonDecode(jsonText) as List;
+    lstUbicaciones =
         jsonList.map((item) => item as Map<String, dynamic>).toList();
   }
   return lstUbicaciones;
+
 }
 
 // Obtener el archivo de Firebase Storage
