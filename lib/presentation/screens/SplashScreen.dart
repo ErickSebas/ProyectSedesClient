@@ -144,7 +144,6 @@ class _SplashScreenState extends State<SplashScreen> {
               TextButton(
                 child: Text('Aceptar'),
                 onPressed: () {
-                  Navigator.of(context).pop(); 
                   Activar_Links("https://sedescochabamba.gob.bo");
                 },
               ),
