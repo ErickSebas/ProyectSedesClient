@@ -135,6 +135,7 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
                     if (camposValidos) {
                       await mostrarFinalizar.Mostrar_Finalizados(
                           context, "Actualizado con Exito!");
+                      Navigator.of(context).pushNamed("/viewClient");
                       // Agregar aquí la lógica para registrar al usuario
                     }
                   },
@@ -147,10 +148,7 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
                 SizedBox(height: 5),
                 ElevatedButton(
                   onPressed: () async {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => ViewClient()),
-                    );
+                    Navigator.of(context).pushNamed("/viewClient");
                   },
                   style: ElevatedButton.styleFrom(
                     primary:

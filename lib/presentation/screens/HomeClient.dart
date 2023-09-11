@@ -107,194 +107,186 @@ class _HomeClientState extends State<HomeClient> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => ViewClient()),
-          );
-          return false; // Devuelve 'true' si quieres prevenir el cierre de la aplicación
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Color.fromARGB(255, 241, 245, 255),
-            centerTitle: true,
-            title: Row(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 241, 245, 255),
+        centerTitle: true,
+        title: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                child: Image.asset("assets/Univallenavbar.png"),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Mostrar_Informacion();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(
+                  "assets/LogoU.png",
+                  height: 32,
+                  width: 32,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: FutureBuilder<List<Marker>>(
+              future: Crear_Puntos(locations),
+              builder: (context, markersSnapshot) {
+                if (markersSnapshot.hasData) {
+                  return Stack(
+                    children: [
+                      GoogleMap(
+                        onCameraMove: (CameraPosition position) {
+                          zoomActual = position.zoom;
+                        },
+                        myLocationEnabled: true,
+                        key: ValueKey("key"),
+                        initialCameraPosition: const CameraPosition(
+                          target: LatLng(-17.3895000, -66.1568000),
+                          zoom: 14.5,
+                        ),
+                        markers: Set<Marker>.of(lstMarcadores),
+                        onMapCreated: Creando_Mapa,
+                        minMaxZoomPreference: MinMaxZoomPreference(12, 18),
+                        polylines: {
+                          Polyline(
+                            polylineId: PolylineId("route"),
+                            points: lstPuntosdeCoordenadas,
+                            color: Color(0xFF7B61FF),
+                            width: 6,
+                          ),
+                        },
+                      ),
+                      Positioned(
+                        top: 16.0,
+                        left: 16.0,
+                        child: Align(
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                estaSiguiendo
+                                    ? ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            estaSiguiendo = false;
+                                            lstPuntosdeCoordenadas.clear();
+                                          });
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.close,
+                                                color: Colors.white),
+                                            SizedBox(width: 5),
+                                            Text('Cancelar',
+                                                style: TextStyle(
+                                                    color: Colors.white)),
+                                          ],
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Color(0xFF5A7999),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 10),
+                                        ),
+                                      )
+                                    : Container(),
+                                SizedBox(height: 10),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 16.0,
+                        left: 16.0,
+                        child: Align(
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                if (estaExpandido)
+                                  FloatingActionButton(
+                                    onPressed: () {
+                                      Activar_Links(lstlinks[0]["link"]);
+                                    },
+                                    child: Icon(Icons.tiktok_rounded),
+                                    backgroundColor:
+                                        Color.fromRGBO(58, 164, 64, 1),
+                                  ),
+                                if (estaExpandido) SizedBox(height: 10),
+                                FloatingActionButton(
+                                  onPressed: () {
+                                    Activar_Links(lstlinks[1]["link"]);
+                                  },
+                                  child: Icon(Icons.tiktok_sharp),
+                                  backgroundColor:
+                                      Color.fromRGBO(58, 164, 64, 1),
+                                ),
+                                SizedBox(height: 10),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return const Center(
+                    child: Text('No hay datos disponibles.'),
+                  );
+                }
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(
                   child: GestureDetector(
-                    child: Image.asset("assets/Univallenavbar.png"),
+                    onTap: () {
+                      Activar_Links("https://gobernaciondecochabamba.bo");
+                    },
+                    child: Image.asset(
+                      "assets/MarcaDepartamental.png",
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Mostrar_Informacion();
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Activar_Links("https://sedescochabamba.gob.bo");
+                    },
                     child: Image.asset(
-                      "assets/LogoU.png",
-                      height: 32,
-                      width: 32,
+                      "assets/LogoSede.png",
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: FutureBuilder<List<Marker>>(
-                  future: Crear_Puntos(locations),
-                  builder: (context, markersSnapshot) {
-                    if (markersSnapshot.hasData) {
-                      return Stack(
-                        children: [
-                          GoogleMap(
-                            onCameraMove: (CameraPosition position) {
-                              zoomActual = position.zoom;
-                            },
-                            myLocationEnabled: true,
-                            key: ValueKey("key"),
-                            initialCameraPosition: const CameraPosition(
-                              target: LatLng(-17.3895000, -66.1568000),
-                              zoom: 14.5,
-                            ),
-                            markers: Set<Marker>.of(lstMarcadores),
-                            onMapCreated: Creando_Mapa,
-                            minMaxZoomPreference: MinMaxZoomPreference(12, 18),
-                            polylines: {
-                              Polyline(
-                                polylineId: PolylineId("route"),
-                                points: lstPuntosdeCoordenadas,
-                                color: Color(0xFF7B61FF),
-                                width: 6,
-                              ),
-                            },
-                          ),
-                          Positioned(
-                            top: 16.0,
-                            left: 16.0,
-                            child: Align(
-                              child: AnimatedContainer(
-                                duration: Duration(milliseconds: 300),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    estaSiguiendo
-                                        ? ElevatedButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                estaSiguiendo = false;
-                                                lstPuntosdeCoordenadas.clear();
-                                              });
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.close,
-                                                    color: Colors.white),
-                                                SizedBox(width: 5),
-                                                Text('Cancelar',
-                                                    style: TextStyle(
-                                                        color: Colors.white)),
-                                              ],
-                                            ),
-                                            style: ElevatedButton.styleFrom(
-                                              primary: Color(0xFF5A7999),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 20, vertical: 10),
-                                            ),
-                                          )
-                                        : Container(),
-                                    SizedBox(height: 10),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 16.0,
-                            left: 16.0,
-                            child: Align(
-                              child: AnimatedContainer(
-                                duration: Duration(milliseconds: 300),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    if (estaExpandido)
-                                      FloatingActionButton(
-                                        onPressed: () {
-                                          Activar_Links(lstlinks[0]["link"]);
-                                        },
-                                        child: Icon(Icons.tiktok_rounded),
-                                        backgroundColor:
-                                            Color.fromRGBO(58, 164, 64, 1),
-                                      ),
-                                    if (estaExpandido) SizedBox(height: 10),
-                                    FloatingActionButton(
-                                      onPressed: () {
-                                        Activar_Links(lstlinks[1]["link"]);
-                                      },
-                                      child: Icon(Icons.tiktok_sharp),
-                                      backgroundColor:
-                                          Color.fromRGBO(58, 164, 64, 1),
-                                    ),
-                                    SizedBox(height: 10),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return const Center(
-                        child: Text('No hay datos disponibles.'),
-                      );
-                    }
-                  },
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Activar_Links("https://gobernaciondecochabamba.bo");
-                        },
-                        child: Image.asset(
-                          "assets/MarcaDepartamental.png",
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Activar_Links("https://sedescochabamba.gob.bo");
-                        },
-                        child: Image.asset(
-                          "assets/LogoSede.png",
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ));
+        ],
+      ),
+    );
   }
 
   /// Crea las ubicaciones para que aparezcan en el mapa , heredando

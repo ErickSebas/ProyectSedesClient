@@ -1,8 +1,4 @@
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
-import 'package:fluttapp/presentation/screens/ActualizarCliente.dart';
-import 'package:fluttapp/presentation/screens/HomeClient.dart';
-import 'package:fluttapp/presentation/screens/ListMascotas.dart';
-import 'package:fluttapp/presentation/screens/SearchClient.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(ViewClient());
@@ -76,12 +72,7 @@ class CampaignPage extends StatelessWidget {
                               color: const Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ListClient(),
-                                ),
-                              );
+                              Navigator.of(context).pushNamed("/listClients");
                             },
                           ),
                         ),
@@ -110,11 +101,7 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ListMascotas()),
-                              );
+                              Navigator.of(context).pushNamed("/listPets");
                             },
                           ),
                         ),
@@ -148,11 +135,7 @@ class CampaignPage extends StatelessWidget {
                               color: const Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomeClient()),
-                              );
+                              Navigator.of(context).pushNamed("/viewMap");
                             },
                           ),
                         ),
@@ -181,11 +164,7 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ActualizarCliente()),
-                              );
+                              Navigator.of(context).pushNamed("/updateClient");
                             },
                           ),
                         ),

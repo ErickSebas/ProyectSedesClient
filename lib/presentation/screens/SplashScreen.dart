@@ -178,7 +178,11 @@ class _SplashScreenState extends State<SplashScreen> {
     );
 
     return Scaffold(
-      body: Stack(
+        body: WillPopScope(
+      onWillPop: () async {
+        return false; // Devuelve 'true' si quieres prevenir el cierre de la aplicación
+      },
+      child: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
@@ -221,6 +225,6 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
         ],
       ),
-    );
+    ));
   }
 }

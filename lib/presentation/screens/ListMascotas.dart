@@ -29,28 +29,33 @@ class CampaignPage extends StatefulWidget {
   _CampaignPageState createState() => _CampaignPageState();
 }
 
-class _CampaignPageState extends State<CampaignPage> {
-  List<String> mascotas = [
-    'Doggy\nFrench Mastiff\n8 meses',
-    'Tommy\nLabrador\n2 años',
-    'Loky\nSiamese Cat\n1 año',
-    'Pepe\nSiamese Cat\n1 año',
-    'Ruso\nSiamese Cat\n1 año',
-    'Rudo\nSiamese Cat\n1 año',
-    'Puro\nSiamese Cat\n1 año',
-    'Lano\nSiamese Cat\n1 año',
-    'Doggy\nFrench Mastiff\n8 meses',
-    'Tommy\nLabrador\n2 años',
-    'Whiskers\nSiamese Cat\n1 año',
-    'Buddy\nGolden Retriever\n4 meses',
-    'Fluffy\nPersian Cat\n6 meses',
-    'Rocky\nGerman Shepherd\n3 años',
-    'Coco\nChihuahua\n1 año',
-    'Lola\nBoxer\n2 años',
-    'Milo\nPoodle\n5 meses',
-    'Lucy\nBeagle\n7 meses',
-  ];
+class Mascota {
+  final String nombre;
+  final String raza;
+  final int CIPropietario; // Cambiado a tipo int
 
+  Mascota({
+    required this.nombre,
+    required this.raza,
+    required this.CIPropietario,
+  });
+}
+
+List<Mascota> mascotas = [
+  Mascota(
+    nombre: 'Doggy',
+    raza: 'French Mastiff',
+    CIPropietario: 8, // Cambiado a tipo int
+  ),
+  Mascota(
+    nombre: 'Tommy',
+    raza: 'Labrador',
+    CIPropietario: 2, // Cambiado a tipo int
+  ),
+  // Otras mascotas...
+];
+
+class _CampaignPageState extends State<CampaignPage> {
   String filtro = '';
 
   void eliminarMascota(int index) {
@@ -91,9 +96,10 @@ class _CampaignPageState extends State<CampaignPage> {
                 itemCount: mascotas.length,
                 itemBuilder: (context, index) {
                   final mascota = mascotas[index];
-                  final mascotaLowerCase = mascota.toLowerCase();
-
-                  if (filtro.isNotEmpty && !mascotaLowerCase.contains(filtro)) {
+                  if (filtro.isNotEmpty &&
+                      !(mascota.nombre.toLowerCase().contains(filtro) ||
+                          mascota.raza.toLowerCase().contains(filtro) ||
+                          mascota.CIPropietario.toString().contains(filtro))) {
                     return Container();
                   }
 
@@ -112,12 +118,8 @@ class _CampaignPageState extends State<CampaignPage> {
                         ),
                         SlidableAction(
                           onPressed: ((context) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RegisterPet(),
-                              ),
-                            );
+                            Navigator.of(context, rootNavigator: true)
+                                .pushNamed("/createPet");
                           }),
                           borderRadius: BorderRadius.circular(20),
                           backgroundColor: Color(0xFF5C8ECB),
@@ -137,48 +139,17 @@ class _CampaignPageState extends State<CampaignPage> {
                           radius: 30,
                         ),
                         title: Text(
-                          mascota,
+                          mascota.nombre,
                           style: TextStyle(
                             color: Colors.white,
                           ),
                         ),
-                        onTap: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => InfoMascotas(),
-                          ),
-                        ),
+                        onTap: () => Navigator.of(context, rootNavigator: true)
+                            .pushNamed("/createPet"),
                       ),
                     ),
                   );
                 },
-              ),
-            ),
-          ),
-          Container(
-            height: 120.0, // Establece la altura fija del botón
-            child: Center(
-              child: FractionallySizedBox(
-                widthFactor:
-                    0.8, // Ajusta el ancho del botón al 80% del ancho de la pantalla
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewClient(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary:
-                          Color(0xFF5C8ECB), // Cambiar el color del botón aquí
-                    ),
-                    child: Text('Atras'),
-                  ),
-                ),
               ),
             ),
           ),

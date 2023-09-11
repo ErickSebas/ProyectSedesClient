@@ -159,12 +159,7 @@ class _RegisterClientState extends State<RegisterClient> {
                         await mostrarFinalizar.Mostrar_Finalizados(
                             context, "Registro Con Éxito!");
                         // Agregar aquí la lógica para registrar al usuario
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ViewClient(),
-                          ),
-                        );
+                        Navigator.of(context).pushNamed("/viewClient");
                       }
                     },
                     style: ElevatedButton.styleFrom(

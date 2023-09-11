@@ -78,11 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterClient()),
-                      );
+                      Navigator.of(context).pushNamed("/createClient");
                     },
                     child: Text(
                       'Regístrate!',
@@ -91,10 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   InkWell(
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
+                      Navigator.of(context).pushNamed("/login");
                     },
                     child: Text(
                       '¿Olvidaste tu contraseña?',
@@ -121,10 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   await mostrarFinalizar.Mostrar_Finalizados(
                       context, "Loggeo Con Éxito!");
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => ViewClient()),
-                  );
+                  Navigator.of(context).pushNamed("/viewClient");
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí

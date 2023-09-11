@@ -21,12 +21,7 @@ class ListClient extends StatelessWidget {
         body: CampaignPage(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RegisterClient(),
-              ),
-            );
+            Navigator.of(context).pushNamed("/createClient");
           },
           child: Icon(Icons.add),
           backgroundColor: Color(0xFF5C8ECB),
@@ -105,11 +100,7 @@ class _CampaignPageState extends State<CampaignPage> {
                         style: TextStyle(color: Colors.black),
                       ),
                       onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterClient()),
-                        );
+                        Navigator.of(context).pushNamed("/createClient");
                       },
                     ),
                   ),
@@ -195,12 +186,8 @@ class _CampaignPageState extends State<CampaignPage> {
                           color: Colors.white,
                         ),
                       ),
-                      onTap: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterPet(),
-                        ),
-                      ),
+                      onTap: () => Navigator.of(context, rootNavigator: true)
+                          .pushNamed("/createPet"),
                     ),
                   );
                 },

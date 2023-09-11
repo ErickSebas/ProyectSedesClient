@@ -44,7 +44,7 @@ class MainApp extends StatelessWidget {
       initialRoute: '/home',
       routes: {
         //Pantalla principal
-        '/home': (context) => const SplashScreen(),
+        '/home': (context) => SplashScreen(),
         '/login': (context) => LoginPage(),
         '/viewClient': (context) => ViewClient(),
         '/createClient': (context) => RegisterClient(),
