@@ -1,9 +1,16 @@
+import 'dart:convert';
+
+import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
-import 'package:fluttapp/presentation/screens/HomeClient.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttapp/presentation/screens/RegisterClient.dart';
 import 'package:fluttapp/presentation/screens/ViewClient.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
+import 'package:flutter/material.dart';
+import 'package:crypto/crypto.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
+
+
 
 void main() => runApp(MyApp());
 
@@ -16,7 +23,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
 
 class LoginPage extends StatefulWidget {
@@ -30,6 +36,24 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController contrasenaController = TextEditingController();
   String? mensajeErrorCorreo;
   String? mensajeErrorContrasena;
+
+  Future<Member?> authenticateHttp(String email, String password) async {
+    final url = Uri.parse(
+        'https://backendapi-398117.rj.r.appspot.com/user?correo=$email&password=$password');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      final member = Member.fromJson(data);
+      miembroActual = member;
+      return member;
+    } else if (response.statusCode == 404) {
+      return null; // Usuario no encontrado
+    } else {
+      throw Exception('Error al autenticar el usuario');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,9 +136,23 @@ class _LoginPageState extends State<LoginPage> {
                   }
                 },*/
                 onPressed: () async {
-                  await mostrarFinalizar.Mostrar_Finalizados(
-                      context, "Loggeo Con Éxito!");
-                  Navigator.of(context).pushNamed("/viewClient");
+                  final loggedInMember = await authenticateHttp(
+                      correoController.text,
+                      md5
+                          .convert(utf8.encode(contrasenaController.text))
+                          .toString());
+                  if (loggedInMember != null) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                      builder: (context) => ViewClient()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text('Usuario o Contraseña Incorrectos')),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí

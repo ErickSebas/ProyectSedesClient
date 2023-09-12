@@ -44,6 +44,90 @@ class CampaignPage extends StatelessWidget {
           ],
         ),
       ),
+       drawer: Drawer(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/Splash.png'), // Ruta de tu imagen
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Color(0xFF5C8ECB),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/univalle.png', // Reemplaza con tu propia imagen
+                        width: 50,
+                        height: 50,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Juan Topo',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                        ),
+                      ),
+                      Text(
+                        'Administrador',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text('Opción 1'),
+                onTap: () {
+                  // Lógica al seleccionar la opción 1
+                },
+              ),
+              ListTile(
+                title: Text('Opción 2'),
+                onTap: () {
+                  // Lógica al seleccionar la opción 2
+                },
+              ),
+              ListTile(
+                title: Text('Opción 3'),
+                onTap: () {
+                  // Lógica al seleccionar la opción 1
+                },
+              ),
+              ListTile(
+                title: Text('Opción 4'),
+                onTap: () {
+                  // Lógica al seleccionar la opción 2
+                },
+              ),
+              ListTile(
+                title: Text('Opción 5'),
+                onTap: () {
+                  // Lógica al seleccionar la opción 1
+                },
+              ),
+              ListTile(
+                title: Text('Opción 6'),
+                onTap: () {
+                  // Lógica al seleccionar la opción 2
+                },
+              ),
+              // Agrega más ListTile según sea necesario
+            ],
+          ),
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
