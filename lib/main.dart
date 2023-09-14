@@ -50,7 +50,7 @@ class MainApp extends StatelessWidget {
         '/createClient': (context) => RegisterClient(),
         '/createPet': (context) => RegisterPet(),
         '/viewMap': (context) => HomeClient(),
-        '/updateClient': (context) => ActualizarCliente(),
+        '/updateClient': (context) => ActualizarCliente(datosClient: null,),
         '/listPets': (context) => ListMascotas(),
         '/listClients': (context) => ListClient(),
         '/viewPetInfo': (context) => ViewMascotasInfo(),

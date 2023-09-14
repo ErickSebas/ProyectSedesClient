@@ -2,9 +2,13 @@ import 'dart:convert';
 
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/ActualizarCliente.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-  Member? loggedInPerson; // Variable para almacenar los datos de la persona autenticada
+
+Member?
+    loggedInPerson; // Variable para almacenar los datos de la persona autenticada
+
 // ignore: must_be_immutable
 class ViewClient extends StatelessWidget {
   final int userId;
@@ -53,7 +57,6 @@ Future<Member?> getPersonById(int userId) async {
   }
 }
 
-
 Future<void> Mostrar_Informacion(BuildContext context) async {
   await InfoDialog.MostrarInformacion(context);
 }
@@ -90,80 +93,81 @@ class CampaignPage extends StatelessWidget {
         ),
       ),
       drawer: Drawer(
-  child: Container(
-    decoration: BoxDecoration(
-      image: DecorationImage(
-        image: AssetImage('assets/Splash.png'),
-        fit: BoxFit.cover,
-      ),
-    ),
-    child: ListView(
-      padding: EdgeInsets.zero,
-      children: <Widget>[
-        DrawerHeader(
+        child: Container(
           decoration: BoxDecoration(
-            color: Color(0xFF5C8ECB),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/univalle.png',
-                  width: 50,
-                  height: 50,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  loggedInPerson?.names ?? '',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
-                  ),
-                ),
-                Text(
-                  loggedInPerson?.role ?? '',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
-                  ),
-                ),
-              ],
+            image: DecorationImage(
+              image: AssetImage('assets/Splash.png'),
+              fit: BoxFit.cover,
             ),
           ),
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Color(0xFF5C8ECB),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/univalle.png',
+                        width: 50,
+                        height: 50,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        loggedInPerson?.names ?? '',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 22,
+                        ),
+                      ),
+                      Text(
+                        loggedInPerson?.role ?? '',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text('Nombres: ${loggedInPerson?.names ?? ''}'),
+                leading: Icon(Icons.person),
+              ),
+              ListTile(
+                title: Text('Apellidos: ${loggedInPerson?.lastnames ?? ''}'),
+                leading: Icon(Icons.person),
+              ),
+              ListTile(
+                title: Text(
+                    'Fecha de Nacimiento: ${loggedInPerson?.fechaNacimiento ?? ''}'),
+                leading: Icon(Icons.calendar_today),
+              ),
+              ListTile(
+                title: Text('Rol: ${loggedInPerson?.role ?? ''}'),
+                leading: Icon(Icons.work),
+              ),
+              ListTile(
+                title: Text('Correo: ${loggedInPerson?.correo ?? ''}'),
+                leading: Icon(Icons.email),
+              ),
+              ListTile(
+                title: Text('Teléfono: ${loggedInPerson?.telefono ?? ''}'),
+                leading: Icon(Icons.phone),
+              ),
+              ListTile(
+                title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
+                leading: Icon(Icons.credit_card),
+              ),
+            ],
+          ),
         ),
-        ListTile(
-          title: Text('Nombres: ${loggedInPerson?.names ?? ''}'),
-          leading: Icon(Icons.person),
-        ),
-        ListTile(
-          title: Text('Apellidos: ${loggedInPerson?.lastnames ?? ''}'),
-          leading: Icon(Icons.person),
-        ),
-        ListTile(
-          title: Text('Fecha de Nacimiento: ${loggedInPerson?.fechaNacimiento ?? ''}'),
-          leading: Icon(Icons.calendar_today),
-        ),
-        ListTile(
-          title: Text('Rol: ${loggedInPerson?.role ?? ''}'),
-          leading: Icon(Icons.work),
-        ),
-        ListTile(
-          title: Text('Correo: ${loggedInPerson?.correo ?? ''}'),
-          leading: Icon(Icons.email),
-        ),
-        ListTile(
-          title: Text('Teléfono: ${loggedInPerson?.telefono ?? ''}'),
-          leading: Icon(Icons.phone),
-        ),
-        ListTile(
-          title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
-          leading: Icon(Icons.credit_card),
-        ),
-      ],
-    ),
-  ),
-),
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -284,7 +288,13 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/updateClient");
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ActualizarCliente(
+                                      datosClient: loggedInPerson), // Pasa el ID del usuario aquí
+                                ),
+                              );
                             },
                           ),
                         ),

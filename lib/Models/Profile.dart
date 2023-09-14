@@ -11,8 +11,8 @@ class Member {
   late String correo;
   late int telefono;
   late String carnet;
-  late double longitud;
-  late double latitud;
+  late int longitud;
+  late int latitud;
   late DateTime? fechaCreacion;
   late int? status;
   // Nuevo atributo

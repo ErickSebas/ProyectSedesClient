@@ -1,9 +1,15 @@
+import 'dart:convert';
+import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/LoginClient.dart';
-import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class ActualizarCliente extends StatefulWidget {
+  final Member? datosClient;
+
+  ActualizarCliente({required this.datosClient});
+
   @override
   _ActualizarClienteState createState() => _ActualizarClienteState();
 }
@@ -16,8 +22,52 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
   DateTime? fechaNacimiento;
   TextEditingController correoController = TextEditingController();
   TextEditingController contrasenaController = TextEditingController();
-  TextEditingController repetirContrasenaController = TextEditingController();
+  TextEditingController telefonoController = TextEditingController();
+  TextEditingController carnetController = TextEditingController();
   String? mensajeError;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Poblar los controladores con los datos del cliente
+    nombreController.text = widget.datosClient?.names ?? '';
+    apellidoController.text = widget.datosClient?.lastnames ?? '';
+    correoController.text = widget.datosClient?.correo ?? '';
+    fechaNacimientoController.text =
+        widget.datosClient?.fechaNacimiento?.toString() ?? '';
+    telefonoController.text = widget.datosClient?.telefono?.toString() ?? '';
+    carnetController.text = widget.datosClient?.carnet?.toString() ?? '';
+  }
+Future<void> updatePerson(Member updatedPerson) async {
+  final url = Uri.parse('http://192.168.100.8:3000/updatepersona/${updatedPerson.id}');
+
+  final response = await http.put(
+    url,
+    body: jsonEncode({
+      'id': updatedPerson.id,
+      'Nombres': updatedPerson.names,
+      'Apellidos': updatedPerson.lastnames,
+      'FechaNacimiento': updatedPerson.fechaNacimiento.toIso8601String(),
+      'Carnet': updatedPerson.carnet,
+      'Telefono': updatedPerson.telefono,
+      'IdRol': updatedPerson.role,// Aquí debes mapear el valor de `updatedPerson.role` a la correspondiente idRolSeleccionada, similar a lo que hace tu compañero en su método.
+      'Latitud': updatedPerson.latitud,
+      'Longitud': updatedPerson.longitud,
+      'Correo': updatedPerson.correo,
+    }),
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    // Actualización exitosa
+    print('Actualización exitosa');
+  } else {
+    // Error en la actualización
+    print('Error en la actualización: ${response.statusCode}');
+    throw Exception('Error al actualizar la persona');
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +93,7 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
                   controller: nombreController,
                   decoration: InputDecoration(
                     labelText: 'Nombre',
-                    errorText: validador
-                        .mensajeErrorNombre, // Muestra el mensaje de error en rojo
+                    errorText: validador.mensajeErrorNombre,
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
@@ -55,8 +104,7 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
                   controller: apellidoController,
                   decoration: InputDecoration(
                     labelText: 'Apellido',
-                    errorText: validador
-                        .mensajeErrorApellido, // Muestra el mensaje de error en rojo
+                    errorText: validador.mensajeErrorApellido,
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
@@ -65,15 +113,14 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
                 SizedBox(height: 10),
                 TextField(
                   controller: fechaNacimientoController,
-                  readOnly: true, // Para evitar la edición manual
+                  readOnly: true,
                   onTap: () {
-                    _selectDate(
-                        context); // Abre el DatePicker para seleccionar la fecha de nacimiento
+                    _selectDate(context);
                   },
                   decoration: InputDecoration(
                     labelText: 'Fecha de nacimiento',
                     hintText: fechaNacimiento != null
-                        ? "${fechaNacimiento!.day}/${fechaNacimiento!.month}/${fechaNacimiento!.year}" // Formatea la fecha
+                        ? "${fechaNacimiento!.day}/${fechaNacimiento!.month}/${fechaNacimiento!.year}"
                         : 'Seleccionar fecha de nacimiento',
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
@@ -90,8 +137,7 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
                   controller: correoController,
                   decoration: InputDecoration(
                     labelText: 'Correo electrónico',
-                    errorText: validador
-                        .mensajeErrorCorreo, // Muestra el mensaje de error en rojo
+                    errorText: validador.mensajeErrorCorreo,
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
@@ -99,12 +145,10 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
                 ),
                 SizedBox(height: 10),
                 TextField(
-                  obscureText: true,
-                  controller: contrasenaController,
+                  controller: telefonoController,
                   decoration: InputDecoration(
-                    labelText: 'Contraseña',
-                    errorText: validador
-                        .mensajeErrorContrasena, // Muestra el mensaje de error en rojo
+                    labelText: 'Telefono',
+                    errorText: validador.mensajeErrorTelefono,
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
@@ -112,47 +156,66 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
                 ),
                 SizedBox(height: 10),
                 TextField(
-                  obscureText: true,
-                  controller: repetirContrasenaController,
+                  controller: carnetController,
                   decoration: InputDecoration(
-                    labelText: 'Repite Contraseña',
-                    errorText: validador.mensajeErrorContrasena,
+                    labelText: 'Carnet',
+                    errorText: validador.mensajeErrorTelefono,
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.lightBlueAccent),
                     ),
                   ),
                 ),
-                // Mostrar mensaje de error general si existe
                 if (mensajeError != null)
                   Text(
                     mensajeError!,
                     style: TextStyle(color: Colors.red),
                   ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    bool camposValidos = validarCampos();
-                    if (camposValidos) {
-                      await mostrarFinalizar.Mostrar_Finalizados(
-                          context, "Actualizado con Exito!");
-                      Navigator.of(context).pushNamed("/viewClient");
-                      // Agregar aquí la lógica para registrar al usuario
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary:
-                        Color(0xFF5C8ECB), // Cambiar el color del botón aquí
-                  ),
-                  child: Text('Actualizar Datos'),
-                ),
+ElevatedButton(
+  onPressed: () async {
+    bool camposValidos = validarCampos();
+    if (camposValidos) {
+      // Crear una instancia de Member con los datos actualizados
+      Member updatedMember = Member(
+        id: widget.datosClient!.id,
+        names: nombreController.text,
+        lastnames: apellidoController.text,
+        fechaNacimiento: fechaNacimiento!,
+        correo: correoController.text,
+        contrasena: widget.datosClient!.contrasena, 
+        telefono: int.parse(telefonoController.text),
+        carnet: carnetController.text,
+        latitud: widget.datosClient!.latitud,
+        longitud: widget.datosClient!.longitud,
+        fechaCreacion: widget.datosClient!.fechaCreacion,
+        status: widget.datosClient!.status,
+        role: widget.datosClient!.role,
+      );
+
+      // Llamar a la función para actualizar el cliente
+      await updatePerson(updatedMember);
+
+      // Mostrar un mensaje de éxito o realizar otras acciones después de la actualización
+      await mostrarFinalizar.Mostrar_Finalizados(
+        context, "Actualizado con Éxito!",
+      );
+
+      // Redirigir a la pantalla de vista de cliente u otras acciones según tus necesidades
+      Navigator.of(context).pushNamed("/viewClient");
+    }
+  },
+  style: ElevatedButton.styleFrom(
+    primary: Color(0xFF5C8ECB),
+  ),
+  child: Text('Actualizar Datos'),
+),
                 SizedBox(height: 5),
                 ElevatedButton(
                   onPressed: () async {
                     Navigator.of(context).pushNamed("/viewClient");
                   },
                   style: ElevatedButton.styleFrom(
-                    primary:
-                        Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                    primary: Color(0xFF5C8ECB),
                   ),
                   child: Text('Cancelar'),
                 ),
@@ -164,7 +227,6 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
     );
   }
 
-  // Función para seleccionar la fecha de nacimiento
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -186,11 +248,12 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
     bool nombreValido = validador.validarNombre(nombreController.text);
     bool apellidoValido = validador.validarApellido(apellidoController.text);
     bool correoValido = validador.validarCorreo(correoController.text);
-    bool contrasenaValida =
-        validador.validarContrasena(contrasenaController.text);
+    bool telefonoValido = validador.validarTelefono(telefonoController.text);
+    bool carnetValido = validador.validarTelefono(carnetController.text);
     bool fechaNacimientoValida = fechaNacimiento != null
         ? validador.validarFechaNacimiento(fechaNacimiento!)
-        : false; // Verificar fecha de nacimiento
+        : false;
+
     setState(() {
       validador.mensajeErrorNombre =
           nombreValido ? null : validador.mensajeErrorNombre;
@@ -198,17 +261,20 @@ class _ActualizarClienteState extends State<ActualizarCliente> {
           apellidoValido ? null : validador.mensajeErrorApellido;
       validador.mensajeErrorCorreo =
           correoValido ? null : validador.mensajeErrorCorreo;
-      validador.mensajeErrorContrasena =
-          contrasenaValida ? null : validador.mensajeErrorContrasena;
-      validador.mensajeErrorContrasena =
-          contrasenaValida ? null : validador.mensajeErrorContrasena;
+      validador.mensajeErrorTelefono =
+          telefonoValido ? null : validador.mensajeErrorTelefono;
+      validador.mensajeErrorTelefono = carnetValido
+          ? null
+          : validador.mensajeErrorTelefono; // Reemplazado por validarCarnet
       validador.mensajeErrorFechaNacimiento =
           fechaNacimientoValida ? null : validador.mensajeErrorFechaNacimiento;
     });
+
     return nombreValido &&
         apellidoValido &&
         correoValido &&
-        contrasenaValida &&
+        telefonoValido &&
+        carnetValido && // Agregado carnetValido
         fechaNacimientoValida;
   }
 }
