@@ -46,7 +46,7 @@ class MainApp extends StatelessWidget {
         //Pantalla principal
         '/home': (context) => SplashScreen(),
         '/login': (context) => LoginPage(),
-        '/viewClient': (context) => ViewClient(),
+        '/viewClient': (context) => ViewClient(userId: 0),
         '/createClient': (context) => RegisterClient(),
         '/createPet': (context) => RegisterPet(),
         '/viewMap': (context) => HomeClient(),

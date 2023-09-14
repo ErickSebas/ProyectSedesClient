@@ -1,19 +1,64 @@
+import 'dart:convert';
+
+import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
 import 'package:flutter/material.dart';
-
-void main() => runApp(ViewClient());
-
+import 'package:http/http.dart' as http;
+  Member? loggedInPerson; // Variable para almacenar los datos de la persona autenticada
+// ignore: must_be_immutable
 class ViewClient extends StatelessWidget {
+  final int userId;
+
+  ViewClient({required this.userId}) {
+    print('ID de usuario en ViewClient: $userId');
+  }
   @override
   Widget build(BuildContext context) {
-    return CampaignPage();
+    // Antes de construir la interfaz, obtén los datos de la persona autenticada
+    return FutureBuilder<Member?>(
+      future: getPersonById(userId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Muestra un indicador de carga mientras se obtienen los datos
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData) {
+          return Text('No se encontraron datos de la persona');
+        } else {
+          loggedInPerson = snapshot.data;
+          // Ahora puedes construir la interfaz con los datos de la persona
+          print('Datos obtenidossss: $loggedInPerson'); // Agrega esta línea
+          print('Nombres: ${loggedInPerson?.names}');
+          print('Rol: ${loggedInPerson?.role}');
+          return CampaignPage();
+        }
+      },
+    );
   }
 }
+
+Future<Member?> getPersonById(int userId) async {
+  final response = await http.get(
+    Uri.parse('http://192.168.100.8:3000/getpersonbyid/$userId'),
+  );
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> data = json.decode(response.body);
+    final member = Member.fromJson(data);
+    return member;
+  } else if (response.statusCode == 404) {
+    return null; // Persona no encontrada
+  } else {
+    throw Exception('Error al obtener la persona por ID');
+  }
+}
+
 
 Future<void> Mostrar_Informacion(BuildContext context) async {
   await InfoDialog.MostrarInformacion(context);
 }
 
+// ignore: must_be_immutable
 class CampaignPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -44,90 +89,81 @@ class CampaignPage extends StatelessWidget {
           ],
         ),
       ),
-       drawer: Drawer(
-        child: Container(
+      drawer: Drawer(
+  child: Container(
+    decoration: BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage('assets/Splash.png'),
+        fit: BoxFit.cover,
+      ),
+    ),
+    child: ListView(
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        DrawerHeader(
           decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/Splash.png'), // Ruta de tu imagen
-              fit: BoxFit.cover,
-            ),
+            color: Color(0xFF5C8ECB),
           ),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Color(0xFF5C8ECB),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/univalle.png',
+                  width: 50,
+                  height: 50,
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/univalle.png', // Reemplaza con tu propia imagen
-                        width: 50,
-                        height: 50,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Juan Topo',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                        ),
-                      ),
-                      Text(
-                        'Administrador',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                        ),
-                      ),
-                    ],
+                SizedBox(height: 10),
+                Text(
+                  loggedInPerson?.names ?? '',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
                   ),
                 ),
-              ),
-              ListTile(
-                title: Text('Opción 1'),
-                onTap: () {
-                  // Lógica al seleccionar la opción 1
-                },
-              ),
-              ListTile(
-                title: Text('Opción 2'),
-                onTap: () {
-                  // Lógica al seleccionar la opción 2
-                },
-              ),
-              ListTile(
-                title: Text('Opción 3'),
-                onTap: () {
-                  // Lógica al seleccionar la opción 1
-                },
-              ),
-              ListTile(
-                title: Text('Opción 4'),
-                onTap: () {
-                  // Lógica al seleccionar la opción 2
-                },
-              ),
-              ListTile(
-                title: Text('Opción 5'),
-                onTap: () {
-                  // Lógica al seleccionar la opción 1
-                },
-              ),
-              ListTile(
-                title: Text('Opción 6'),
-                onTap: () {
-                  // Lógica al seleccionar la opción 2
-                },
-              ),
-              // Agrega más ListTile según sea necesario
-            ],
+                Text(
+                  loggedInPerson?.role ?? '',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+        ListTile(
+          title: Text('Nombres: ${loggedInPerson?.names ?? ''}'),
+          leading: Icon(Icons.person),
+        ),
+        ListTile(
+          title: Text('Apellidos: ${loggedInPerson?.lastnames ?? ''}'),
+          leading: Icon(Icons.person),
+        ),
+        ListTile(
+          title: Text('Fecha de Nacimiento: ${loggedInPerson?.fechaNacimiento ?? ''}'),
+          leading: Icon(Icons.calendar_today),
+        ),
+        ListTile(
+          title: Text('Rol: ${loggedInPerson?.role ?? ''}'),
+          leading: Icon(Icons.work),
+        ),
+        ListTile(
+          title: Text('Correo: ${loggedInPerson?.correo ?? ''}'),
+          leading: Icon(Icons.email),
+        ),
+        ListTile(
+          title: Text('Teléfono: ${loggedInPerson?.telefono ?? ''}'),
+          leading: Icon(Icons.phone),
+        ),
+        ListTile(
+          title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
+          leading: Icon(Icons.credit_card),
+        ),
+      ],
+    ),
+  ),
+),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -268,7 +304,7 @@ class CampaignPage extends StatelessWidget {
           ),
         ),
       ),
-        floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pushNamed("/createClient");
         },

@@ -7,10 +7,7 @@ import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
-
-
 
 void main() => runApp(MyApp());
 
@@ -23,6 +20,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
 
 class LoginPage extends StatefulWidget {
@@ -39,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
-        'https://backendapi-398117.rj.r.appspot.com/user?correo=$email&password=$password');
+        'http://192.168.100.8:3000/user?correo=$email&password=$password');
 
     final response = await http.get(url);
 
@@ -122,19 +120,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                /*onPressed: () async {
-                  bool camposValidos = validarCampos();
-                  if (camposValidos) {
-                    await mostrarFinalizar.Mostrar_Finalizados(
-                      context,
-                      "Inicio de Sesión Exitoso!",
-                    );
-                    Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => ViewClient()),
-                  );
-                  }
-                },*/
                 onPressed: () async {
                   final loggedInMember = await authenticateHttp(
                       correoController.text,
@@ -145,7 +130,10 @@ class _LoginPageState extends State<LoginPage> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                      builder: (context) => ViewClient()),
+                        builder: (context) => ViewClient(
+                            userId: loggedInMember
+                                .id), // Pasa el ID del usuario aquí
+                      ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
