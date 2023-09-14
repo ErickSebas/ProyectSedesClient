@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:fluttapp/presentation/screens/RegisterClient.dart';
-import 'package:fluttapp/presentation/screens/RegisterPet.dart';
+import 'package:fluttapp/presentation/screens/Register.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(ListClient());

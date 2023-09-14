@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
-import 'package:fluttapp/presentation/screens/ActualizarCliente.dart';
+import 'package:fluttapp/presentation/screens/Cliente/ActualizarCliente.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -181,36 +181,7 @@ class CampaignPage extends StatelessWidget {
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Card(
-                        color: Colors.transparent,
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.add,
-                              size: 60,
-                              color: const Color(0xFF5C8ECB),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pushNamed("/listClients");
-                            },
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Crear Mascota',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: const Color(0xFF5C8ECB),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: 20), // Espacio entre botones
+                children: <Widget>[// Espacio entre botones
                   Column(
                     children: <Widget>[
                       Card(
@@ -225,13 +196,13 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/listPets");
+                              Navigator.of(context).pushNamed("/viewPetInfo");
                             },
                           ),
                         ),
                       ),
                       Text(
-                        'Ver Mascotas',
+                        'Ver Tus Mascotas',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.blueAccent,
@@ -288,13 +259,7 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ActualizarCliente(
-                                      datosClient: loggedInPerson), // Pasa el ID del usuario aquí
-                                ),
-                              );
+                              Navigator.of(context).pushNamed("/updateClient", arguments: loggedInPerson);
                             },
                           ),
                         ),
@@ -316,7 +281,7 @@ class CampaignPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed("/createClient");
+          //NAVEGACION A LOS COSOS DEL QR
         },
         child: Icon(Icons.qr_code),
         backgroundColor: Color(0xFF5C8ECB),

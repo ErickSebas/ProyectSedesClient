@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
-import 'package:fluttapp/presentation/screens/ViewClient.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
+import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
@@ -37,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
-        'http://192.168.100.8:3000/user?correo=$email&password=$password');
+        'http://192.168.100.8:3000/userbyrol?correo=$email&password=$password');
 
     final response = await http.get(url);
 
@@ -119,34 +120,50 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  final loggedInMember = await authenticateHttp(
-                      correoController.text,
-                      md5
-                          .convert(utf8.encode(contrasenaController.text))
-                          .toString());
-                  if (loggedInMember != null) {
-                    Navigator.pushReplacement(
-                      context,
+ElevatedButton(
+  onPressed: () async {
+    final loggedInMember = await authenticateHttp(
+        correoController.text,
+        md5
+            .convert(utf8.encode(contrasenaController.text))
+            .toString());
+    if (loggedInMember != null) {
+      if (loggedInMember.role == "Carnetizador") {
+        // Redirigir al administrador a la pantalla de administrador
+        Navigator.pushReplacement(
+           context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeCarnetizador(
+                            userId: loggedInMember
+                                .id), // Pasa el ID del usuario aquí
+        ));
+      } else if (loggedInMember.role == "Cliente") {
+        // Redirigir al usuario normal a la pantalla de usuario
+        Navigator.pushReplacement(
+                  context,
                       MaterialPageRoute(
                         builder: (context) => ViewClient(
                             userId: loggedInMember
                                 .id), // Pasa el ID del usuario aquí
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Usuario o Contraseña Incorrectos')),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
-                ),
-                child: Text('Iniciar sesión'),
-              ),
+          ),
+        );
+      } else {
+        // Rol desconocido, puedes mostrar un mensaje de error o manejarlo según tus necesidades.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Rol de usuario desconocido')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Usuario o Contraseña Incorrectos')),
+      );
+    }
+  }, child: null,
+  // ...
+)
+
             ],
           ),
         ),

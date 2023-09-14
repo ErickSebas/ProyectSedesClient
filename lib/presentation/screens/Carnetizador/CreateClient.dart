@@ -1,15 +1,15 @@
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
-import 'package:fluttapp/presentation/screens/LoginClient.dart';
-import 'package:fluttapp/presentation/screens/RegisterPet.dart';
-import 'package:fluttapp/presentation/screens/ViewClient.dart';
+import 'package:fluttapp/presentation/screens/Login.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
+import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:flutter/material.dart';
 
-class RegisterClient extends StatefulWidget {
+class CreateClient extends StatefulWidget {
   @override
-  _RegisterClientState createState() => _RegisterClientState();
+  _CreateClientState createState() => _CreateClientState();
 }
 
-class _RegisterClientState extends State<RegisterClient> {
+class _CreateClientState extends State<CreateClient> {
   ValidadorCampos validador = ValidadorCampos();
   TextEditingController nombreController = TextEditingController();
   TextEditingController apellidoController = TextEditingController();
@@ -130,27 +130,6 @@ class _RegisterClientState extends State<RegisterClient> {
                       mensajeError!,
                       style: TextStyle(color: Colors.red),
                     ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginPage(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          '¿Ya tienes cuenta? Inicia sesión aquí',
-                          style:
-                              TextStyle(decoration: TextDecoration.underline),
-                        ),
-                      ),
-                    ],
-                  ),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {

@@ -1,20 +1,20 @@
 import 'dart:convert';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
-import 'package:fluttapp/presentation/screens/LoginClient.dart';
+import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class ActualizarCliente extends StatefulWidget {
+class ActualizarCarnetizador extends StatefulWidget {
   final Member? datosClient;
 
-  ActualizarCliente({required this.datosClient});
+  ActualizarCarnetizador({required this.datosClient});
 
   @override
-  _ActualizarClienteState createState() => _ActualizarClienteState();
+  _ActualizarCarnetizadorState createState() => _ActualizarCarnetizadorState();
 }
 
-class _ActualizarClienteState extends State<ActualizarCliente> {
+class _ActualizarCarnetizadorState extends State<ActualizarCarnetizador> {
   ValidadorCampos validador = ValidadorCampos();
   TextEditingController nombreController = TextEditingController();
   TextEditingController apellidoController = TextEditingController();

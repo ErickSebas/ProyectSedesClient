@@ -10,15 +10,18 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttapp/firebase_options.dart';
-import 'package:fluttapp/presentation/screens/ActualizarCliente.dart';
-import 'package:fluttapp/presentation/screens/HomeClient.dart';
-import 'package:fluttapp/presentation/screens/ListMascotas.dart';
-import 'package:fluttapp/presentation/screens/LoginClient.dart';
-import 'package:fluttapp/presentation/screens/RegisterClient.dart';
-import 'package:fluttapp/presentation/screens/RegisterPet.dart';
-import 'package:fluttapp/presentation/screens/SearchClient.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/ActualizarCarnetizador.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/CreateClient.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
+import 'package:fluttapp/presentation/screens/Cliente/ActualizarCliente.dart';
+import 'package:fluttapp/presentation/screens/Maps.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
+import 'package:fluttapp/presentation/screens/Login.dart';
+import 'package:fluttapp/presentation/screens/Register.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/SearchClient.dart';
 import 'package:fluttapp/presentation/screens/SplashScreen.dart';
-import 'package:fluttapp/presentation/screens/ViewClient.dart';
+import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
 import 'package:flutter/material.dart';
 
@@ -47,13 +50,16 @@ class MainApp extends StatelessWidget {
         '/home': (context) => SplashScreen(),
         '/login': (context) => LoginPage(),
         '/viewClient': (context) => ViewClient(userId: 0),
-        '/createClient': (context) => RegisterClient(),
+        '/viewCarnetizador': (context) => HomeCarnetizador(userId: 0),
+        '/register': (context) => Register(),
         '/createPet': (context) => RegisterPet(),
-        '/viewMap': (context) => HomeClient(),
+        '/viewMap': (context) => VerCamapanas(),
         '/updateClient': (context) => ActualizarCliente(datosClient: null,),
         '/listPets': (context) => ListMascotas(),
         '/listClients': (context) => ListClient(),
         '/viewPetInfo': (context) => ViewMascotasInfo(),
+        '/updateCarnetizador': (context) => ActualizarCarnetizador(datosClient: null,),
+        '/createClient': (context) => CreateClient(),
       },
     );
   }

@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'LoginClient.dart';
+import 'Login.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 
 class SplashScreen extends StatefulWidget {

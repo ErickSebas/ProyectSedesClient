@@ -1,4 +1,4 @@
-import 'package:fluttapp/presentation/screens/ListMascotas.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(ViewMascotasInfo());
@@ -154,35 +154,6 @@ class InfoMascotas extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Column(
-                children: <Widget>[
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => ListMascotas()),
-                      );
-                    },
-                    child: Card(
-                      color: Colors.transparent,
-                      child: Container(
-                        width: 120,
-                        height: 60,
-                        child: Center(
-                          child: Text(
-                            'Volver',
-                            style: TextStyle(color: Colors.black),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
               ),
             ],
           ),

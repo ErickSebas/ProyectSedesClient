@@ -4,13 +4,12 @@
 /// Fecha de creación: 18/08/2023
 /// </summary>
 ///
-// <copyright file="HomeClient.dart" company="Sedes-Univalle">
+// <copyright file="VerCamapanas.dart" company="Sedes-Univalle">
 // Esta clase está restringida para su uso, sin la previa autorización de Sedes-Univalle.
 // </copyright>
 
 import 'dart:async';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
-import 'package:fluttapp/presentation/screens/ViewClient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -19,14 +18,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HomeClient extends StatefulWidget {
-  const HomeClient({super.key});
+class VerCamapanas extends StatefulWidget {
+  const VerCamapanas({super.key});
 
   @override
-  _HomeClientState createState() => _HomeClientState();
+  _VerCamapanasState createState() => _VerCamapanasState();
 }
 
-class _HomeClientState extends State<HomeClient> {
+class _VerCamapanasState extends State<VerCamapanas> {
   List<Marker> lstMarcadores = [];
   List<LatLng> lstPuntosdeCoordenadas = [];
   static LatLng miPosicion = LatLng(0, 0);

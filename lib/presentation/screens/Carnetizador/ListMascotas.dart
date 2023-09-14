@@ -1,5 +1,5 @@
-import 'package:fluttapp/presentation/screens/RegisterPet.dart';
-import 'package:fluttapp/presentation/screens/ViewClient.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
+import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
@@ -19,6 +19,13 @@ class ListMascotas extends StatelessWidget {
           centerTitle: true,
         ),
         body: CampaignPage(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed("/createPet");
+          },
+          child: Icon(Icons.add_box),
+          backgroundColor: Color(0xFF5C8ECB),
+        ),
       ),
     );
   }
@@ -145,7 +152,7 @@ class _CampaignPageState extends State<CampaignPage> {
                           ),
                         ),
                         onTap: () => Navigator.of(context, rootNavigator: true)
-                            .pushNamed("/createPet"),
+                            .pushNamed("/viewPetInfo"),
                       ),
                     ),
                   );

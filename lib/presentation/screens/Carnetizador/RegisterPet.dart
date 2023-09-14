@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
-import 'package:fluttapp/presentation/screens/ListMascotas.dart';
-import 'package:fluttapp/presentation/screens/SearchClient.dart';
-import 'package:fluttapp/presentation/screens/ViewClient.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/SearchClient.dart';
+import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
