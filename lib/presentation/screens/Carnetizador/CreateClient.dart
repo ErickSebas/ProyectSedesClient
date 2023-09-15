@@ -1,7 +1,5 @@
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
-import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
-import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:flutter/material.dart';
 
 class CreateClient extends StatefulWidget {

@@ -1,60 +1,34 @@
-import 'dart:convert';
-
-import 'package:fluttapp/Models/Profile.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
-import 'package:fluttapp/presentation/screens/Cliente/ActualizarCliente.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-Member?
-    loggedInPerson; // Variable para almacenar los datos de la persona autenticada
 
 // ignore: must_be_immutable
-
-class ViewClient extends StatelessWidget {
-  final int userId;
-
-  ViewClient({required this.userId}) {
-    print('ID de usuario en ViewClient: $userId');
-  }
+class HomeClientFacebookState extends State<HomeClientFacebook> {
   @override
   Widget build(BuildContext context) {
-    // Antes de construir la interfaz, obtén los datos de la persona autenticada
-    return FutureBuilder<Member?>(
-      future: getPersonById(userId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Muestra un indicador de carga mientras se obtienen los datos
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData) {
-          return Text('No se encontraron datos de la persona');
-        } else {
-          loggedInPerson = snapshot.data;
-          // Ahora puedes construir la interfaz con los datos de la persona
-          print('Datos obtenidossss: $loggedInPerson'); // Agrega esta línea
-          print('Nombres: ${loggedInPerson?.names}');
-          print('Rol: ${loggedInPerson?.role}');
-          return CampaignPage();
-        }
-      },
-    );
+    // Aquí puedes construir el widget de tu página
+    return HomeClientFacebookPage(widget: widget);
   }
 }
-
-Future<Member?> getPersonById(int userId) async {
-  final response = await http.get(
-    Uri.parse('http://192.168.100.8:3000/getpersonbyid/$userId'),
-  );
-
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> data = json.decode(response.body);
-    final member = Member.fromJson(data);
-    return member;
-  } else if (response.statusCode == 404) {
-    return null; // Persona no encontrada
-  } else {
-    throw Exception('Error al obtener la persona por ID');
+class HomeClientFacebook extends StatefulWidget {
+  final String profileImage;
+  final String fbName;
+  final String fbEmail;
+  final String fbId;
+  final String fbAccessToken;
+  const HomeClientFacebook(
+      {Key? key,
+      required this.fbAccessToken,
+      required this.fbId,
+      required this.fbEmail,
+      required this.fbName,
+      required this.profileImage})
+      : super(key: key);
+      
+ @override
+  State<StatefulWidget> createState() {
+    // Devuelve una instancia de HomeClientFacebookState
+    return HomeClientFacebookState();
   }
 }
 
@@ -63,7 +37,9 @@ Future<void> Mostrar_Informacion(BuildContext context) async {
 }
 
 // ignore: must_be_immutable
-class CampaignPage extends StatelessWidget {
+class HomeClientFacebookPage extends StatelessWidget {
+  final HomeClientFacebook widget;
+  HomeClientFacebookPage({required this.widget});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,79 +70,51 @@ class CampaignPage extends StatelessWidget {
         ),
       ),
       drawer: Drawer(
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/Splash.png'),
-              fit: BoxFit.cover,
+        child: Column(
+          // Envuelve CachedNetworkImage y ListView en un Column
+          children: [
+            Expanded(
+              // Usa Expanded para asegurarte de que el ListView ocupe todo el espacio restante
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Color(0xFF5C8ECB),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+            CachedNetworkImage(
+              imageUrl: widget.profileImage,
+              progressIndicatorBuilder: (context, url, progress) =>
+                  CircularProgressIndicator(value: progress.progress),
+              errorWidget: (context, url, error) => Icon(Icons.error),
             ),
-          ),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Color(0xFF5C8ECB),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/univalle.png',
-                        width: 50,
-                        height: 50,
+                          SizedBox(height: 10),
+                          Text(
+                            widget.fbName,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 22,
+                            ),
+                          ),
+                          Text(
+                            widget.fbEmail,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 22,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 10),
-                      Text(
-                        loggedInPerson?.names ?? '',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 22,
-                        ),
-                      ),
-                      Text(
-                        loggedInPerson?.role ?? '',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 22,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-              ListTile(
-                title: Text('Nombres: ${loggedInPerson?.names ?? ''}'),
-                leading: Icon(Icons.person),
-              ),
-              ListTile(
-                title: Text('Apellidos: ${loggedInPerson?.lastnames ?? ''}'),
-                leading: Icon(Icons.person),
-              ),
-              ListTile(
-                title: Text(
-                    'Fecha de Nacimiento: ${loggedInPerson?.fechaNacimiento ?? ''}'),
-                leading: Icon(Icons.calendar_today),
-              ),
-              ListTile(
-                title: Text('Rol: ${loggedInPerson?.role ?? ''}'),
-                leading: Icon(Icons.work),
-              ),
-              ListTile(
-                title: Text('Correo: ${loggedInPerson?.correo ?? ''}'),
-                leading: Icon(Icons.email),
-              ),
-              ListTile(
-                title: Text('Teléfono: ${loggedInPerson?.telefono ?? ''}'),
-                leading: Icon(Icons.phone),
-              ),
-              ListTile(
-                title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
-                leading: Icon(Icons.credit_card),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       body: Container(
@@ -182,7 +130,8 @@ class CampaignPage extends StatelessWidget {
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[// Espacio entre botones
+                children: <Widget>[
+                  // Espacio entre botones
                   Column(
                     children: <Widget>[
                       Card(
@@ -260,7 +209,7 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/updateClient", arguments: loggedInPerson);
+                              //Navigator.of(context).pushNamed("/updateClient", arguments: loggedInPerson);
                             },
                           ),
                         ),
