@@ -44,7 +44,7 @@ class ViewClient extends StatelessWidget {
 
 Future<Member?> getPersonById(int userId) async {
   final response = await http.get(
-    Uri.parse('http://192.168.100.8:3000/getpersonbyid/$userId'),
+    Uri.parse('http://10.0.2.2:3000/getpersonbyid/$userId'),
   );
 
   if (response.statusCode == 200) {

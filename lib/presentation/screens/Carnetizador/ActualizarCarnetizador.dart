@@ -40,7 +40,7 @@ class _ActualizarCarnetizadorState extends State<ActualizarCarnetizador> {
     carnetController.text = widget.datosClient?.carnet?.toString() ?? '';
   }
 Future<void> updatePerson(Member updatedPerson) async {
-  final url = Uri.parse('http://192.168.100.8:3000/updatepersona/${updatedPerson.id}');
+  final url = Uri.parse('http://10.253.0.220/updatepersona/${updatedPerson.id}');
 
   final response = await http.put(
     url,

@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
-        'http://192.168.100.8:3000/userbyrol?correo=$email&password=$password');
+        'http://10.0.2.2:3000/userbyrol?correo=$email&password=$password');
 
     final response = await http.get(url);
 
