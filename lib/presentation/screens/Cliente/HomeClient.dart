@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
 import 'package:fluttapp/presentation/screens/Cliente/ActualizarCliente.dart';
+import 'package:fluttapp/presentation/screens/Login.dart';
+import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -165,6 +168,20 @@ class CampaignPage extends StatelessWidget {
                 title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
                 leading: Icon(Icons.credit_card),
               ),
+              Align(
+              alignment: Alignment.bottomRight,
+              child: ListTile(
+                leading: Icon(Icons.logout),
+                title: Text('Cerrar Sesión'),
+                onTap: () {
+                  miembroActual = null;
+                  Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                },
+              ),
+            ),
             ],
           ),
         ),
@@ -260,7 +277,15 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/updateClient", arguments: loggedInPerson);
+                              //Navigator.of(context).pushNamed("/updateClient", arguments: loggedInPerson);
+                              if (loggedInPerson!.role == "Carnetizador") {
+                              esCarnetizador = true;
+                              } 
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegisterUpdate(isUpdate: true, userData: loggedInPerson)),
+                              );
                             },
                           ),
                         ),

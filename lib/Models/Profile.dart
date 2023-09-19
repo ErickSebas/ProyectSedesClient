@@ -78,3 +78,15 @@ Future<Member> getCardByUser(int id) async {
       throw Exception('Failed to load members');
     }
   }
+  Future<int> getNextIdPerson() async {
+  final response = await http.get(Uri.parse(
+      'https://backendapi-398117.rj.r.appspot.com/nextidperson')); //////
+  if (response.statusCode == 200) {
+    List<dynamic> jsonResponse = json.decode(response.body);
+    print(jsonResponse[0]['AUTO_INCREMENT']);
+    var res = jsonResponse[0]['AUTO_INCREMENT'];
+    return res;
+  } else {
+    throw Exception('Failed to load id');
+  }
+}

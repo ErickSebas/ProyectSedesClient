@@ -5,6 +5,7 @@ import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClientFacebook.dart';
+import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
@@ -41,6 +42,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
         'http://10.0.2.2:3000/userbyrol?correo=$email&password=$password');
+        //http://181.188.191.35:3000/userbyrol?correo=pepe@gmail.com&password=827ccb0eea8a706c4c34a16891f84e7b
 
     final response = await http.get(url);
 
@@ -103,7 +105,12 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.of(context).pushNamed("/createClient");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RegisterUpdate(
+                                isUpdate: false)),
+                      );
                     },
                     child: Text(
                       'Regístrate!',
@@ -233,14 +240,18 @@ class _LoginPageState extends State<LoginPage> {
         // But user can decline permission
         if (email != null) print('And your email is $email');
 // Después de obtener los datos de inicio de sesión exitosos, redirige al usuario
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeClientFacebook(fbAccessToken: accessToken!.token, profileImage: imageUrl!,
-           fbName: profile!.name!, fbId: profile.userId, fbEmail: email!,
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeClientFacebook(
+              fbAccessToken: accessToken!.token,
+              profileImage: imageUrl!,
+              fbName: profile!.name!,
+              fbId: profile.userId,
+              fbEmail: email!,
+            ),
           ),
-        ),
-      );
+        );
         break;
       case FacebookLoginStatus.cancel:
         // User cancel log in

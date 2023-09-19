@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fluttapp/presentation/screens/Register.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
+import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(ListClient());
@@ -100,7 +101,10 @@ class _CampaignPageState extends State<CampaignPage> {
                         style: TextStyle(color: Colors.black),
                       ),
                       onPressed: () {
-                        Navigator.of(context).pushNamed("/createClient");
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterUpdate(isUpdate: false,)),
+                );
                       },
                     ),
                   ),
