@@ -1,227 +1,329 @@
-import 'package:fluttapp/presentation/littlescreens/validator.dart';
-import 'package:fluttapp/presentation/screens/Login.dart';
-import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
-import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
+import 'package:fluttapp/Models/Profile.dart';
+import 'package:fluttapp/presentation/screens/SearchLocation.dart';
+import 'package:fluttapp/presentation/services/alert.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:geolocator/geolocator.dart';
+
+void main() => runApp(MyApp());
+MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
+
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Register(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
 
 class Register extends StatefulWidget {
   @override
-  _RegisterState createState() => _RegisterState();
+  _RegisterUpdateState createState() => _RegisterUpdateState();
 }
 
-class _RegisterState extends State<Register> {
-  ValidadorCampos validador = ValidadorCampos();
-  TextEditingController nombreController = TextEditingController();
-  TextEditingController apellidoController = TextEditingController();
-  TextEditingController fechaNacimientoController = TextEditingController();
-  DateTime? fechaNacimiento;
-  TextEditingController correoController = TextEditingController();
-  TextEditingController contrasenaController = TextEditingController();
-  TextEditingController repetirContrasenaController = TextEditingController();
-  String? mensajeError;
+class _RegisterUpdateState extends State<Register> {
+  final _formKey = GlobalKey<FormState>();
+  String nombre = '';
+  String apellido = '';
+  var datebirthday;
+  var dateCreation;
+  String carnet = '';
+  String telefono = '';
+  String? selectedRole = 'Cliente';
+  String latitude = '';
+  String longitude = '';
+  String email = '';
+  String password = '';
+  int status = 1;
+  int? idRolSeleccionada;
+  String nameJefe = "";
+  int idJefe = 0;
+  int idPerson = 0;
+  Member? jefeDeCarnetizador;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/Splash.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Image.asset(
-                    "assets/Univallenavbar.png",
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: nombreController,
-                    decoration: InputDecoration(
-                      labelText: 'Nombre',
-                      errorText: validador
-                          .mensajeErrorNombre, // Muestra el mensaje de error en rojo
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.lightBlueAccent),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: apellidoController,
-                    decoration: InputDecoration(
-                      labelText: 'Apellido',
-                      errorText: validador
-                          .mensajeErrorApellido, // Muestra el mensaje de error en rojo
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.lightBlueAccent),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: fechaNacimientoController,
-                    readOnly: true, // Para evitar la edición manual
-                    onTap: () {
-                      _selectDate(
-                          context); // Abre el DatePicker para seleccionar la fecha de nacimiento
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Fecha de nacimiento',
-                      hintText: fechaNacimiento != null
-                          ? "${fechaNacimiento!.day}/${fechaNacimiento!.month}/${fechaNacimiento!.year}" // Formatea la fecha
-                          : 'Seleccionar fecha de nacimiento',
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.lightBlueAccent),
-                      ),
-                    ),
-                  ),
-                  if (validador.mensajeErrorFechaNacimiento != null)
-                    Text(
-                      validador.mensajeErrorFechaNacimiento!,
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: correoController,
-                    decoration: InputDecoration(
-                      labelText: 'Correo electrónico',
-                      errorText: validador
-                          .mensajeErrorCorreo, // Muestra el mensaje de error en rojo
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.lightBlueAccent),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    obscureText: true,
-                    controller: contrasenaController,
-                    decoration: InputDecoration(
-                      labelText: 'Contraseña',
-                      errorText: validador
-                          .mensajeErrorContrasena, // Muestra el mensaje de error en rojo
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.lightBlueAccent),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    obscureText: true,
-                    controller: repetirContrasenaController,
-                    decoration: InputDecoration(
-                      labelText: 'Repite Contraseña',
-                      errorText: validador.mensajeErrorContrasena,
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.lightBlueAccent),
-                      ),
-                    ),
-                  ),
-                  // Mostrar mensaje de error general si existe
-                  if (mensajeError != null)
-                    Text(
-                      mensajeError!,
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginPage(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          '¿Ya tienes cuenta? Inicia sesión aquí',
-                          style:
-                              TextStyle(decoration: TextDecoration.underline),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      bool camposValidos = validarCampos();
-                      if (camposValidos) {
-                        await mostrarFinalizar.Mostrar_Finalizados(
-                            context, "Registro Con Éxito!");
-                        // Agregar aquí la lógica para registrar al usuario
-                        Navigator.of(context).pushNamed("/viewClient");
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary:
-                          Color(0xFF5C8ECB), // Cambiar el color del botón aquí
-                    ),
-                    child: Text('Registrarse'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  void initState() {
+    super.initState();
   }
 
-// Función para seleccionar la fecha de nacimiento
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: fechaNacimiento ?? DateTime.now(),
-      firstDate: DateTime(1920),
-      lastDate: DateTime.now(),
+  Future<void> registerUser() async {
+    final url =
+        Uri.parse('https://backendapi-398117.rj.r.appspot.com/register');
+    if (selectedRole == 'Carnetizador') {
+      idRolSeleccionada = 3;
+    } else if (selectedRole == 'Cliente') {
+      idRolSeleccionada = 4;
+    }
+    final response = await http.post(
+      url,
+      body: jsonEncode({
+        'Nombres': nombre,
+        'Apellidos': apellido,
+        'FechaNacimiento': datebirthday.toIso8601String(),
+        'FechaCreacion': dateCreation.toIso8601String(),
+        'Carnet': carnet,
+        'Telefono': telefono,
+        'IdRol': idRolSeleccionada,
+        'Latitud': latitude,
+        'Longitud': longitude,
+        'Correo': email,
+        'Password': password,
+        'Status': status,
+      }),
+      headers: {'Content-Type': 'application/json'},
     );
 
-    if (picked != null) {
-      setState(() {
-        fechaNacimiento = picked;
-        fechaNacimientoController.text =
-            "${picked.day}/${picked.month}/${picked.year}";
-      });
+    if (response.statusCode == 200) {
+      // Registro exitoso
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al registrar el usuario')),
+      );
     }
   }
 
-  bool validarCampos() {
-    bool nombreValido = validador.validarNombre(nombreController.text);
-    bool apellidoValido = validador.validarApellido(apellidoController.text);
-    bool correoValido = validador.validarCorreo(correoController.text);
-    bool contrasenaValida =
-        validador.validarContrasena(contrasenaController.text);
-    bool fechaNacimientoValida = fechaNacimiento != null
-        ? validador.validarFechaNacimiento(fechaNacimiento!)
-        : false; // Verificar fecha de nacimiento
-    setState(() {
-      validador.mensajeErrorNombre =
-          nombreValido ? null : validador.mensajeErrorNombre;
-      validador.mensajeErrorApellido =
-          apellidoValido ? null : validador.mensajeErrorApellido;
-      validador.mensajeErrorCorreo =
-          correoValido ? null : validador.mensajeErrorCorreo;
-      validador.mensajeErrorContrasena =
-          contrasenaValida ? null : validador.mensajeErrorContrasena;
-      validador.mensajeErrorContrasena =
-          contrasenaValida ? null : validador.mensajeErrorContrasena;
-      validador.mensajeErrorFechaNacimiento =
-          fechaNacimientoValida ? null : validador.mensajeErrorFechaNacimiento;
-    });
-    return nombreValido &&
-        apellidoValido &&
-        correoValido &&
-        contrasenaValida &&
-        fechaNacimientoValida;
+  Future<void> Permisos() async {
+    LocationPermission permiso;
+    permiso = await Geolocator.checkPermission();
+    if (permiso == LocationPermission.denied) {
+      permiso = await Geolocator.requestPermission();
+      if (permiso == LocationPermission.denied) {
+        return Future.error('Error');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final title = 'Registrar Usuario'; // Título dinámico
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title, style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+      ),
+      body: Stack(children: [
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/Splash.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                Center(
+                  child: Image.asset(
+                    'assets/SplashMaypivac.png',
+                    height: 100,
+                    width: 100,
+                  ),
+                ),
+                _buildTextField(
+                  initialData: nombre,
+                  label: 'Nombres',
+                  onChanged: (value) => nombre = value,
+                  validator: (value) =>
+                      value!.isEmpty ? 'El nombre no puede estar vacío.' : null,
+                ),
+                _buildTextField(
+                  initialData: apellido,
+                  label: 'Apellidos',
+                  onChanged: (value) => apellido = value,
+                  validator: (value) =>
+                      value!.isEmpty ? 'El nombre no puede estar vacío.' : null,
+                ),
+                SizedBox(height: 10),
+                Text("Fecha Nacimiento:",
+                    style: TextStyle(color: Colors.white)),
+                _buildDateOfBirthField(
+                  label: 'Fecha Nacimiento',
+                  onChanged: (value) => datebirthday = value,
+                ),
+                _buildTextField(
+                  initialData: carnet,
+                  label: 'Carnet',
+                  onChanged: (value) => carnet = value,
+                  validator: (value) =>
+                      value!.isEmpty ? 'El carnet no puede estar vacío.' : null,
+                ),
+                _buildTextField(
+                  initialData: telefono,
+                  label: 'Teléfono',
+                  onChanged: (value) => telefono = value,
+                  validator: (value) => value!.isEmpty
+                      ? 'El Teléfono no puede estar vacía.'
+                      : null,
+                  keyboardType: TextInputType.number,
+                ),
+                Text("Dirección:", style: TextStyle(color: Colors.white)),
+                ElevatedButton(
+                  child: Text("Selecciona una ubicación"),
+                  onPressed: () async {
+                    await Permisos();
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LocationPicker(),
+                      ),
+                    );
+                    if (result != null) {
+                      setState(() {
+                        latitude = result.latitude.toString();
+                        longitude = result.longitude.toString();
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0xFF1A2946),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    latitude + " " + longitude,
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+                _buildTextField(
+                  initialData: email,
+                  label: 'Email',
+                  onChanged: (value) => email = value,
+                  validator: (value) =>
+                      value!.isEmpty ? 'El email no puede estar vacío.' : null,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                _buildTextField(
+                  initialData: "",
+                  label: 'Contraseña',
+                  onChanged: (value) => password = value,
+                  obscureText: true,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    dateCreation = new DateTime.now();
+                    status = 1;
+                    if (esCarnetizador &&
+                        _formKey.currentState!.validate() &&
+                        latitude != '' &&
+                        selectedRole != '' &&
+                        datebirthday != null) {
+                      if (password != "") {
+                        dateCreation = new DateTime.now();
+                        status = 1;
+                        await registerUser();
+                        idPerson = await getNextIdPerson(); //metodo que hace que el id sea el siguiente en la base de datos
+                        mostrarFinalizar.Mostrar_Finalizados(
+                            context, "Registro con exito!");
+                      }
+                      esCarnetizador = false;
+                    } else {
+                      if (esCarnetizador == false &&
+                          _formKey.currentState!.validate() &&
+                          latitude != '' &&
+                          selectedRole != '' &&
+                          datebirthday != null) {
+                        if (password != "") {
+                          dateCreation = new DateTime.now();
+                          status = 1;
+                          await registerUser();
+                          mostrarFinalizar.Mostrar_Finalizados(
+                              context, "Registro con exito!");
+                        }
+
+                        esCarnetizador = false;
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Ingrese todos los campos')),
+                        );
+                      }
+                    }
+                  },
+                  child: Text('Registrar'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0xFF1A2946),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+      ]),
+    );
+  }
+
+  Widget _buildDateOfBirthField({
+    required String label,
+    required Function(DateTime?) onChanged,
+  }) {
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () async {
+              datebirthday = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(1900),
+                lastDate: DateTime.now(),
+              );
+
+              if (datebirthday != null) {
+                onChanged(datebirthday);
+                setState(() {});
+              }
+            },
+            child: Text(
+              datebirthday != null
+                  ? "${datebirthday.day}/${datebirthday.month}/${datebirthday.year}"
+                  : label,
+              style: TextStyle(color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFF1A2946),
+            ),
+          ),
+        ),
+        SizedBox(height: 15),
+      ],
+    );
+  }
+
+  Widget _buildTextField({
+    required String initialData,
+    required String label,
+    required Function(String) onChanged,
+    String? Function(String?)? validator,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+  }) {
+    return Column(
+      children: [
+        TextFormField(
+          initialValue: initialData,
+          style: TextStyle(color: Colors.black),
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: TextStyle(color: Colors.black),
+          ),
+          onChanged: onChanged,
+          validator: validator,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+        ),
+        SizedBox(height: 15),
+      ],
+    );
   }
 }

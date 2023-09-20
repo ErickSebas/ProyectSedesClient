@@ -18,24 +18,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: RegisterUpdate(
-        isUpdate: false,
+      home: UpdateFacebook(
       ),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class RegisterUpdate extends StatefulWidget {
+class UpdateFacebook extends StatefulWidget {
   final Member? userData;
-  late final bool isUpdate;
 
-  RegisterUpdate({required this.isUpdate, this.userData});
+  UpdateFacebook({this.userData});
   @override
-  _RegisterUpdateState createState() => _RegisterUpdateState();
+  _UpdateFacebookState createState() => _UpdateFacebookState();
 }
 
-class _RegisterUpdateState extends State<RegisterUpdate> {
+class _UpdateFacebookState extends State<UpdateFacebook> {
   final _formKey = GlobalKey<FormState>();
   String nombre = '';
   String apellido = '';
@@ -77,42 +75,6 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     email = widget.userData!.correo;
 
     setState(() {});
-  }
-
-  Future<void> registerUser() async {
-    final url =
-        Uri.parse('https://backendapi-398117.rj.r.appspot.com/register');
-    if (selectedRole == 'Carnetizador') {
-      idRolSeleccionada = 3;
-    } else if (selectedRole == 'Cliente') {
-      idRolSeleccionada = 4;
-    }
-    final response = await http.post(
-      url,
-      body: jsonEncode({
-        'Nombres': nombre,
-        'Apellidos': apellido,
-        'FechaNacimiento': datebirthday.toIso8601String(),
-        'FechaCreacion': dateCreation.toIso8601String(),
-        'Carnet': carnet,
-        'Telefono': telefono,
-        'IdRol': idRolSeleccionada,
-        'Latitud': latitude,
-        'Longitud': longitude,
-        'Correo': email,
-        'Password': password,
-        'Status': status,
-      }),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      // Registro exitoso
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al registrar el usuario')),
-      );
-    }
   }
 
   Future<void> updateUser() async {
@@ -174,9 +136,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.isUpdate
-        ? 'Actualizar Usuario'
-        : 'Registrar Usuario'; // Título dinámico
+    final title = 'Actualizar Usuario';
+// Título dinámico
 
     return Scaffold(
       appBar: AppBar(
@@ -305,66 +266,27 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                       value!.isEmpty ? 'El email no puede estar vacío.' : null,
                   keyboardType: TextInputType.emailAddress,
                 ),
-                widget.isUpdate
-                    ? Container()
-                    : _buildTextField(
-                        initialData: "",
-                        label: 'Contraseña',
-                        onChanged: (value) => password = value,
-                        obscureText: true,
-                      ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     dateCreation = new DateTime.now();
                     status = 1;
-                    if (esCarnetizador &&
-                        _formKey.currentState!.validate() &&
-                        latitude != '' &&
-                        selectedRole != '' &&
-                        datebirthday != null) {
-                      if (widget.isUpdate) {
-                        await updateUser();
-
-                        mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
-                            context, "Actializacion con exito!",miembroActual!.id);
-                      } else if (password != "") {
-                        dateCreation = new DateTime.now();
-                        status = 1;
-                        await registerUser();
-                        idPerson = await getNextIdPerson();
-                          mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
-                            context, "Registro con exito!",miembroActual!.id);
-                      }
-                      esCarnetizador = false;
-                    } else {
                       if (esCarnetizador == false &&
                           _formKey.currentState!.validate() &&
                           latitude != '' &&
                           selectedRole != '' &&
                           datebirthday != null) {
-                        if (widget.isUpdate) {
                           await updateUser(); 
                         mostrarMensaje.Mostrar_Finalizados_Clientes(
                             context, "Actializacion con exito!",miembroActual!.id);
                               
-                        } else if (password != "") {
-                          dateCreation = new DateTime.now();
-                          status = 1;
-                          await registerUser();
-                      mostrarMensaje.Mostrar_Finalizados_Clientes(
-                            context, "Registro con exito!",miembroActual!.id);
-                        }
-
-                        esCarnetizador = false;
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Ingrese todos los campos')),
                         );
                       }
-                    }
-                  },
-                  child: Text(widget.isUpdate ? 'Actualizar' : 'Registrar'),
+                    },
+                  child: Text('Actualizar'),
                   style: ElevatedButton.styleFrom(
                     primary: Color(0xFF1A2946),
                   ),

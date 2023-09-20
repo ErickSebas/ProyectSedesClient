@@ -13,15 +13,19 @@ class HomeClientFacebookState extends State<HomeClientFacebook> {
 class HomeClientFacebook extends StatefulWidget {
   final String profileImage;
   final String fbName;
+  final String fbLastname;
   final String fbEmail;
   final String fbId;
+  final String fbfirstname;
   final String fbAccessToken;
   const HomeClientFacebook(
       {Key? key,
       required this.fbAccessToken,
       required this.fbId,
       required this.fbEmail,
+      required this.fbfirstname,
       required this.fbName,
+      required this.fbLastname,
       required this.profileImage})
       : super(key: key);
       

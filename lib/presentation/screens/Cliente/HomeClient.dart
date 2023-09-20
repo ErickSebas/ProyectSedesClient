@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
-import 'package:fluttapp/presentation/screens/Cliente/ActualizarCliente.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';

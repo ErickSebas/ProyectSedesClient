@@ -5,6 +5,7 @@ import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClientFacebook.dart';
+import 'package:fluttapp/presentation/screens/Register.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
+MostrarFinalizarLogin mostrarFinalizar = MostrarFinalizarLogin();
 
 class LoginPage extends StatefulWidget {
   @override
@@ -107,9 +108,8 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterUpdate(
-                                isUpdate: false)),
+                        MaterialPageRoute(  
+                            builder: (context) => Register()),
                       );
                     },
                     child: Text(
@@ -247,8 +247,10 @@ class _LoginPageState extends State<LoginPage> {
               fbAccessToken: accessToken!.token,
               profileImage: imageUrl!,
               fbName: profile!.name!,
+              fbfirstname: profile!.firstName!,
+              fbLastname: profile.lastName!,
               fbId: profile.userId,
-              fbEmail: email!,
+              fbEmail: email!
             ),
           ),
         );

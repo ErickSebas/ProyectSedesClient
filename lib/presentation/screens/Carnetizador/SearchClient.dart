@@ -22,7 +22,13 @@ class ListClient extends StatelessWidget {
         body: CampaignPage(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.of(context).pushNamed("/createClient");
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => RegisterUpdate(
+                        isUpdate: false,
+                      )),
+            );
           },
           child: Icon(Icons.add),
           backgroundColor: Color(0xFF5C8ECB),
@@ -101,10 +107,13 @@ class _CampaignPageState extends State<CampaignPage> {
                         style: TextStyle(color: Colors.black),
                       ),
                       onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterUpdate(isUpdate: false,)),
-                );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegisterUpdate(
+                                    isUpdate: false,
+                                  )),
+                        );
                       },
                     ),
                   ),

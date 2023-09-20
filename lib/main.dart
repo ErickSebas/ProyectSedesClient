@@ -10,10 +10,7 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttapp/firebase_options.dart';
-import 'package:fluttapp/presentation/screens/Carnetizador/ActualizarCarnetizador.dart';
-import 'package:fluttapp/presentation/screens/Carnetizador/CreateClient.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
-import 'package:fluttapp/presentation/screens/Cliente/ActualizarCliente.dart';
 import 'package:fluttapp/presentation/screens/Maps.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
@@ -54,12 +51,9 @@ class MainApp extends StatelessWidget {
         '/register': (context) => Register(),
         '/createPet': (context) => RegisterPet(),
         '/viewMap': (context) => VerCamapanas(),
-        '/updateClient': (context) => ActualizarCliente(datosClient: null,),
         '/listPets': (context) => ListMascotas(),
         '/listClients': (context) => ListClient(),
         '/viewPetInfo': (context) => ViewMascotasInfo(),
-        '/updateCarnetizador': (context) => ActualizarCarnetizador(datosClient: null,),
-        '/createClient': (context) => CreateClient(),
       },
     );
   }
