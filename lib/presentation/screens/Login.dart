@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
         'http://10.0.2.2:3000/userbyrol?correo=$email&password=$password');
-        //http://181.188.191.35:3000/userbyrol?correo=pepe@gmail.com&password=827ccb0eea8a706c4c34a16891f84e7b
+    //http://181.188.191.35:3000/userbyrol?correo=pepe@gmail.com&password=827ccb0eea8a706c4c34a16891f84e7b
 
     final response = await http.get(url);
 
@@ -108,8 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(  
-                            builder: (context) => Register()),
+                        MaterialPageRoute(builder: (context) => Register()),
                       );
                     },
                     child: Text(
@@ -244,14 +243,13 @@ class _LoginPageState extends State<LoginPage> {
           context,
           MaterialPageRoute(
             builder: (context) => HomeClientFacebook(
-              fbAccessToken: accessToken!.token,
-              profileImage: imageUrl!,
-              fbName: profile!.name!,
-              fbfirstname: profile!.firstName!,
-              fbLastname: profile.lastName!,
-              fbId: profile.userId,
-              fbEmail: email!
-            ),
+                fbAccessToken: accessToken!.token,
+                profileImage: imageUrl!,
+                fbName: profile!.name!,
+                fbfirstname: profile!.firstName!,
+                fbLastname: profile.lastName!,
+                fbId: profile.userId,
+                fbEmail: email!),
           ),
         );
         break;
