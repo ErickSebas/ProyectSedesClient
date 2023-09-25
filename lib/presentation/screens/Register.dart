@@ -8,7 +8,7 @@ import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 
 void main() => runApp(MyApp());
-MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
+MostrarFinalizarLogin mostrarFinalizar = MostrarFinalizarLogin();
 
 
 class MyApp extends StatelessWidget {
@@ -223,7 +223,7 @@ class _RegisterUpdateState extends State<Register> {
                         status = 1;
                         await registerUser();
                         idPerson = await getNextIdPerson(); //metodo que hace que el id sea el siguiente en la base de datos
-                        mostrarFinalizar.Mostrar_Finalizados(
+                        mostrarFinalizar.Mostrar_FinalizadosLogin(
                             context, "Registro con exito!");
                       }
                       esCarnetizador = false;
@@ -237,7 +237,7 @@ class _RegisterUpdateState extends State<Register> {
                           dateCreation = new DateTime.now();
                           status = 1;
                           await registerUser();
-                          mostrarFinalizar.Mostrar_Finalizados(
+                          mostrarFinalizar.Mostrar_FinalizadosLogin(
                               context, "Registro con exito!");
                         }
 

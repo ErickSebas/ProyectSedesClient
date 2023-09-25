@@ -133,7 +133,7 @@ class Mostrar_Finalizados_Update {
 }
 
 class MostrarFinalizarLogin {
-  Future<void> Mostrar_Finalizados(BuildContext context, String mensaje) async {
+  Future<void> Mostrar_FinalizadosLogin(BuildContext context, String mensaje) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -153,10 +153,7 @@ class MostrarFinalizarLogin {
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
+                      Navigator.of(context).pushNamed("/login");
               },
             ),
           ],

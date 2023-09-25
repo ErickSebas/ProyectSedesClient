@@ -11,12 +11,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttapp/firebase_options.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/Maps.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/Register.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
-import 'package:fluttapp/presentation/screens/Carnetizador/SearchClient.dart';
 import 'package:fluttapp/presentation/screens/SplashScreen.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
@@ -52,8 +52,8 @@ class MainApp extends StatelessWidget {
         '/createPet': (context) => RegisterPet(),
         '/viewMap': (context) => VerCamapanas(),
         '/listPets': (context) => ListMascotas(),
-        '/listClients': (context) => ListClient(),
         '/viewPetInfo': (context) => ViewMascotasInfo(),
+        '/searchClientNew': (context) => ListMembersScreen(),
       },
     );
   }

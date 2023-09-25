@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 Member?
     loggedInPerson; // Variable para almacenar los datos de la persona autenticada
 
+int estadoPerfil = 0;
 // ignore: must_be_immutable
 class HomeCarnetizador extends StatelessWidget {
   final int userId;
@@ -212,7 +213,7 @@ class CampaignPage extends StatelessWidget {
                               color: const Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/listClients");
+                              Navigator.of(context).pushNamed("/searchClientNew");
                             },
                           ),
                         ),

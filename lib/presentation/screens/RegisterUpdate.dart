@@ -60,7 +60,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     if (widget.userData?.id != null) {
       Cargar_Datos_Persona();
     }
-  }
+  }   
 
   void Cargar_Datos_Persona() async {
     idPerson = widget.userData!.id;
