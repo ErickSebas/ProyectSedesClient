@@ -38,7 +38,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  ValidadorCampos validador = ValidadorCampos();
   TextEditingController correoController = TextEditingController();
   TextEditingController contrasenaController = TextEditingController();
   String? mensajeErrorCorreo;
@@ -47,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
   Member? globalLoggedInMember;
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
-        'http://10.10.0.14:3000/userbyrol?correo=$email&password=$password');
+        'http://10.0.2.2:3000/userbyrol?correo=$email&password=$password');
     //http://181.188.191.35:3000/userbyrol?correo=pepe@gmail.com&password=827ccb0eea8a706c4c34a16891f84e7b
 
     final response = await http.get(url);
@@ -65,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   insertToken() async {
-    final url = 'http://10.10.0.14:3000/inserttoken';
+    final url = 'http://10.0.2.2:3000/inserttoken';
     final response = await http.post(
       Uri.parse(url),
       headers: {
@@ -83,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<Member?> recoverPassword(String email) async {
-    final url = Uri.parse('http://10.10.0.14:3000/checkemail/$email');
+    final url = Uri.parse('http://10.0.2.2:3000/checkemail/$email');
 
     final response = await http.get(url);
 
@@ -115,9 +114,9 @@ class _LoginPageState extends State<LoginPage> {
       // Actualiza la base de datos
       final url = exists
           ? Uri.parse(
-              'http://10.10.0.14:3000/updateCode/$userId/$code') // URL para actualizar el código
+              'http://10.0.2.2:3000/updateCode/$userId/$code') // URL para actualizar el código
           : Uri.parse(
-              'http://10.10.0.14:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
+              'http://10.0.2.2:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
       final response = await (exists ? http.put(url) : http.post(url));
       if (response.statusCode == 200) {
         print('Código actualizado/insertado en la base de datos.');
@@ -146,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
     var userId = globalLoggedInMember?.id;
     final response = await http.get(
       Uri.parse(
-          'http://10.10.0.14:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
+          'http://10.0.2.2:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -300,13 +299,34 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
+                  // Validación de campos vacíos
+                  if (correoController.text.isEmpty ||
+                      contrasenaController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Por favor, complete todos los campos.')),
+                    );
+                    return; // Sale de la función si hay campos vacíos
+                  }
+
+                  // Validación de formato de correo electrónico
+                  if (!isValidEmail(correoController.text)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Ingrese un correo electrónico válido.')),
+                    );
+                    return; // Sale de la función si el correo es inválido
+                  }
+
                   final loggedInMember = await authenticateHttp(
                     correoController.text,
                     md5
                         .convert(utf8.encode(contrasenaController.text))
                         .toString(),
                   );
-                  if (loggedInMember != null) {
+                 if (loggedInMember != null) {
                     if (loggedInMember.role == "Carnetizador") {
                       // Redirigir al administrador a la pantalla de administrador
                       Navigator.pushReplacement(
@@ -338,7 +358,7 @@ class _LoginPageState extends State<LoginPage> {
                       SnackBar(
                           content: Text('Usuario o Contraseña Incorrectos')),
                     );
-                  }
+                  } 
                 },
                 child: Text('LOGIN'), // Agregar el texto "LOGIN" aquí
               )
@@ -377,6 +397,11 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+    return emailRegex.hasMatch(email);
   }
 
   _facebookLogin() async {
@@ -431,20 +456,5 @@ class _LoginPageState extends State<LoginPage> {
         print('Error while log in: ${res.error}');
         break;
     }
-  }
-
-  // Función para validar los campos de texto
-  bool validarCampos() {
-    bool correoValido = validador.validarCorreo(correoController.text);
-    bool contrasenaValida =
-        validador.validarContrasena(contrasenaController.text);
-
-    setState(() {
-      mensajeErrorCorreo = correoValido ? null : validador.mensajeErrorCorreo;
-      mensajeErrorContrasena =
-          contrasenaValida ? null : validador.mensajeErrorContrasena;
-    });
-
-    return correoValido && contrasenaValida;
   }
 }
