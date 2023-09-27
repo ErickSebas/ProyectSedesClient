@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:crypto/crypto.dart'; // Importa la librería crypto
 
 void main() => runApp(MyApp());
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
@@ -81,12 +82,13 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
 
   Future<void> registerUser() async {
     final url =
-        Uri.parse('https://backendapi-398117.rj.r.appspot.com/register');
+        Uri.parse('http://10.0.2.2:3000/register');
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
       idRolSeleccionada = 4;
     }
+    String md5Password = md5.convert(utf8.encode(password)).toString();
     final response = await http.post(
       url,
       body: jsonEncode({
@@ -100,7 +102,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
         'Latitud': latitude,
         'Longitud': longitude,
         'Correo': email,
-        'Password': password,
+        'Password': md5Password,
         'Status': status,
       }),
       headers: {'Content-Type': 'application/json'},
@@ -116,13 +118,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   }
 
   Future<void> updateUser() async {
-    final url = Uri.parse('https://backendapi-398117.rj.r.appspot.com/update/' +
+    final url = Uri.parse('http://10.0.2.2:3000/update/' +
         idPerson.toString()); //
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
       idRolSeleccionada = 4;
     }
+      // Calcula el hash MD5 de la contraseña
     final response = await http.put(
       url,
       body: jsonEncode({

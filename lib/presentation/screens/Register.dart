@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+import 'package:crypto/crypto.dart'; // Importa la librería crypto
 
 void main() => runApp(MyApp());
 MostrarFinalizarLogin mostrarFinalizar = MostrarFinalizarLogin();
@@ -51,40 +52,43 @@ class _RegisterUpdateState extends State<Register> {
   }
 
   Future<void> registerUser() async {
-    final url =
-        Uri.parse('https://backendapi-398117.rj.r.appspot.com/register');
-    if (selectedRole == 'Carnetizador') {
-      idRolSeleccionada = 3;
-    } else if (selectedRole == 'Cliente') {
-      idRolSeleccionada = 4;
-    }
-    final response = await http.post(
-      url,
-      body: jsonEncode({
-        'Nombres': nombre,
-        'Apellidos': apellido,
-        'FechaNacimiento': datebirthday.toIso8601String(),
-        'FechaCreacion': dateCreation.toIso8601String(),
-        'Carnet': carnet,
-        'Telefono': telefono,
-        'IdRol': idRolSeleccionada,
-        'Latitud': latitude,
-        'Longitud': longitude,
-        'Correo': email,
-        'Password': password,
-        'Status': status,
-      }),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      // Registro exitoso
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al registrar el usuario')),
-      );
-    }
+  final url = Uri.parse('http://10.0.2.2:3000/register');
+  if (selectedRole == 'Carnetizador') {
+    idRolSeleccionada = 3;
+  } else if (selectedRole == 'Cliente') {
+    idRolSeleccionada = 4;
   }
+
+  // Calcula el hash MD5 de la contraseña
+  String md5Password = md5.convert(utf8.encode(password)).toString();
+
+  final response = await http.post(
+    url,
+    body: jsonEncode({
+      'Nombres': nombre,
+      'Apellidos': apellido,
+      'FechaNacimiento': datebirthday.toIso8601String(),
+      'FechaCreacion': dateCreation.toIso8601String(),
+      'Carnet': carnet,
+      'Telefono': telefono,
+      'IdRol': idRolSeleccionada,
+      'Latitud': latitude,
+      'Longitud': longitude,
+      'Correo': email,
+      'Password': md5Password, // Envía la contraseña en formato MD5
+      'Status': status,
+    }),
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    // Registro exitoso
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al registrar el usuario')),
+    );
+  }
+}
 
   Future<void> Permisos() async {
     LocationPermission permiso;
