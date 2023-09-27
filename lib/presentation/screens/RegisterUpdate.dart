@@ -15,6 +15,7 @@ void main() => runApp(MyApp());
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
 
 Mostrar_Finalizados_Update mostrarMensaje = Mostrar_Finalizados_Update();
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     if (widget.userData?.id != null) {
       Cargar_Datos_Persona();
     }
-  }   
+  }
 
   void Cargar_Datos_Persona() async {
     idPerson = widget.userData!.id;
@@ -81,8 +82,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   }
 
   Future<void> registerUser() async {
-    final url =
-        Uri.parse('http://10.0.2.2:3000/register');
+    final url = Uri.parse('http://10.10.0.14:3000/register');
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
@@ -118,14 +118,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   }
 
   Future<void> updateUser() async {
-    final url = Uri.parse('http://10.0.2.2:3000/update/' +
-        idPerson.toString()); //
+    final url =
+        Uri.parse('http://10.10.0.14:3000/update/' + idPerson.toString()); //
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
       idRolSeleccionada = 4;
     }
-      // Calcula el hash MD5 de la contraseña
+    // Calcula el hash MD5 de la contraseña
     final response = await http.put(
       url,
       body: jsonEncode({
@@ -330,14 +330,16 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                         await updateUser();
 
                         mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
-                            context, "Actializacion con exito!",miembroActual!.id);
+                            context,
+                            "Actializacion con exito!",
+                            miembroActual!.id);
                       } else if (password != "") {
                         dateCreation = new DateTime.now();
                         status = 1;
                         await registerUser();
                         idPerson = await getNextIdPerson();
-                          mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
-                            context, "Registro con exito!",miembroActual!.id);
+                        mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
+                            context, "Registro con exito!", miembroActual!.id);
                       }
                       esCarnetizador = false;
                     } else {
@@ -347,16 +349,15 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           selectedRole != '' &&
                           datebirthday != null) {
                         if (widget.isUpdate) {
-                          await updateUser(); 
-                        mostrarMensaje.Mostrar_Finalizados_Clientes(
-                            context, "Actializacion con exito!",miembroActual!.id);
-                              
+                          await updateUser();
+                          mostrarMensaje.Mostrar_Finalizados_Clientes(context,
+                              "Actializacion con exito!", miembroActual!.id);
                         } else if (password != "") {
                           dateCreation = new DateTime.now();
                           status = 1;
                           await registerUser();
-                      mostrarMensaje.Mostrar_Finalizados_Clientes(
-                            context, "Registro con exito!",miembroActual!.id);
+                          mostrarMensaje.Mostrar_Finalizados_Clientes(context,
+                              "Registro con exito!", miembroActual!.id);
                         }
 
                         esCarnetizador = false;

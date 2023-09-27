@@ -22,7 +22,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
 
   Future<List<Member>> fetchMembers() async {
     final response =
-        await http.get(Uri.parse('http://10.0.2.2:3000/allaccountsclient'));
+        await http.get(Uri.parse('http://10.10.0.14:3000/allaccountsclient'));
     print('Fetching members...'); // Agregar esto para verificar si se llama
 
     if (response.statusCode == 200) {
@@ -63,7 +63,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
 
   Future<void> deleteUser(String userId) async {
     final url = Uri.parse(
-        'http://10.0.2.2:3000/deleteperson/$userId'); // Reemplaza $userId con el ID del usuario que deseas eliminar
+        'http://10.10.0.14:3000/deleteperson/$userId'); // Reemplaza $userId con el ID del usuario que deseas eliminar
     final response = await http.put(url);
 
     if (response.statusCode == 200) {

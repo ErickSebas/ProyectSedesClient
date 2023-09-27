@@ -1,22 +1,24 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:fluttapp/Models/Profile.dart';
+import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
-import 'package:fluttapp/presentation/screens/Carnetizador/SearchClient.dart';
-import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
-class RegisterPet extends StatefulWidget {
+class UpdatePet extends StatefulWidget {
+  final Mascota mascota; // Agregar este campo para recibir el objeto Mascota
+
+  UpdatePet(this.mascota); // Constructor que recibe una Mascota
+
   @override
-  _RegisterPetState createState() => _RegisterPetState();
+  _UpdatePetState createState() => _UpdatePetState();
 }
 
-class _RegisterPetState extends State<RegisterPet> {
+class _UpdatePetState extends State<UpdatePet> {
   ValidadorCamposMascota validador = ValidadorCamposMascota();
   TextEditingController nombreController = TextEditingController();
   TextEditingController edadController = TextEditingController();
@@ -26,6 +28,19 @@ class _RegisterPetState extends State<RegisterPet> {
   String? mensajeError;
   List<File?> _selectedImages = [];
   MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Asignar los valores de la Mascota a los controladores
+    nombreController.text = widget.mascota.nombre;
+    edadController.text = widget.mascota.edad.toString();
+    descripcionController.text = widget.mascota.descripcion;
+    razaController.text = widget.mascota.raza;
+    colorController.text = widget.mascota.color;
+  }
+
   Future<void> Confirmacion_Eliminar_Imagen(int index) async {
     return showDialog<void>(
       context: context,
@@ -56,30 +71,38 @@ class _RegisterPetState extends State<RegisterPet> {
     );
   }
 
-  Future<void> registerPet() async {
-    final url = Uri.parse('http://10.10.0.14:3000/registerPet');
-
-    final response = await http.post(
+  Future<void> updatePet() async {
+    final url = Uri.parse('http://10.10.0.14:3000/updatemascota/' +
+        widget.mascota.idMascotas.toString());
+    print("datos enviados");
+    print("Nombre: " + nombreController.text);
+    print("Raza: " + razaController.text);
+    print("Edad: " + edadController.text);
+    print("Color: " + colorController.text);
+    print("Descripción: " + descripcionController.text);
+    print("Sexo: " + valorSeleccionado);
+    final response = await http.put(
       url,
       body: jsonEncode({
+        'id': widget.mascota.idMascotas,
         'Nombre': nombreController.text,
         'Raza': razaController.text,
-        'Edad': edadController.text,
+        'Edad': int.parse(edadController.text),
         'Color': colorController.text,
         'Descripcion': descripcionController.text,
-        'IdPersona': '9',
-        'Sexo':
-            valorSeleccionado, // Usar el valor seleccionado del DropdownButton
-        'IdQr': '1'
+        'IdPersona': widget
+            .mascota.idPersona, // Asegúrate de tener este valor disponible
+        'Sexo': valorSeleccionado,
+        'IdQr': widget.mascota.idQr, // Asegúrate de tener este valor disponible
       }),
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
-      // Registro exitoso
+      // Mascota actualizada exitosamente
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al registrar la mascota')),
+        SnackBar(content: Text('Error al actualizar la mascota')),
       );
     }
   }
@@ -261,7 +284,7 @@ class _RegisterPetState extends State<RegisterPet> {
                         edadController.text +
                         colorController.text +
                         descripcionController.text);
-                    await registerPet();
+                    await updatePet();
 
                     await mostrarFinalizar.Mostrar_Finalizados(
                         context, "Registro Con Éxito!");
@@ -271,9 +294,11 @@ class _RegisterPetState extends State<RegisterPet> {
                         edadController.text +
                         colorController.text +
                         descripcionController.text);
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ListMascotas(), // Pasa el ID del usuario aquí
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ListMascotas(),
+                      ),
                     );
                   }
                 },
@@ -285,7 +310,12 @@ class _RegisterPetState extends State<RegisterPet> {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () async {
-                  Navigator.of(context).pushNamed("/listPets");
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ListMascotas(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí

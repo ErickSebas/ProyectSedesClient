@@ -1,75 +1,124 @@
+import 'dart:convert';
+import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
-import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/UpdatePet.dart';
+import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
+import 'package:http/http.dart' as http;
 
-void main() => runApp(ListMascotas());
+Future<List<Mascota>> fetchMembers() async {
+  final response =
+      await http.get(Uri.parse('http://10.10.0.14:3000/allmascotas'));
 
-class ListMascotas extends StatelessWidget {
+  final List<dynamic> data = json.decode(response.body);
+  final members =
+      data.map((memberData) => Mascota.fromJson(memberData)).toList();
+  return members;
+}
+
+Future<void> disablePet(
+    int idMascota, BuildContext context, Function() refreshList) async {
+  final url = Uri.parse('http://10.10.0.14:3000/disablemascota/$idMascota');
+  print("Deshabilitando mascota con ID: $idMascota");
+  final response = await http.put(
+    url,
+    body: jsonEncode({'id': idMascota, 'Status': 0}),
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    // Mascota deshabilitada exitosamente
+    refreshList(); // Llama a la función de actualización
+  } else {
+    // Manejar el caso de error si es necesario
+  }
+}
+
+class ListMascotas extends StatefulWidget {
+  @override
+  _ListMascotasState createState() => _ListMascotasState();
+}
+
+class _ListMascotasState extends State<ListMascotas> {
+  late Future<List<Mascota>> mascotasFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    mascotasFuture = fetchMembers();
+  }
+
+  Future<void> refreshData() async {
+    setState(() {
+      mascotasFuture = fetchMembers();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 241, 245, 255),
-          title: Text('Mascotas',
-              style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65))),
-          centerTitle: true,
-        ),
-        body: CampaignPage(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed("/createPet");
-          },
-          child: Icon(Icons.add_box),
-          backgroundColor: Color(0xFF5C8ECB),
-        ),
+      home: FutureBuilder<List<Mascota>>(
+        future: mascotasFuture,
+        builder: (BuildContext context, AsyncSnapshot<List<Mascota>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Scaffold(
+              body: Center(
+                child: Text('Error: ${snapshot.error}'),
+              ),
+            );
+          } else {
+            List<Mascota> mascotas = snapshot.data!;
+            return Scaffold(
+              appBar: AppBar(
+                backgroundColor: Color.fromARGB(255, 241, 245, 255),
+                title: Text(
+                  'Mascotas',
+                  style:
+                      TextStyle(color: const Color.fromARGB(255, 70, 65, 65)),
+                ),
+                centerTitle: true,
+              ),
+              body: CampaignPage(mascotas: mascotas, refreshList: refreshData),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RegisterPet(),
+                    ),
+                  );
+                },
+                child: Icon(Icons.add_box),
+                backgroundColor: Color(0xFF5C8ECB),
+              ),
+            );
+          }
+        },
       ),
     );
   }
 }
 
 class CampaignPage extends StatefulWidget {
+  final List<Mascota> mascotas;
+  final Function() refreshList;
+
+  CampaignPage({required this.mascotas, required this.refreshList});
+
   @override
   _CampaignPageState createState() => _CampaignPageState();
 }
 
-class Mascota {
-  final String nombre;
-  final String raza;
-  final int CIPropietario; // Cambiado a tipo int
-
-  Mascota({
-    required this.nombre,
-    required this.raza,
-    required this.CIPropietario,
-  });
-}
-
-List<Mascota> mascotas = [
-  Mascota(
-    nombre: 'Doggy',
-    raza: 'French Mastiff',
-    CIPropietario: 8, // Cambiado a tipo int
-  ),
-  Mascota(
-    nombre: 'Tommy',
-    raza: 'Labrador',
-    CIPropietario: 2, // Cambiado a tipo int
-  ),
-  // Otras mascotas...
-];
-
 class _CampaignPageState extends State<CampaignPage> {
   String filtro = '';
-
-  void eliminarMascota(int index) {
-    setState(() {
-      mascotas.removeAt(index);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,13 +149,15 @@ class _CampaignPageState extends State<CampaignPage> {
           Expanded(
             child: SlidableAutoCloseBehavior(
               child: ListView.builder(
-                itemCount: mascotas.length,
+                itemCount: widget.mascotas.length,
                 itemBuilder: (context, index) {
-                  final mascota = mascotas[index];
+                  final mascota = widget.mascotas[index];
                   if (filtro.isNotEmpty &&
                       !(mascota.nombre.toLowerCase().contains(filtro) ||
                           mascota.raza.toLowerCase().contains(filtro) ||
-                          mascota.CIPropietario.toString().contains(filtro))) {
+                          mascota.carnetPropietario
+                              .toString()
+                              .contains(filtro))) {
                     return Container();
                   }
 
@@ -116,8 +167,9 @@ class _CampaignPageState extends State<CampaignPage> {
                       children: [
                         SlidableAction(
                           onPressed: ((context) {
-                            eliminarMascota(
-                                index); // Elimina el elemento de la lista
+                            disablePet(mascota.idMascotas, context,
+                                widget.refreshList); // Pasa el contexto aquí
+                            print("id" + mascota.idMascotas.toString());
                           }),
                           borderRadius: BorderRadius.circular(20),
                           backgroundColor: Colors.red,
@@ -125,8 +177,12 @@ class _CampaignPageState extends State<CampaignPage> {
                         ),
                         SlidableAction(
                           onPressed: ((context) {
-                            Navigator.of(context, rootNavigator: true)
-                                .pushNamed("/createPet");
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UpdatePet(mascota),
+                              ),
+                            );
                           }),
                           borderRadius: BorderRadius.circular(20),
                           backgroundColor: Color(0xFF5C8ECB),
@@ -151,8 +207,12 @@ class _CampaignPageState extends State<CampaignPage> {
                             color: Colors.white,
                           ),
                         ),
-                        onTap: () => Navigator.of(context, rootNavigator: true)
-                            .pushNamed("/viewPetInfo"),
+                        onTap: () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ViewMascotasInfo(mascota),
+                          ),
+                        ),
                       ),
                     ),
                   );
@@ -164,4 +224,8 @@ class _CampaignPageState extends State<CampaignPage> {
       ),
     );
   }
+}
+
+void main() {
+  runApp(ListMascotas());
 }

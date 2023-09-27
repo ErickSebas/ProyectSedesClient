@@ -1,16 +1,52 @@
+import 'dart:convert';
+
+import 'package:fluttapp/Models/Mascota.dart';
+import 'package:fluttapp/Models/Propietario.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:flutter/material.dart';
-
-void main() => runApp(ViewMascotasInfo());
+import 'package:http/http.dart' as http;
 
 class ViewMascotasInfo extends StatelessWidget {
+  final Mascota mascota;
+
+  Future<Propietario> fetchOwnerById(int id) async {
+    final response = await http
+        .get(Uri.parse('http://10.10.0.14:3000/getpropietariobyid2/$id'));
+
+    if (response.statusCode == 200) {
+      final dynamic data = json.decode(response.body);
+      return Propietario.fromJson(data);
+    } else {
+      throw Exception('Failed to load owner');
+    }
+  }
+
+  ViewMascotasInfo(this.mascota);
+
   @override
   Widget build(BuildContext context) {
-    return InfoMascotas();
+    return FutureBuilder<Propietario>(
+      future: fetchOwnerById(mascota.idPersona),
+      builder: (BuildContext context, AsyncSnapshot<Propietario> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Muestra un indicador de carga mientras se espera la respuesta.
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          Propietario propietario = snapshot.data!;
+          return InfoMascotas(mascota: mascota, propietario: propietario);
+        }
+      },
+    );
   }
 }
 
 class InfoMascotas extends StatelessWidget {
+  final Mascota mascota;
+  final Propietario propietario;
+
+  InfoMascotas({required this.mascota, required this.propietario});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,42 +86,47 @@ class InfoMascotas extends StatelessWidget {
                           child: Column(
                             children: [
                               Text(
-                                'Doggy',
+                                mascota.nombre, // Usar el nombre de la mascota
                                 style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
-                                'French Mastiff',
+                                "Raza: " +
+                                    mascota.raza, // Usar la raza de la mascota
                                 style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
-                                '8 meses',
+                                mascota.edad.toString() +
+                                    " de edad", // Usar la edad de la mascota
                                 style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
-                                'Naranja',
+                                "Color: " +
+                                    mascota
+                                        .color, // Usar el color de la mascota
                                 style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
-                                'Tiene una patita coja',
+                                mascota
+                                    .descripcion, // Usar la descripción de la mascota
                                 style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               Text(
-                                'Vacuna Antirrabica',
+                                mascota.sexo == 'H' ? 'Hembra' : 'Macho',
                                 style: TextStyle(color: Colors.black),
                               ),
                             ],
@@ -102,7 +143,7 @@ class InfoMascotas extends StatelessWidget {
                           child: Column(
                             children: [
                               Text(
-                                'Dueño',
+                                'Propietario',
                                 style: TextStyle(
                                     color: Colors.black, fontSize: 20),
                               ),
@@ -118,28 +159,32 @@ class InfoMascotas extends StatelessWidget {
                                     child: Column(
                                       children: [
                                         Text(
-                                          'Juan Pedro',
+                                          propietario
+                                              .nombres, // Usar el nombre del propietario
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         SizedBox(
                                           height: 10,
                                         ),
                                         Text(
-                                          'Topo Quispe',
+                                          propietario
+                                              .apellidos, // Usar los apellidos del propietario
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         SizedBox(
                                           height: 10,
                                         ),
                                         Text(
-                                          'Goku1234@gmail.com',
+                                          propietario
+                                              .correo, // Usar el correo del propietario
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         SizedBox(
                                           height: 10,
                                         ),
                                         Text(
-                                          'Av. Simon Lopez y Bejing',
+                                          propietario.telefono
+                                              .toString(), // Usar el teléfono del propietario
                                           style: TextStyle(color: Colors.white),
                                         ),
                                       ],

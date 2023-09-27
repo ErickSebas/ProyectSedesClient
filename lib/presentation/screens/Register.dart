@@ -11,7 +11,6 @@ import 'package:crypto/crypto.dart'; // Importa la librería crypto
 void main() => runApp(MyApp());
 MostrarFinalizarLogin mostrarFinalizar = MostrarFinalizarLogin();
 
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -52,43 +51,43 @@ class _RegisterUpdateState extends State<Register> {
   }
 
   Future<void> registerUser() async {
-  final url = Uri.parse('http://10.0.2.2:3000/register');
-  if (selectedRole == 'Carnetizador') {
-    idRolSeleccionada = 3;
-  } else if (selectedRole == 'Cliente') {
-    idRolSeleccionada = 4;
-  }
+    final url = Uri.parse('http://10.10.0.14:3000/register');
+    if (selectedRole == 'Carnetizador') {
+      idRolSeleccionada = 3;
+    } else if (selectedRole == 'Cliente') {
+      idRolSeleccionada = 4;
+    }
 
-  // Calcula el hash MD5 de la contraseña
-  String md5Password = md5.convert(utf8.encode(password)).toString();
+    // Calcula el hash MD5 de la contraseña
+    String md5Password = md5.convert(utf8.encode(password)).toString();
 
-  final response = await http.post(
-    url,
-    body: jsonEncode({
-      'Nombres': nombre,
-      'Apellidos': apellido,
-      'FechaNacimiento': datebirthday.toIso8601String(),
-      'FechaCreacion': dateCreation.toIso8601String(),
-      'Carnet': carnet,
-      'Telefono': telefono,
-      'IdRol': idRolSeleccionada,
-      'Latitud': latitude,
-      'Longitud': longitude,
-      'Correo': email,
-      'Password': md5Password, // Envía la contraseña en formato MD5
-      'Status': status,
-    }),
-    headers: {'Content-Type': 'application/json'},
-  );
-
-  if (response.statusCode == 200) {
-    // Registro exitoso
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error al registrar el usuario')),
+    final response = await http.post(
+      url,
+      body: jsonEncode({
+        'Nombres': nombre,
+        'Apellidos': apellido,
+        'FechaNacimiento': datebirthday.toIso8601String(),
+        'FechaCreacion': dateCreation.toIso8601String(),
+        'Carnet': carnet,
+        'Telefono': telefono,
+        'IdRol': idRolSeleccionada,
+        'Latitud': latitude,
+        'Longitud': longitude,
+        'Correo': email,
+        'Password': md5Password, // Envía la contraseña en formato MD5
+        'Status': status,
+      }),
+      headers: {'Content-Type': 'application/json'},
     );
+
+    if (response.statusCode == 200) {
+      // Registro exitoso
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al registrar el usuario')),
+      );
+    }
   }
-}
 
   Future<void> Permisos() async {
     LocationPermission permiso;
@@ -226,7 +225,8 @@ class _RegisterUpdateState extends State<Register> {
                         dateCreation = new DateTime.now();
                         status = 1;
                         await registerUser();
-                        idPerson = await getNextIdPerson(); //metodo que hace que el id sea el siguiente en la base de datos
+                        idPerson =
+                            await getNextIdPerson(); //metodo que hace que el id sea el siguiente en la base de datos
                         mostrarFinalizar.Mostrar_FinalizadosLogin(
                             context, "Registro con exito!");
                       }
