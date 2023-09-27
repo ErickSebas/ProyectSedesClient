@@ -27,7 +27,8 @@ double? proceso = 0.0;
 Member? miembroActual;
 bool esCarnetizador = false;
 int idCamp = 0;
-
+String? token;
+int isLogin = 0;
 
 Future<void> eliminarArchivoDeStorage(int id) async {
   Reference ref = storage.ref().child('campana' + id.toString() + '.json');

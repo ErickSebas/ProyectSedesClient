@@ -4,13 +4,13 @@ import 'package:http/http.dart' as http;
 class Member {
   late String names;
   late String? lastnames;
-  late DateTime fechaNacimiento;
+  late DateTime? fechaNacimiento;
   late int id;
-  late String role;
-  late String contrasena; // Nuevo atributo
+  late String? role;
+  late String? contrasena; // Nuevo atributo
   late String correo;
-  late int telefono;
-  late String carnet;
+  late int? telefono;
+  late String? carnet;
   late double longitud;
   late double  latitud;
   late DateTime? fechaCreacion;
@@ -20,13 +20,13 @@ class Member {
   Member(
       {required this.names,
       this.lastnames,
-      required this.fechaNacimiento,
+      this.fechaNacimiento,
       required this.id,
-      required this.role,
-      required this.contrasena, // Nuevo atributo
+      this.role,
+      this.contrasena, // Nuevo atributo
       required this.correo, // Nuevo atributo
-      required this.telefono,
-      required this.carnet,
+      this.telefono,
+      this.carnet,
       required this.latitud,
       required this.longitud,
       this.fechaCreacion,
@@ -47,6 +47,31 @@ class Member {
         longitud: json['Longitud'],
         latitud: json['Latitud'],
         role: json['NombreRol']);
+  }
+factory Member.fromJson2(Map<String, dynamic> json) {
+
+    final result = json['result'];
+
+    return Member(
+
+      names: result['Nombres'],
+
+      id: result['idPerson'],
+
+      correo: result['Correo'],
+
+      latitud: result['Latitud'],
+
+      longitud: result['Longitud'],
+
+      fechaCreacion: result['FechaCreacion'] != null
+
+          ? DateTime.parse(result['FechaCreacion'])
+
+          : null,
+
+    );
+
   }
 
   Future<List<Member>> fetchMembers() async {

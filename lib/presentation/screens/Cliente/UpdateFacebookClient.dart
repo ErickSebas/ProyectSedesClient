@@ -66,7 +66,7 @@ class _UpdateFacebookState extends State<UpdateFacebook> {
     apellido = widget.userData!.lastnames!;
     datebirthday = widget.userData?.fechaNacimiento;
     dateCreation = widget.userData?.fechaCreacion;
-    carnet = widget.userData!.carnet;
+    carnet = widget.userData!.carnet!;
     telefono = widget.userData!.telefono.toString();
     selectedRole = widget.userData!.role;
 
