@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBCTC4IG0Lzq42q0k4CeeHTqsgksbiuv3A',
-    appId: '1:625724453137:android:f8532f506dd917c2c45cb0',
+    appId: '1:625724453137:android:da4b9accc3d7db1cc45cb0',
     messagingSenderId: '625724453137',
     projectId: 'flutter-test-d1cb6',
     storageBucket: 'flutter-test-d1cb6.appspot.com',
@@ -66,6 +66,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '625724453137',
     projectId: 'flutter-test-d1cb6',
     storageBucket: 'flutter-test-d1cb6.appspot.com',
+    androidClientId: '625724453137-8voobj3ed5sssvtm85muug8tn39t8has.apps.googleusercontent.com',
     iosClientId: '625724453137-9bt3jba010a7ogp7bsrc1egv102l9luj.apps.googleusercontent.com',
     iosBundleId: 'com.example.fluttapp',
   );
@@ -76,6 +77,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '625724453137',
     projectId: 'flutter-test-d1cb6',
     storageBucket: 'flutter-test-d1cb6.appspot.com',
+    androidClientId: '625724453137-8voobj3ed5sssvtm85muug8tn39t8has.apps.googleusercontent.com',
     iosClientId: '625724453137-jd68doeh8h7gk016if1p0hfvu46aipbq.apps.googleusercontent.com',
     iosBundleId: 'com.example.fluttapp.RunnerTests',
   );
