@@ -28,6 +28,7 @@ class HomeClient extends StatefulWidget {
 }
 
 class _HomeClientState extends State<HomeClient> {
+Set<Polyline> polylines = {};
 List<Marker> lstMarcadores = [];
 List<LatLng> lstPuntosdeCoordenadas = [];
 LatLng destination_load = LatLng(0, 0);
@@ -126,7 +127,7 @@ Activar_Links(String url) async {
     lstPuntosdeCoordenadas.clear();
     PolylinePoints polylinePoints = PolylinePoints();
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-    "AIzaSyD8VxZxvKCkDbGNwfoCoTMDfUODjnccBlM", 
+    "AIzaSyCy9cWOObdo5a37Hc6URNJK32mtlNtMWj4", 
     PointLatLng(miPosicion.latitude, miPosicion.longitude),
     PointLatLng(destination.latitude, destination.longitude)
   );
@@ -143,14 +144,33 @@ Activar_Links(String url) async {
 }
 
 
-Future<void> Cancelar_Rutas() async{
+Future<void> Cancelar_Rutas() async {
+  // Creamos una ruta invisible
+  lstPuntosdeCoordenadas.clear();
+  lstPuntosdeCoordenadas.add(LatLng(0.000001, 0.000001)); // Agregamos un punto muy cercano
+  lstPuntosdeCoordenadas.add(LatLng(0.000002, 0.000002)); // Agregamos otro punto muy cercano
+  // Puedes agregar más puntos si lo deseas
+
+  // Cambiamos el color de la línea a transparente
+  Polyline invisiblePolyline = Polyline(
+    polylineId: PolylineId("invisible_route"),
+    points: lstPuntosdeCoordenadas,
+    color: Colors.transparent, // Color transparente
+    width: 0, // Un ancho muy pequeño
+  );
+
+  // Llamamos a setState para redibujar el mapa
   setState(() {
     estaCentrado = false;
     estaSiguiendo = false;
-    lstPuntosdeCoordenadas.clear();
+    // Agregamos la ruta invisible
+    polylines.clear();
+    polylines.add(invisiblePolyline);
   });
-  
 }
+
+
+
 
 
 ///Vamos a llamar al metodo mostrar informacion que viene desde Popout.dart
@@ -329,6 +349,7 @@ Padding(
         child: ElevatedButton(
   onPressed: () {
     Cancelar_Rutas();
+    setState(() {});
   },
   child: Row(
     mainAxisAlignment: MainAxisAlignment.center,
@@ -440,7 +461,7 @@ Padding(
     var cont = 1;
     for (var location in locations!) {
     BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
-    ImageConfiguration(size: Size(100, 100)), 'assets/Waypoint.png');
+    ImageConfiguration(size: Size(30, 30)), 'assets/Waypoint.png');
       lstMarcadores.add(
         Marker(
           markerId: MarkerId(cont.toString()),
