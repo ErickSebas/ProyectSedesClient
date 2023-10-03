@@ -59,7 +59,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    
+    currentChatId = widget.idChat;
 
     fetchMessage(widget.idChat).then((value) => {
       if(mounted){
@@ -104,9 +104,9 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF4D6596),
+      backgroundColor: Color(0xFF5C8ECB),
       appBar: AppBar(
-        backgroundColor: Color(0xFF4D6596),
+        backgroundColor: Color(0xFF5C8ECB),
         title: Text(widget.nombreChat, style: TextStyle(color: Colors.white)),
         centerTitle: true,
         leading: Builder(
