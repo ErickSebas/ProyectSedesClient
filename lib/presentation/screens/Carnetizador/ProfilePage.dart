@@ -2,6 +2,7 @@ import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
+import 'package:fluttapp/presentation/screens/ChangePassword.dart';
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
@@ -16,8 +17,8 @@ class ProfilePage extends StatelessWidget {
   Member? member;
 
   Future<Member?> recoverPassword(String email) async {
-    final url = Uri.parse('http://10.10.0.14:3000/checkemail/$email');
-
+    final url = Uri.parse('http://192.168.0.11:3000/checkemail/$email');
+    //final url = Uri.parse('http://10.10.0.14:3000/checkemail/$email');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -48,9 +49,9 @@ class ProfilePage extends StatelessWidget {
       // Actualiza la base de datos
       final url = exists
           ? Uri.parse(
-              'http://10.10.0.14:3000/updateCode/$userId/$code') // URL para actualizar el código
+              'http://192.168.0.11:3000/updateCode/$userId/$code') // URL para actualizar el código
           : Uri.parse(
-              'http://10.10.0.14:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
+              'http://192.168.0.11:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
       final response = await (exists ? http.put(url) : http.post(url));
       if (response.statusCode == 200) {
         print('Código actualizado/insertado en la base de datos.');
@@ -79,7 +80,7 @@ class ProfilePage extends StatelessWidget {
     var userId = member?.id;
     final response = await http.get(
       Uri.parse(
-          'http://10.10.0.14:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
+          'http://192.168.0.11:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -177,7 +178,7 @@ class ProfilePage extends StatelessWidget {
                               ),
                             ),
                             SizedBox(width: 20),
-                            //_buildSendEmailButton(context)
+                            _buildSendEmailButton(context)
                           ],
                         )
                       ],
@@ -191,7 +192,43 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
+Widget _buildSendEmailButton(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        primary: Color(0xFF4D6596),
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+      ),
+      onPressed: () async {
+        // Envía el correo y actualiza la base de datos
+        final success = await sendEmailAndUpdateCode(member!.id);
 
+        if (success) {
+          await Mostrar_Mensaje(
+              context, "Se ha enviado un código a tu correo electrónico.");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangePasswordPage(
+                member: member,
+              ),
+            ),
+          );
+          isLogin = 0;
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text('Ocurrió un error al enviar el código de recuperación.'),
+            ),
+          );
+        }
+      },
+      child: Text("Cambiar Contraseña"),
+    );
+  }
   Widget _buildInfoItem(String text) {
     final List<String> parts =
         text.split(":"); // Dividimos el texto en dos partes

@@ -22,7 +22,8 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
 
   Future<List<Member>> fetchMembers() async {
     final response =
-        await http.get(Uri.parse('http://10.10.0.14:3000/allaccountsclient'));
+        await http.get(Uri.parse('http://192.168.0.11:3000/allaccountsclient'));
+        //        await http.get(Uri.parse('http://10.10.0.14:3000/allaccountsclient'));
     print('Fetching members...'); // Agregar esto para verificar si se llama
 
     if (response.statusCode == 200) {
