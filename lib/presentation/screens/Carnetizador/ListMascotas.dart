@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 Future<List<Mascota>> fetchMembers() async {
   final response =
-      await http.get(Uri.parse('http://10.10.0.14:3000/allmascotas'));
+      await http.get(Uri.parse('http://10.10.0.146:3000/allmascotas'));
 
   final List<dynamic> data = json.decode(response.body);
   final members =
@@ -17,9 +17,8 @@ Future<List<Mascota>> fetchMembers() async {
   return members;
 }
 
-Future<void> disablePet(
-    int idMascota, BuildContext context, Function() refreshList) async {
-  final url = Uri.parse('http://10.10.0.14:3000/disablemascota/$idMascota');
+Future<void> disablePet(int idMascota) async {
+  final url = Uri.parse('http://10.10.0.146:3000/disablemascota/$idMascota');
   print("Deshabilitando mascota con ID: $idMascota");
   final response = await http.put(
     url,
@@ -28,39 +27,18 @@ Future<void> disablePet(
   );
 
   if (response.statusCode == 200) {
-    // Mascota deshabilitada exitosamente
-    refreshList(); // Llama a la función de actualización
   } else {
     // Manejar el caso de error si es necesario
   }
 }
 
-class ListMascotas extends StatefulWidget {
-  @override
-  _ListMascotasState createState() => _ListMascotasState();
-}
-
-class _ListMascotasState extends State<ListMascotas> {
-  late Future<List<Mascota>> mascotasFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    mascotasFuture = fetchMembers();
-  }
-
-  Future<void> refreshData() async {
-    setState(() {
-      mascotasFuture = fetchMembers();
-    });
-  }
-
+class ListMascotas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<List<Mascota>>(
-        future: mascotasFuture,
+        future: fetchMembers(),
         builder: (BuildContext context, AsyncSnapshot<List<Mascota>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
@@ -86,15 +64,15 @@ class _ListMascotasState extends State<ListMascotas> {
                 ),
                 centerTitle: true,
               ),
-              body: CampaignPage(mascotas: mascotas, refreshList: refreshData),
+              body: CampaignPage(mascotas: mascotas),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
                   Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RegisterPet(),
-                    ),
-                  );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RegisterPet(), // Pasa el ID del usuario aquí
+                      ));
                 },
                 child: Icon(Icons.add_box),
                 backgroundColor: Color(0xFF5C8ECB),
@@ -109,9 +87,8 @@ class _ListMascotasState extends State<ListMascotas> {
 
 class CampaignPage extends StatefulWidget {
   final List<Mascota> mascotas;
-  final Function() refreshList;
 
-  CampaignPage({required this.mascotas, required this.refreshList});
+  CampaignPage({required this.mascotas});
 
   @override
   _CampaignPageState createState() => _CampaignPageState();
@@ -119,6 +96,12 @@ class CampaignPage extends StatefulWidget {
 
 class _CampaignPageState extends State<CampaignPage> {
   String filtro = '';
+
+  void eliminarMascota(int index) {
+    setState(() {
+      widget.mascotas.removeAt(index);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -167,8 +150,7 @@ class _CampaignPageState extends State<CampaignPage> {
                       children: [
                         SlidableAction(
                           onPressed: ((context) {
-                            disablePet(mascota.idMascotas, context,
-                                widget.refreshList); // Pasa el contexto aquí
+                            disablePet(mascota.idMascotas);
                             print("id" + mascota.idMascotas.toString());
                           }),
                           borderRadius: BorderRadius.circular(20),
@@ -229,3 +211,4 @@ class _CampaignPageState extends State<CampaignPage> {
 void main() {
   runApp(ListMascotas());
 }
+

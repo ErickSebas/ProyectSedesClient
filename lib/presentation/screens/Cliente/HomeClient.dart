@@ -1,7 +1,11 @@
 import 'dart:convert';
 
+import 'package:fluttapp/Implementation/ChatImp.dart';
+import 'package:fluttapp/Implementation/Conversation.dart';
+import 'package:fluttapp/Models/Conversation.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
@@ -46,7 +50,7 @@ class ViewClient extends StatelessWidget {
 
 Future<Member?> getPersonById(int userId) async {
   final response = await http.get(
-    Uri.parse('http://10.0.2.2:3000/getpersonbyid/$userId'),
+    Uri.parse('http://181.188.191.35:3000/getpersonbyid/$userId'),
   );
 
   if (response.statusCode == 200) {
@@ -167,6 +171,38 @@ class CampaignPage extends StatelessWidget {
                 title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
                 leading: Icon(Icons.credit_card),
               ),
+              ListTile(
+              leading: Icon(Icons.message),
+              title: Text('Mensaje'),
+              onTap: () async {
+                if(miembroActual!.role=='Cliente'){
+                  Chat chatCliente = Chat(idChats: 0, idPerson: null, idPersonDestino: miembroActual!.id, fechaActualizacion: DateTime.now());
+                  int lastId =0;
+                  List<Chat> filteredList=[];
+                  await fetchChatsClient().then((value) => {
+                    filteredList = value.where((element) => element.idPersonDestino == miembroActual!.id).toList(),
+                    if(filteredList.isEmpty){
+                      registerNewChat(chatCliente).then((value) => {
+                        getLastIdChat().then((value) => {
+                          lastId = value,
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ChatPage(idChat: lastId, nombreChat: 'Soporte',idPersonDestino: 0,)),
+                          ) 
+                        })
+                      })
+                    }else{
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChatPage(idChat: filteredList[0].idChats, nombreChat: 'Soporte', idPersonDestino: 0,)),
+                      ) 
+                    }
+                  });
+                  
+                }
+                
+              },
+            ),
               Align(
               alignment: Alignment.bottomRight,
               child: ListTile(
@@ -226,7 +262,8 @@ class CampaignPage extends StatelessWidget {
                         ),
                       ),
                     ],
-                  )
+                  ),
+                  
                 ],
               ),
               SizedBox(height: 20),

@@ -20,14 +20,29 @@ import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
 import 'package:fluttapp/presentation/screens/SplashScreen.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
+import 'package:fluttapp/services/global_notification.dart';
+import 'package:fluttapp/services/notification_services.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MainApp());
+  await PushNotificationService.initializeApp();
+  //PushNotificationService.messagesStream.listen((message){
+  //  print('MyApp: $message');
+  //});
+
+  runApp(
+
+    MultiProvider(providers: [
+      Provider<LocalNotificationService>(create: (context) => LocalNotificationService()),
+      //Provider<PushNotificationService>(create: (context) => PushNotificationService(),)
+    ],
+    child: const MainApp(),)
+    );
 }
 
 class MainApp extends StatelessWidget {

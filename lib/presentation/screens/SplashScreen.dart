@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'Login.dart';
 import 'package:fluttapp/services/firebase_service.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -37,6 +38,21 @@ class _SplashScreenState extends State<SplashScreen> {
   bool esPrimeraVez = true;
   @override
   void initState() {
+    
+    socket =
+        IO.io('http://181.188.191.35:3000', <String, dynamic>{
+      //192.168.14.112
+      'transports': ['websocket'],
+      'autoConnect': false,
+    });
+
+    socket.connect();
+    socket.onConnect((_) {
+      print('Conectado');
+    });
+    socket.onConnectError((data) => print("Error de conexión: $data"));
+    socket.onError((data) => print("Error: $data"));
+
     super.initState();
     Iniciar_Ver_Primera_Vez();
   }

@@ -57,7 +57,7 @@ class _RegisterPetState extends State<RegisterPet> {
   }
 
   Future<void> registerPet() async {
-    final url = Uri.parse('http://10.10.0.14:3000/registerPet');
+    final url = Uri.parse('http://10.10.0.146:3000/registerPet');
 
     final response = await http.post(
       url,
@@ -68,8 +68,7 @@ class _RegisterPetState extends State<RegisterPet> {
         'Color': colorController.text,
         'Descripcion': descripcionController.text,
         'IdPersona': '9',
-        'Sexo':
-            valorSeleccionado, // Usar el valor seleccionado del DropdownButton
+        'Sexo': 'H',
         'IdQr': '1'
       }),
       headers: {'Content-Type': 'application/json'},

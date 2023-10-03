@@ -82,7 +82,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
 
   Future<void> registerUser() async {
     final url =
-        Uri.parse('http://10.0.2.2:3000/register');
+        Uri.parse('http://181.188.191.35:3000/register');
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
@@ -118,7 +118,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   }
 
   Future<void> updateUser() async {
-    final url = Uri.parse('http://10.0.2.2:3000/update/' +
+    final url = Uri.parse('http://181.188.191.35:3000/update/' +
         idPerson.toString()); //
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;

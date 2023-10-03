@@ -10,18 +10,27 @@
 // <author>Pedro Conde</author>
 
 import "dart:convert";
+import "package:fluttapp/Models/ChatModel.dart";
+import "package:fluttapp/Models/Profile.dart";
 import 'package:http/http.dart' as http;
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_storage/firebase_storage.dart";
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
 
 FirebaseFirestore db  = FirebaseFirestore.instance;
 FirebaseStorage storage  = FirebaseStorage.instance;
+Member? globalLoggedInMember;
 
 List<dynamic> lstlinks = [];
 List<dynamic> locations = [];
 List<Marker> lstMarcadores = [];
 List<dynamic> lstVersions = [];
+List<ChatMessage> messages = [];
+int currentChatId = 0;
+late IO.Socket socket;
+String? token;
 // Obtener el archivo de Firebase Storage
 Future<List> Obtener_Archivo() async {
   List lstUbicaciones = [];

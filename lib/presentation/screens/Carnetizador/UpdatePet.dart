@@ -72,15 +72,9 @@ class _UpdatePetState extends State<UpdatePet> {
   }
 
   Future<void> updatePet() async {
-    final url = Uri.parse('http://10.10.0.14:3000/updatemascota/' +
+    final url = Uri.parse('http://10.10.0.146:3000/updatemascota/' +
         widget.mascota.idMascotas.toString());
-    print("datos enviados");
-    print("Nombre: " + nombreController.text);
-    print("Raza: " + razaController.text);
-    print("Edad: " + edadController.text);
-    print("Color: " + colorController.text);
-    print("Descripción: " + descripcionController.text);
-    print("Sexo: " + valorSeleccionado);
+
     final response = await http.put(
       url,
       body: jsonEncode({

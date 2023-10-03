@@ -10,6 +10,7 @@ import 'package:fluttapp/presentation/screens/Cliente/HomeClientFacebook.dart';
 import 'package:fluttapp/presentation/screens/Register.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
+import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
@@ -43,10 +44,10 @@ class _LoginPageState extends State<LoginPage> {
   String? mensajeErrorCorreo;
   String? mensajeErrorContrasena;
 
-  Member? globalLoggedInMember;
+  
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
-        'http://10.0.2.2:3000/userbyrol?correo=$email&password=$password');
+        'http://181.188.191.35:3000/user?correo=$email&password=$password');
     //http://181.188.191.35:3000/userbyrol?correo=pepe@gmail.com&password=827ccb0eea8a706c4c34a16891f84e7b
 
     final response = await http.get(url);
@@ -55,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
       final Map<String, dynamic> data = json.decode(response.body);
       final member = Member.fromJson(data);
       miembroActual = member;
+      insertToken();
       return member;
     } else if (response.statusCode == 404) {
       return null; // Usuario no encontrado
@@ -64,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   insertToken() async {
-    final url = 'http://10.0.2.2:3000/inserttoken';
+    final url = 'http://181.188.191.35:3000/inserttoken';
     final response = await http.post(
       Uri.parse(url),
       headers: {
@@ -82,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<Member?> recoverPassword(String email) async {
-    final url = Uri.parse('http://10.0.2.2:3000/checkemail/$email');
+    final url = Uri.parse('http://181.188.191.35:3000/checkemail/$email');
 
     final response = await http.get(url);
 
@@ -114,9 +116,9 @@ class _LoginPageState extends State<LoginPage> {
       // Actualiza la base de datos
       final url = exists
           ? Uri.parse(
-              'http://10.0.2.2:3000/updateCode/$userId/$code') // URL para actualizar el código
+              'http://181.188.191.35:3000/updateCode/$userId/$code') // URL para actualizar el código
           : Uri.parse(
-              'http://10.0.2.2:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
+              'http://181.188.191.35:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
       final response = await (exists ? http.put(url) : http.post(url));
       if (response.statusCode == 200) {
         print('Código actualizado/insertado en la base de datos.');
@@ -145,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
     var userId = globalLoggedInMember?.id;
     final response = await http.get(
       Uri.parse(
-          'http://10.0.2.2:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
+          'http://181.188.191.35:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
