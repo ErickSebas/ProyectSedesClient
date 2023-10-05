@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 Future<List<Mascota>> fetchMembers() async {
   final response =
-      await http.get(Uri.parse('http://10.10.0.146:3000/allmascotas'));
+      await http.get(Uri.parse('http://181.188.191.35:3000/allmascotas'));
 
   final List<dynamic> data = json.decode(response.body);
   final members =
@@ -18,7 +18,7 @@ Future<List<Mascota>> fetchMembers() async {
 }
 
 Future<void> disablePet(int idMascota) async {
-  final url = Uri.parse('http://10.10.0.146:3000/disablemascota/$idMascota');
+  final url = Uri.parse('http://181.188.191.35:3000/disablemascota/$idMascota');
   print("Deshabilitando mascota con ID: $idMascota");
   final response = await http.put(
     url,

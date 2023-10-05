@@ -54,7 +54,7 @@ class _RegisterPetState extends State<RegisterPet> {
   }
 
   Future<void> registerPet() async {
-    final url = Uri.parse('http://10.10.0.146:3000/registerPet');
+    final url = Uri.parse('http://181.188.191.35:3000/registerPet');
 
     final response = await http.post(
       url,
