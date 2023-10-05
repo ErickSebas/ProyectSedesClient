@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
 class Member {
@@ -76,7 +77,7 @@ factory Member.fromJson2(Map<String, dynamic> json) {
 
   Future<List<Member>> fetchMembers() async {
     final response = await http.get(
-        Uri.parse('https://backendapi-398117.rj.r.appspot.com/allaccounts'));
+        Uri.parse('http://181.188.191.35:3000/allaccounts'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -105,7 +106,7 @@ Future<Member> getCardByUser(int id) async {
   }
   Future<int> getNextIdPerson() async {
   final response = await http.get(Uri.parse(
-      'https://backendapi-398117.rj.r.appspot.com/nextidperson')); //////
+      'http://181.188.191.35:3000/nextidperson')); //////
   if (response.statusCode == 200) {
     List<dynamic> jsonResponse = json.decode(response.body);
     print(jsonResponse[0]['AUTO_INCREMENT']);
@@ -115,3 +116,44 @@ Future<Member> getCardByUser(int id) async {
     throw Exception('Failed to load id');
   }
 }
+
+  Future<int> registerUser2(Member miembro) async {
+    print(miembro.toString());
+    final url = Uri.parse('http://181.188.191.35:3000/register');
+    var idRol=0;
+    if (miembro.role == 'Carnetizador') {
+      idRol = 3;
+    } else if (miembro.role == 'Cliente') {
+      idRol = 4;
+    }else if(miembro.role==null){
+      idRol = 4;
+    }
+    String? md5Password = null;
+    if(miembro.contrasena!=null)
+    md5Password = md5.convert(utf8.encode(miembro.contrasena!)).toString();
+
+    final response = await http.post(
+      url,
+      body: jsonEncode({
+        'Nombres': miembro.names,
+        'Apellidos': miembro.lastnames,
+        'FechaNacimiento': miembro.fechaNacimiento?.toIso8601String(),
+        'FechaCreacion': miembro.fechaCreacion?.toIso8601String(),
+        'Carnet': miembro.carnet,
+        'Telefono': miembro.telefono,
+        'IdRol': idRol,
+        'Latitud': miembro.latitud,
+        'Longitud': miembro.longitud,
+        'Correo': miembro.correo,
+        'Password': md5Password, 
+        'Status': miembro.status,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }

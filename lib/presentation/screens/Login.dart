@@ -1,15 +1,19 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/ChangePassword.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClientFacebook.dart';
 import 'package:fluttapp/presentation/screens/Register.dart';
+import 'package:fluttapp/presentation/services/auth_google.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
@@ -40,11 +44,12 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController contrasenaController = TextEditingController();
   String? mensajeErrorCorreo;
   String? mensajeErrorContrasena;
+  final AuthGoogle authGoogle = AuthGoogle();
 
   
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
-        'http://10.10.0.14:3000/user?correo=$email&password=$password');
+        'http://181.188.191.35:3000/user?correo=$email&password=$password');
     //http://181.188.191.35:3000/userbyrol?correo=pepe@gmail.com&password=827ccb0eea8a706c4c34a16891f84e7b
 
     final response = await http.get(url);
@@ -63,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   insertToken() async {
-    final url = 'http://10.10.0.14:3000/inserttoken';
+    final url = 'http://181.188.191.35:3000/inserttoken';
     final response = await http.post(
       Uri.parse(url),
       headers: {
@@ -81,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<Member?> recoverPassword(String email) async {
-    final url = Uri.parse('http://10.10.0.14:3000/checkemail/$email');
+    final url = Uri.parse('http://181.188.191.35:3000/checkemail/$email');
 
     final response = await http.get(url);
 
@@ -113,9 +118,9 @@ class _LoginPageState extends State<LoginPage> {
       // Actualiza la base de datos
       final url = exists
           ? Uri.parse(
-              'http://10.10.0.14:3000/updateCode/$userId/$code') // URL para actualizar el código
+              'http://181.188.191.35:3000/updateCode/$userId/$code') // URL para actualizar el código
           : Uri.parse(
-              'http://10.10.0.14:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
+              'http://181.188.191.35:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
       final response = await (exists ? http.put(url) : http.post(url));
       if (response.statusCode == 200) {
         print('Código actualizado/insertado en la base de datos.');
@@ -144,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
     var userId = globalLoggedInMember?.id;
     final response = await http.get(
       Uri.parse(
-          'http://10.10.0.14:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
+          'http://181.188.191.35:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -384,12 +389,66 @@ class _LoginPageState extends State<LoginPage> {
                 label: Text('Facebook'),
               ),
               SizedBox(width: 16),
-              ElevatedButton.icon(
-                onPressed: () {
-                  // Aquí puedes manejar la lógica de inicio de sesión con Google
+             ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white, 
+                  onPrimary: Colors.black, 
+                ),
+                onPressed: () async {
+                  try {
+                    UserCredential userCredential = await authGoogle.signInWithGoogle();
+                    User? user = userCredential.user;
+                    Member? googleUser;
+                    if (user != null) {
+                      print("UID: ${user.uid}");
+                      print("Nombre: ${user.displayName}");
+                      print("Foto de perfil: ${user.photoURL}");
+                      print("Correo electrónico: ${user.email}");
+                      googleUser!.correo = user.email!;
+                      googleUser.telefono = user.phoneNumber as int?;
+                      googleUser.fechaCreacion = DateTime.now();
+                      googleUser.status = 1;
+                      googleUser.role=null;
+                      googleUser.names = user.displayName!;
+                      //
+                    }
+
+                    AdditionalUserInfo? additionalUserInfo = userCredential.additionalUserInfo;
+                    if (additionalUserInfo != null) {
+                      print("Es nuevo usuario: ${additionalUserInfo.isNewUser}");
+                      print("Nombre de usuario: ${additionalUserInfo.username}");
+                      print("ID del proveedor: ${additionalUserInfo.providerId}");
+                      print("Perfil: ${additionalUserInfo.profile}");
+                      googleUser!.names = additionalUserInfo.profile?["given_name"];
+                      googleUser.lastnames = additionalUserInfo.profile?["family_name"];
+                    }
+
+                    GoogleSignIn().signOut();
+                    GoogleSignIn().disconnect();
+
+                    var res = await registerUser2(googleUser!);
+                    if(res == 1){
+                      miembroActual = googleUser;
+                    }else{
+                      //Mostrar_Error(context, "Error al iniciar sesión");
+                      return;
+                    }
+                    
+                    
+
+                  } catch (error) {
+                    if (error is PlatformException && error.code == 'sign_in_canceled') {
+                      print("Inicio de sesión con Google cancelado por el usuario");
+                    } else {
+                      print("Error al iniciar sesión con Google: $error");
+                    }
+                  }
                 },
-                icon: Icon(Icons.message),
-                label: Text('Google'),
+                icon: Image(
+                  image: AssetImage('assets/google.png'),
+                  height: 24.0, 
+                ),
+                label: Text('Continuar con Google'),
               ),
             ],
           ),
