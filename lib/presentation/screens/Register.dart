@@ -51,7 +51,7 @@ class _RegisterUpdateState extends State<Register> {
   }
 
   Future<void> registerUser() async {
-    final url = Uri.parse('http://10.10.0.14:3000/register');
+    final url = Uri.parse('http://10.253.1.91:3000/register');
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {

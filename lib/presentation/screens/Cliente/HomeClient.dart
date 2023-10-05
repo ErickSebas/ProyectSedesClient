@@ -50,7 +50,7 @@ class ViewClient extends StatelessWidget {
 
 Future<Member?> getPersonById(int userId) async {
   final response = await http.get(
-    Uri.parse('http://10.10.0.14:3000/getpersonbyid/$userId'),
+    Uri.parse('http://10.253.1.91:3000/getpersonbyid/$userId'),
   );
 
   if (response.statusCode == 200) {
@@ -176,6 +176,7 @@ class CampaignPage extends StatelessWidget {
               title: Text('Mensaje'),
               onTap: () async {
                 if(miembroActual!.role=='Cliente'){
+                  print(miembroActual!.role);
                   Chat chatCliente = Chat(idChats: 0, idPerson: null, idPersonDestino: miembroActual!.id, fechaActualizacion: DateTime.now());
                   int lastId =0;
                   List<Chat> filteredList=[];
@@ -320,7 +321,7 @@ class CampaignPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RegisterUpdate(isUpdate: true, userData: loggedInPerson)),
+                                    builder: (context) => RegisterUpdate(isUpdate: true, userData: loggedInPerson, carnetizadorMember: loggedInPerson,)),
                               );
                             },
                           ),

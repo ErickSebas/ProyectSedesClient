@@ -1,4 +1,5 @@
 import 'package:fluttapp/Models/Profile.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:fluttapp/presentation/screens/ChangePassword.dart';
@@ -13,9 +14,10 @@ import 'package:http/http.dart' as http;
 // ignore: must_be_immutable
 class ProfilePage extends StatelessWidget {
   Member? member;
+  Member? carnetizadorMember;
 
   Future<Member?> recoverPassword(String email) async {
-    final url = Uri.parse('http://10.10.0.14:3000/checkemail/$email');
+    final url = Uri.parse('http://10.253.1.91:3000/checkemail/$email');
     //final url = Uri.parse('http://10.10.0.14:3000/checkemail/$email');
     final response = await http.get(url);
 
@@ -47,9 +49,9 @@ class ProfilePage extends StatelessWidget {
       // Actualiza la base de datos
       final url = exists
           ? Uri.parse(
-              'http://10.10.0.14:3000/updateCode/$userId/$code') // URL para actualizar el código
+              'http://10.253.1.91:3000/updateCode/$userId/$code') // URL para actualizar el código
           : Uri.parse(
-              'http://10.10.0.14:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
+              'http://10.253.1.91:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
       final response = await (exists ? http.put(url) : http.post(url));
       if (response.statusCode == 200) {
         print('Código actualizado/insertado en la base de datos.');
@@ -78,7 +80,7 @@ class ProfilePage extends StatelessWidget {
     var userId = member?.id;
     final response = await http.get(
       Uri.parse(
-          'http://10.10.0.14:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
+          'http://10.253.1.91:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -89,10 +91,11 @@ class ProfilePage extends StatelessWidget {
     }
   }
 
-  ProfilePage({this.member});
+  ProfilePage({this.member, required this.carnetizadorMember});
 
   @override
   Widget build(BuildContext context) {
+    print(carnetizadorMember?.correo);
     return Scaffold(
       appBar: AppBar(
         title: Text("Perfil de ${member!.names}"),
@@ -101,7 +104,14 @@ class ProfilePage extends StatelessWidget {
           builder: (context) => IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              Navigator.of(context).pushNamed("/searchClientNew");
+                                 Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ListMembersScreen(
+                            userId: miembroActual!.id,
+                          ), // Pasa el ID del usuario aquí
+                        ),
+                      );
             },
           ),
         ),
@@ -153,7 +163,7 @@ class ProfilePage extends StatelessWidget {
                                   MaterialPageRoute(
                                     builder: (context) => RegisterUpdate(
                                       isUpdate: true,
-                                      userData: member,
+                                      userData: member, carnetizadorMember: carnetizadorMember
                                     ),
                                   ),
                                 );

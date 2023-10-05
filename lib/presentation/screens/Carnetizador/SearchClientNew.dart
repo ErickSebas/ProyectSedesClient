@@ -8,12 +8,36 @@ import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+Member?
+    loggedInPerson; // Variable para almacenar los datos de la persona autenticada
+int? useridROL;
 class ListMembersScreen extends StatefulWidget {
   late final Member? userData;
+  final int userId;
+  ListMembersScreen({required this.userId}) {
+        useridROL = this.userId;
+        print('ID de usuario en Buscar Clientes: $useridROL');
+  }
+
   @override
   _ListMembersScreenState createState() => _ListMembersScreenState();
 }
 
+Future<Member?> getPersonById(int userId) async {
+  final response = await http.get(
+    Uri.parse('http://10.253.1.91:3000/getpersonbyid/$userId'),
+  );
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> data = json.decode(response.body);
+    final member = Member.fromJson(data);
+    return member;
+  } else if (response.statusCode == 404) {
+    return null; // Persona no encontrada
+  } else {
+    throw Exception('Error al obtener la persona por ID');
+  }
+}
 MostrarFinalizar mostrarFinalizar = new MostrarFinalizar();
 
 class _ListMembersScreenState extends State<ListMembersScreen> {
@@ -22,8 +46,8 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
 
   Future<List<Member>> fetchMembers() async {
     final response =
-        await http.get(Uri.parse('http://10.10.0.14:3000/allaccountsclient'));
-        //        await http.get(Uri.parse('http://10.10.0.14:3000/allaccountsclient'));
+        await http.get(Uri.parse('http://10.253.1.91:3000/allaccountsclient'));
+    //        await http.get(Uri.parse('http://10.10.0.14:3000/allaccountsclient'));
     print('Fetching members...'); // Agregar esto para verificar si se llama
 
     if (response.statusCode == 200) {
@@ -40,6 +64,24 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
   void initState() {
     super.initState();
     members = fetchMembers();
+
+    // Llamar a getPersonById para obtener los datos de la persona actualmente autenticada.
+    getPersonById(useridROL!).then((person) {
+      if (person != null) {
+        // Los datos de la persona se han obtenido correctamente.
+        setState(() {
+          loggedInPerson = person;
+          print(person.names);
+          print(person.correo);
+        });
+      } else {
+        // La persona no se encontró o hubo un error al obtenerla.
+        mostrarFinalizar.Mostrar_Finalizados(
+          context,
+          "No se encontraron datos de la persona o hubo un error.",
+        );
+      }
+    });
   }
 
   Future<void> refreshMembersList() async {
@@ -61,7 +103,6 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
       }).toList();
     }
   }
-
   Future<void> deleteUser(String userId) async {
     final url = Uri.parse(
         'http://10.10.0.14:3000/deleteperson/$userId'); // Reemplaza $userId con el ID del usuario que deseas eliminar
@@ -232,7 +273,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                ProfilePage(member: member),
+                                                ProfilePage(member: member, carnetizadorMember: loggedInPerson),
                                           ),
                                         );
                                       },
@@ -259,7 +300,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => RegisterUpdate(
-                      isUpdate: false,
+                      isUpdate: false, carnetizadorMember: personaMember
                     )),
           );
         },
@@ -268,8 +309,4 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(home: ListMembersScreen()));
 }

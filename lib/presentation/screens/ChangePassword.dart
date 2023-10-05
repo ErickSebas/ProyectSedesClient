@@ -64,7 +64,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   Future<bool> validate(String code, int userId) async {
     final url = Uri.parse(
-        'http://10.10.0.14:3000/validateCode?userId=$userId&code=$code');
+        'http://10.253.1.91:3000/validateCode?userId=$userId&code=$code');
 
     final response = await http.get(url);
 
@@ -77,7 +77,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   Future<bool> changePassword(int userId, String newPassword) async {
-    final url = Uri.parse('http://10.10.0.14:3000/changePassword');
+    final url = Uri.parse('http://10.253.1.91:3000/changePassword');
 
     final response = await http.put(
       url,
@@ -113,7 +113,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            ProfilePage(member: widget.member),
+                            ProfilePage(member: widget.member, carnetizadorMember: null,),
                       ),
                     );
                   },
@@ -222,7 +222,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => ProfilePage(
-                                      member: widget.member,
+                                      member: widget.member, carnetizadorMember: null,
                                     ),
                                   ),
                                 );
@@ -258,7 +258,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                ProfilePage(member: widget.member),
+                                ProfilePage(member: widget.member, carnetizadorMember: null,),
                           ),
                         );
                       } else {

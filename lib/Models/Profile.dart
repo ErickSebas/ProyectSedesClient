@@ -76,7 +76,7 @@ factory Member.fromJson2(Map<String, dynamic> json) {
 
   Future<List<Member>> fetchMembers() async {
     final response = await http.get(
-        Uri.parse('https://backendapi-398117.rj.r.appspot.com/allaccounts'));
+        Uri.parse('http://181.188.191.35:3000/allaccounts'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -105,7 +105,7 @@ Future<Member> getCardByUser(int id) async {
   }
   Future<int> getNextIdPerson() async {
   final response = await http.get(Uri.parse(
-      'https://backendapi-398117.rj.r.appspot.com/nextidperson')); //////
+      'http://181.188.191.35:3000/nextidperson')); //////
   if (response.statusCode == 200) {
     List<dynamic> jsonResponse = json.decode(response.body);
     print(jsonResponse[0]['AUTO_INCREMENT']);
