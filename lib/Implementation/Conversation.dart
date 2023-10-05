@@ -21,7 +21,7 @@ Future<List<Chat>> fetchChats() async {
 
 Future<List<Chat>> fetchChatsClient() async {
   final response = await http.get(Uri.parse(
-      'http://10.0.2.2:3000/getchatcliente/' +
+      'http://181.188.191.35:3000/getchatcliente/' +
           miembroActual!.id.toString()));
   if (response.statusCode == 200) {
     List<dynamic> jsonResponse = json.decode(response.body);
