@@ -17,7 +17,7 @@ class ProfilePage extends StatelessWidget {
   Member? carnetizadorMember;
 
   Future<Member?> recoverPassword(String email) async {
-    final url = Uri.parse('http://10.253.1.91:3000/checkemail/$email');
+    final url = Uri.parse('http://181.188.191.35:3000/checkemail/$email');
     //final url = Uri.parse('http://10.10.0.14:3000/checkemail/$email');
     final response = await http.get(url);
 
@@ -49,9 +49,9 @@ class ProfilePage extends StatelessWidget {
       // Actualiza la base de datos
       final url = exists
           ? Uri.parse(
-              'http://10.253.1.91:3000/updateCode/$userId/$code') // URL para actualizar el código
+              'http://181.188.191.35:3000/updateCode/$userId/$code') // URL para actualizar el código
           : Uri.parse(
-              'http://10.253.1.91:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
+              'http://181.188.191.35:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
       final response = await (exists ? http.put(url) : http.post(url));
       if (response.statusCode == 200) {
         print('Código actualizado/insertado en la base de datos.');
@@ -80,7 +80,7 @@ class ProfilePage extends StatelessWidget {
     var userId = member?.id;
     final response = await http.get(
       Uri.parse(
-          'http://10.253.1.91:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
+          'http://181.188.191.35:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
