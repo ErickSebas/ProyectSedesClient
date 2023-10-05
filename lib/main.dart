@@ -66,7 +66,7 @@ class MainApp extends StatelessWidget {
         '/createPet': (context) => RegisterPet(),
         '/viewMap': (context) => VerCamapanas(),
         '/listPets': (context) => ListMascotas(),
-        '/searchClientNew': (context) => ListMembersScreen(),
+        '/searchClientNew': (context) => ListMembersScreen(userId: 0,),
       },
     );
   }

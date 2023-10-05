@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
@@ -12,6 +13,7 @@ Member?
     loggedInPerson; // Variable para almacenar los datos de la persona autenticada
 
 int estadoPerfil = 0;
+
 // ignore: must_be_immutable
 class HomeCarnetizador extends StatelessWidget {
   final int userId;
@@ -46,7 +48,7 @@ class HomeCarnetizador extends StatelessWidget {
 
 Future<Member?> getPersonById(int userId) async {
   final response = await http.get(
-    Uri.parse('http://10.10.0.14:3000/getpersonbyid/$userId'),
+    Uri.parse('http://181.188.191.35:3000/getpersonbyid/$userId'),
   );
 
   if (response.statusCode == 200) {
@@ -168,19 +170,19 @@ class CampaignPage extends StatelessWidget {
                 leading: Icon(Icons.credit_card),
               ),
               Align(
-              alignment: Alignment.bottomRight,
-              child: ListTile(
-                leading: Icon(Icons.logout),
-                title: Text('Cerrar Sesión'),
-                onTap: () {
-                  miembroActual = null;
-                  Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
-                },
+                alignment: Alignment.bottomRight,
+                child: ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text('Cerrar Sesión'),
+                  onTap: () {
+                    miembroActual = null;
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  },
+                ),
               ),
-            ),
             ],
           ),
         ),
@@ -213,7 +215,13 @@ class CampaignPage extends StatelessWidget {
                               color: const Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/searchClientNew");
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ListMembersScreen(userId: loggedInPerson!.id
+                                  ), // Pasa el ID del usuario aquí
+                                ),
+                              );
                             },
                           ),
                         ),
@@ -304,15 +312,17 @@ class CampaignPage extends StatelessWidget {
                               size: 60,
                               color: Color(0xFF5C8ECB),
                             ),
-                             onPressed: () {
+                            onPressed: () {
                               //Navigator.of(context).pushNamed("/updateClient", arguments: loggedInPerson);
                               if (loggedInPerson!.role == "Carnetizador") {
-                              esCarnetizador = true;
-                              } 
+                                esCarnetizador = true;
+                              }
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RegisterUpdate(isUpdate: true, userData: loggedInPerson)),
+                                    builder: (context) => RegisterUpdate(
+                                        isUpdate: true,
+                                        userData: loggedInPerson, carnetizadorMember: loggedInPerson,)),
                               );
                             },
                           ),

@@ -12,14 +12,16 @@ import 'package:crypto/crypto.dart'; // Importa la librería crypto
 
 void main() => runApp(MyApp());
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
-
+late Member carnetizadorglobal;
 Mostrar_Finalizados_Update mostrarMensaje = Mostrar_Finalizados_Update();
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: RegisterUpdate(
         isUpdate: false,
+        carnetizadorMember: null,
       ),
       debugShowCheckedModeBanner: false,
     );
@@ -29,13 +31,22 @@ class MyApp extends StatelessWidget {
 class RegisterUpdate extends StatefulWidget {
   final Member? userData;
   late final bool isUpdate;
+  Member? carnetizadorMember;
 
-  RegisterUpdate({required this.isUpdate, this.userData});
+  RegisterUpdate(
+      {required this.isUpdate,
+      this.userData,
+      required this.carnetizadorMember}) {
+    print("intentando mandar los datos de name con:");
+    print(carnetizadorMember?.names);
+    carnetizadorglobal = this.carnetizadorMember!;
+  }
   @override
   _RegisterUpdateState createState() => _RegisterUpdateState();
 }
 
 class _RegisterUpdateState extends State<RegisterUpdate> {
+  bool esCliente = false;
   final _formKey = GlobalKey<FormState>();
   String nombre = '';
   String apellido = '';
@@ -60,7 +71,17 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     if (widget.userData?.id != null) {
       Cargar_Datos_Persona();
     }
-  }   
+    if (widget.userData?.role == "Cliente") {
+      esCliente = true;
+      print(widget.userData?.role);
+    } else if (widget.userData?.role == "Carnetizador") {
+      esCliente = false;
+      print(widget.userData?.role);
+    }
+    print("probando si envia los datos ahora global");
+    print(carnetizadorglobal.id);
+    print(carnetizadorglobal.correo);
+  }
 
   void Cargar_Datos_Persona() async {
     idPerson = widget.userData!.id;
@@ -80,8 +101,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   }
 
   Future<void> registerUser() async {
-    final url =
-        Uri.parse('http://10.10.0.14:3000/register');
+    final url = Uri.parse('http://181.188.191.35:3000/register');
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
@@ -117,14 +137,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   }
 
   Future<void> updateUser() async {
-    final url = Uri.parse('http://10.10.0.14:3000/update/' +
-        idPerson.toString()); //
+    final url =
+        Uri.parse('http://181.188.191.35:3000/update/' + idPerson.toString()); //
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
       idRolSeleccionada = 4;
     }
-      // Calcula el hash MD5 de la contraseña
+    // Calcula el hash MD5 de la contraseña
     final response = await http.put(
       url,
       body: jsonEncode({
@@ -188,7 +208,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
           builder: (context) => IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              if (miembroActual?.role == "Carnetizador") {
+              if (carnetizadorglobal.role == "Carnetizador") {
+                print("volver carnetizador");
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -197,15 +218,17 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                     ), // Pasa el ID del usuario aquí
                   ),
                 );
-              } else if (miembroActual?.role == "Cliente") {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ViewClient(
-                      userId: miembroActual!.id,
-                    ), // Pasa el ID del usuario aquí
-                  ),
-                );
+              }
+              else if(carnetizadorglobal.role != "Carnetizador"){
+              print("volver cliente");
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ViewClient(
+                    userId: miembroActual!.id,
+                  ), // Pasa el ID del usuario aquí
+                ),
+              );
               }
             },
           ),
@@ -320,38 +343,50 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   onPressed: () async {
                     dateCreation = new DateTime.now();
                     status = 1;
-                    if (
-                        _formKey.currentState!.validate() &&
-                        miembroActual?.role !='CarnetizadorC' &&
-                        latitude != '' &&
-                        selectedRole != '' &&
-                        datebirthday != null) {
-                      if (widget.isUpdate) {
-                        await updateUser();
-
-                        mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
-                            context, "Actializacion con exito! de Carnetizador",miembroActual!.id);
-                      } else if (password != "") {
-                        dateCreation = new DateTime.now();
-                        status = 1;
-                        await registerUser();
-                        idPerson = await getNextIdPerson();
-                          mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
-                            context, "Registro con exito!",miembroActual!.id);
-                      }
-                    } else {
-                      if (
-                          _formKey.currentState!.validate() &&
+                    if (esCliente == false) {
+                      if (_formKey.currentState!.validate() &&
                           latitude != '' &&
-                          miembroActual?.role !='Cliente' &&
                           selectedRole != '' &&
                           datebirthday != null) {
                         if (widget.isUpdate) {
-                          await updateUser(); 
-                        mostrarMensaje.Mostrar_Finalizados_Clientes(
-                            context, "Actializacion con exito! de Cliente",miembroActual!.id);
-                            print(miembroActual!.role );
-                        } 
+                          await updateUser();
+
+                          mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
+                              context,
+                              "Actializacion con exito! de Carnetizador",
+                              miembroActual!.id);
+                        } else if (password != "") {
+                          dateCreation = new DateTime.now();
+                          status = 1;
+                          await registerUser();
+                          idPerson = await getNextIdPerson();
+                          mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
+                              context,
+                              "Registro carnetizador con exito!",
+                              miembroActual!.id);
+                        }
+                      }
+                    } else if (esCliente == true) {
+                      if (_formKey.currentState!.validate() &&
+                          latitude != '' &&
+                          selectedRole != '' &&
+                          datebirthday != null) {
+                        if (widget.isUpdate) {
+                          await updateUser();
+                          if (carnetizadorglobal.role == 'Carnetizador') {
+                            mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
+                                context,
+                                "Actializacion con exito! de Cliente con Carnetizador",
+                                miembroActual!.id);
+                            print(miembroActual!.role);
+                          } else {
+                            mostrarMensaje.Mostrar_Finalizados_Clientes(
+                                context,
+                                "Actializacion con exito! de Cliente",
+                                miembroActual!.id);
+                            print(miembroActual!.role);
+                          }
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Ingrese todos los campos')),

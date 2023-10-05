@@ -34,7 +34,7 @@ package="com.MaYpiVac.example">
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true">
-    <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyDGQnci5z1oh-hPiko4z3on291KFb1X1-c"/>
+    <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyD8VxZxvKCkDbGNwfoCoTMDfUODjnccBlM"/>
         <!-- Elemento para la configuración de Flutter -->
         <meta-data
             android:name="flutterEmbedding"
