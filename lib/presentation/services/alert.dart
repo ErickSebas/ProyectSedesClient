@@ -1,9 +1,7 @@
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
-import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 Member? personaMember;
 
