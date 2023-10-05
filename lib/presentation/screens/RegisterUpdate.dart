@@ -7,7 +7,6 @@ import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:crypto/crypto.dart'; // Importa la librería crypto
 
@@ -82,7 +81,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
 
   Future<void> registerUser() async {
     final url =
-        Uri.parse('http://181.188.191.35:3000/register');
+        Uri.parse('http://10.10.0.14:3000/register');
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
@@ -118,7 +117,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   }
 
   Future<void> updateUser() async {
-    final url = Uri.parse('http://181.188.191.35:3000/update/' +
+    final url = Uri.parse('http://10.10.0.14:3000/update/' +
         idPerson.toString()); //
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;

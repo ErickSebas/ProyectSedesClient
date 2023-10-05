@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/Models/Propietario.dart';
-import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -42,6 +41,7 @@ class ViewMascotasInfo extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class InfoMascotas extends StatelessWidget {
   final Mascota mascota;
   final Propietario propietario;

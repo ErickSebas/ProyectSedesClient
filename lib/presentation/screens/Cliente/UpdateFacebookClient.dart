@@ -7,7 +7,6 @@ import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 
 void main() => runApp(MyApp());

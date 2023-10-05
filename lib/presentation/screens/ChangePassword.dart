@@ -64,7 +64,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   Future<bool> validate(String code, int userId) async {
     final url = Uri.parse(
-        'http://192.168.0.11:3000/validateCode?userId=$userId&code=$code');
+        'http://10.10.0.14:3000/validateCode?userId=$userId&code=$code');
 
     final response = await http.get(url);
 
@@ -77,7 +77,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   Future<bool> changePassword(int userId, String newPassword) async {
-    final url = Uri.parse('http://192.168.0.11:3000/changePassword');
+    final url = Uri.parse('http://10.10.0.14:3000/changePassword');
 
     final response = await http.put(
       url,

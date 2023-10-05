@@ -22,7 +22,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
 
   Future<List<Member>> fetchMembers() async {
     final response =
-        await http.get(Uri.parse('http://192.168.0.11:3000/allaccountsclient'));
+        await http.get(Uri.parse('http://10.10.0.14:3000/allaccountsclient'));
         //        await http.get(Uri.parse('http://10.10.0.14:3000/allaccountsclient'));
     print('Fetching members...'); // Agregar esto para verificar si se llama
 
@@ -53,7 +53,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
       return allMembers.where((member) {
         final lowerCaseName = member.names.toLowerCase();
         final lowerCaseCarnet = member.carnet?.toLowerCase();
-        final lowerCaseRole = member.role?.toLowerCase();
+        //final lowerCaseRole = member.role?.toLowerCase();
         final lowerCaseQuery = searchQuery.toLowerCase();
 
         return (lowerCaseName.contains(lowerCaseQuery) ||

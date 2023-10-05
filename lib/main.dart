@@ -19,7 +19,6 @@ import 'package:fluttapp/presentation/screens/Register.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
 import 'package:fluttapp/presentation/screens/SplashScreen.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
-import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
 import 'package:fluttapp/services/global_notification.dart';
 import 'package:fluttapp/services/notification_services.dart';
 import 'package:flutter/material.dart';
