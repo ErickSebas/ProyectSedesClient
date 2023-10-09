@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class RegisterUpdate extends StatefulWidget {
   final Member? userData;
   late final bool isUpdate;
@@ -214,8 +215,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => HomeCarnetizador(
-                      userId: miembroActual!.id,
-                    ), // Pasa el ID del usuario aquí
+                      userId: miembroActual!.id, //El carnetizador saldra con el miembro actual que entre , pero se valida con el carnetizadorglobal
+                    ), 
                   ),
                 );
               }
@@ -225,8 +226,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ViewClient(
-                    userId: miembroActual!.id,
-                  ), // Pasa el ID del usuario aquí
+                    userId: miembroActual!.id, //El cliente entrara con la misma variable carnetizadorglobal.role pero en este caso se controla que sea diferente el Rol
+                  ),
                 ),
               );
               }

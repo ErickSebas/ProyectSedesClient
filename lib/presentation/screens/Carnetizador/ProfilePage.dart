@@ -13,12 +13,12 @@ import 'package:http/http.dart' as http;
 
 // ignore: must_be_immutable
 class ProfilePage extends StatelessWidget {
-  Member? member;
-  Member? carnetizadorMember;
+  Member? member; //Variable que agarra el dato del perfil y hace el recorrido de cambiar de contrasena
+  Member?
+      carnetizadorMember; //Variable que toma el dato que entra desde search cliente , este dato , va al Update, y tambien se usa para volver al search
 
   Future<Member?> recoverPassword(String email) async {
     final url = Uri.parse('http://181.188.191.35:3000/checkemail/$email');
-    //final url = Uri.parse('http://10.10.0.14:3000/checkemail/$email');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -104,14 +104,14 @@ class ProfilePage extends StatelessWidget {
           builder: (context) => IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-                                 Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ListMembersScreen(
-                            userId: miembroActual!.id,
-                          ), // Pasa el ID del usuario aquí
-                        ),
-                      );
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ListMembersScreen(
+                    userId: miembroActual!.id, //Te manda a la lista con el ID del usuario que se asigno
+                  ), 
+                ),
+              );
             },
           ),
         ),
@@ -119,14 +119,14 @@ class ProfilePage extends StatelessWidget {
       body: Stack(
         children: [
           Image.asset(
-            'assets/Splash.png', // Reemplaza 'Splash.png' con la ruta correcta de tu imagen de fondo
-            fit: BoxFit.cover, // Ajusta la imagen al tamaño de la pantalla
+            'assets/Splash.png',
+            fit: BoxFit.cover, 
             width: double.infinity,
             height: double.infinity,
           ),
           Container(
             color: Color(
-                0xFF4D6596), // Establece el color de fondo como transparente para que la imagen de fondo sea visible
+                0xFF4D6596),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -162,9 +162,9 @@ class ProfilePage extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => RegisterUpdate(
-                                      isUpdate: true,
-                                      userData: member, carnetizadorMember: carnetizadorMember
-                                    ),
+                                        isUpdate: true,
+                                        userData: member,
+                                        carnetizadorMember: carnetizadorMember),
                                   ),
                                 );
                               },
@@ -200,7 +200,8 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-Widget _buildSendEmailButton(BuildContext context) {
+
+  Widget _buildSendEmailButton(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         primary: Color(0xFF4D6596),
@@ -237,6 +238,7 @@ Widget _buildSendEmailButton(BuildContext context) {
       child: Text("Cambiar Contraseña"),
     );
   }
+
   Widget _buildInfoItem(String text) {
     final List<String> parts =
         text.split(":"); // Dividimos el texto en dos partes

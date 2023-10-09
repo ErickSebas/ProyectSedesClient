@@ -95,7 +95,6 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
       return allMembers.where((member) {
         final lowerCaseName = member.names.toLowerCase();
         final lowerCaseCarnet = member.carnet?.toLowerCase();
-        //final lowerCaseRole = member.role?.toLowerCase();
         final lowerCaseQuery = searchQuery.toLowerCase();
 
         return (lowerCaseName.contains(lowerCaseQuery) ||
@@ -105,14 +104,12 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
   }
   Future<void> deleteUser(String userId) async {
     final url = Uri.parse(
-        'http://181.188.191.35:3000/deleteperson/$userId'); // Reemplaza $userId con el ID del usuario que deseas eliminar
+        'http://181.188.191.35:3000/deleteperson/$userId');
     final response = await http.put(url);
 
     if (response.statusCode == 200) {
-      // La solicitud PUT se completó con éxito, puedes mostrar un mensaje de éxito o actualizar la lista de usuarios.
       print('Usuario eliminado con éxito');
     } else {
-      // Manejar errores aquí, como mostrar un mensaje de error o registrar el error.
       print('Error al eliminar el usuario: ${response.statusCode}');
     }
   }
@@ -216,7 +213,14 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                "Rol: ${member.role}",
+                                "Telefono: ${member.telefono}",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                                                            SizedBox(height: 8),
+                              Text(
+                                "Fecha Nacimiento: ${member.fechaNacimiento?.day}/${member.fechaNacimiento?.month}/${member.fechaNacimiento?.year}",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold),
