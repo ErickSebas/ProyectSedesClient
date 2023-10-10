@@ -210,7 +210,7 @@ class CampaignPage extends StatelessWidget {
                 leading: Icon(Icons.logout),
                 title: Text('Cerrar Sesión'),
                 onTap: () {
-                  miembroActual = null;
+                  miembroActual = loggedInPerson!;
                   Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage()),

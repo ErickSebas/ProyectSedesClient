@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 FirebaseStorage storage = FirebaseStorage.instance;
 double? proceso = 0.0;
-Member? miembroActual;
+Member miembroActual=Member(names: '', id: 0, correo: '', latitud: 0.1, longitud: 0.1);
 bool esCarnetizador = false;
 int idCamp = 0;
 int isLogin = 0;

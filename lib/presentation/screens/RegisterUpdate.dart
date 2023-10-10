@@ -41,6 +41,10 @@ class RegisterUpdate extends StatefulWidget {
     print("intentando mandar los datos de name con:");
     print(carnetizadorMember?.names);
     carnetizadorglobal = this.carnetizadorMember!;
+
+
+    print("Esta llegando el ID de Facebook");
+    print(userData?.id);
   }
   @override
   _RegisterUpdateState createState() => _RegisterUpdateState();
@@ -82,10 +86,17 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     print("probando si envia los datos ahora global");
     print(carnetizadorglobal.id);
     print(carnetizadorglobal.correo);
+
+
+    print("probando si llegan los datos del cliente facebook");
+    print(widget.userData?.id);
+    idPerson = widget.userData!.id;
+    print("probando si llegan los datos del cliente facebook pero con idPerson");
+    print(idPerson);
   }
 
   void Cargar_Datos_Persona() async {
-    idPerson = widget.userData!.id;
+    idPerson;
     nombre = widget.userData!.names;
     apellido = widget.userData!.lastnames!;
     datebirthday = widget.userData?.fechaNacimiento;
@@ -170,8 +181,11 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
         SnackBar(content: Text('Error al actualizar el usuario')),
       );
     }
+    miembroActual!.id == idPerson;
 
-    if (miembroActual!.id == widget.userData!.id) {
+    print(widget.userData!.id);
+    print(miembroActual!.id);
+    if (miembroActual!.id == idPerson) {
       miembroActual!.names = nombre;
       miembroActual!.lastnames = apellido;
       miembroActual!.fechaNacimiento = datebirthday;
@@ -222,11 +236,12 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
               }
               else if(carnetizadorglobal.role != "Carnetizador"){
               print("volver cliente");
+              print(widget.userData!.id);
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ViewClient(
-                    userId: miembroActual!.id, //El cliente entrara con la misma variable carnetizadorglobal.role pero en este caso se controla que sea diferente el Rol
+                    userId: widget.userData!.id, //El cliente entrara con la misma variable carnetizadorglobal.role pero en este caso se controla que sea diferente el Rol
                   ),
                 ),
               );
@@ -384,7 +399,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                             mostrarMensaje.Mostrar_Finalizados_Clientes(
                                 context,
                                 "Actializacion con exito! de Cliente",
-                                miembroActual!.id);
+                                widget.userData!.id);
                             print(miembroActual!.role);
                           }
                         }

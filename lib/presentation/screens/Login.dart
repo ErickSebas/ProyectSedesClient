@@ -484,55 +484,143 @@ class _LoginPageState extends State<LoginPage> {
     return emailRegex.hasMatch(email);
   }
 
+ Future<Member?> checkemailexist(String email) async {
+    final url = Uri.parse('http://181.188.191.35:3000/checkemail/$email');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      globalLoggedInMember = Member.fromJson2(data);
+
+      return globalLoggedInMember;
+    } else if (response.statusCode == 404) {
+      print("Correo no encontrado en la base de datos");
+      return null;
+    } else {
+      throw Exception('Error al checkear el email la contraseña');
+    }
+  }
+
+  Future<int> registerUser2(Member miembro) async {
+    print(miembro.toString());
+    final url = Uri.parse('http://181.188.191.35:3000/register');
+    var idRol = 0;
+    if (miembro.role == 'Carnetizador') {
+      idRol = 3;
+    } else if (miembro.role == 'Cliente') {
+      idRol = 4;
+    } else if (miembro.role == null) {
+      idRol = 4;
+    }
+    String? md5Password = null;
+    if (miembro.contrasena != null)
+      md5Password = md5.convert(utf8.encode(miembro.contrasena!)).toString();
+
+    final response = await http.post(
+      url,
+      body: jsonEncode({
+        'Nombres': miembro.names,
+        'Apellidos': miembro.lastnames,
+        'FechaNacimiento': miembro.fechaNacimiento?.toIso8601String(),
+        'FechaCreacion': miembro.fechaCreacion?.toIso8601String(),
+        'Carnet': miembro.carnet,
+        'Telefono': miembro.telefono,
+        'IdRol': idRol,
+        'Latitud': miembro.latitud,
+        'Longitud': miembro.longitud,
+        'Correo': miembro.correo,
+        'Password': md5Password,
+        'Status': miembro.status,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
   _facebookLogin() async {
-// Create an instance of FacebookLogin
+    Member? facebookUser;
+
+    // Create an instance of FacebookLogin
     final fb = FacebookLogin();
+
     // Log in
     final res = await fb.logIn(permissions: [
-      FacebookPermission.publicProfile, //permiso para perfil
-      FacebookPermission.email, //permiso para tener el email
+      FacebookPermission.publicProfile, // Permiso para perfil
+      FacebookPermission.email, // Permiso para tener el correo electrónico
     ]);
-// Check result status
+
+    // Check result status
     switch (res.status) {
       case FacebookLoginStatus.success:
         // Logged in
 
         // Send access token to server for validation and auth
-        final FacebookAccessToken? accessToken = res.accessToken; //get el token
+        final FacebookAccessToken? accessToken =
+            res.accessToken; // Obtener el token
+
         // Get profile data
         final profile = await fb.getUserProfile();
 
-        // Get user profile image url
-        final imageUrl = await fb.getProfileImageUrl(width: 100); //get imagen
+        // Get user profile image URL
+        final imageUrl =
+            await fb.getProfileImageUrl(width: 100); // Obtener la imagen
         print('Access token: ${accessToken?.token}');
         print('Hello, ${profile?.name}! You ID: ${profile?.userId}');
-
         print('Your profile image: $imageUrl');
 
         // Get email (since we request email permission)
         final email = await fb.getUserEmail();
-        // But user can decline permission
-        if (email != null) print('And your email is $email');
-// Después de obtener los datos de inicio de sesión exitosos, redirige al usuario
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomeClientFacebook(
-                fbAccessToken: accessToken!.token,
-                profileImage: imageUrl!,
-                fbName: profile!.name!,
-                fbfirstname: profile.firstName!,
-                fbLastname: profile.lastName!,
-                fbId: profile.userId,
-                fbEmail: email!),
-          ),
-        );
+
+        // Verificar si el correo de Facebook ya está registrado
+        final existingMember = await checkemailexist(email!);
+
+        if (existingMember != null) {
+          // El usuario ya está registrado, puedes redirigirlo a la pantalla de menú
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ViewClient(userId: existingMember.id),
+            ),
+          );
+        } else {
+          // El usuario de Facebook no está registrado, regístralo
+          final newMember = Member(names: "", id: 0, correo: "", latitud: 0.1, longitud: 0.1);
+            newMember.correo = email;
+            newMember.fechaCreacion= DateTime.now();
+            newMember.status= 1;
+            newMember.role= null;
+            newMember.names= profile!.firstName!;
+            newMember.lastnames= profile.lastName!;
+            // Agrega otros campos necesarios aquí
+
+          final registrationResult = await registerUser2(newMember);
+
+          if (registrationResult == 1) {
+            miembroActual = (await checkemailexist(newMember.correo))!;
+            // Registro exitoso, redirigir al usuario a la pantalla de menú
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ViewClient(userId: miembroActual!.id),
+              ),
+            );
+          } else {
+            // Error en el registro, manejar de acuerdo a tus necesidades
+          }
+        }
         break;
       case FacebookLoginStatus.cancel:
-        // User cancel log in
+        // Usuario canceló el inicio de sesión
         break;
       case FacebookLoginStatus.error:
-        // Log in failed
+        // Error en el inicio de sesión
         print('Error while log in: ${res.error}');
         break;
     }
