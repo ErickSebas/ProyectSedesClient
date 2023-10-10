@@ -36,7 +36,7 @@ Future<void> eliminarArchivoDeStorage(int id) async {
   }
 }
 
-  void Mostrar_Error(BuildContext context, String errorMessage) {
+  void Mostrar_Error1(BuildContext context, String errorMessage) {
   showDialog(
     context: context,
     builder: (BuildContext context) {

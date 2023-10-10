@@ -45,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
   String? mensajeErrorCorreo;
   String? mensajeErrorContrasena;
   final AuthGoogle authGoogle = AuthGoogle();
+  bool isloading=false;
 
   
   Future<Member?> authenticateHttp(String email, String password) async {
@@ -162,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _showEmailDialog(BuildContext context) async {
     String email = '';
-    final loggedInMember = await showDialog<Member?>(
+    await showDialog<Member?>(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -233,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: isloading? Center(child: CircularProgressIndicator()) : Container(
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/Splash.png'),
@@ -374,11 +375,11 @@ class _LoginPageState extends State<LoginPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'O inicia sesión con:',
+            isloading?'':'O inicia sesión con:',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 16),
-          Row(
+          isloading?Container():Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton.icon(
@@ -397,44 +398,65 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   try {
                     UserCredential userCredential = await authGoogle.signInWithGoogle();
+                    setState(() {
+                      isloading=true;    
+                    }); 
                     User? user = userCredential.user;
-                    Member? googleUser;
+                    Member googleUser= Member(names: "", id: 0, correo: "", latitud: 0.1, longitud: 0.1);
                     if (user != null) {
-                      print("UID: ${user.uid}");
-                      print("Nombre: ${user.displayName}");
-                      print("Foto de perfil: ${user.photoURL}");
-                      print("Correo electrónico: ${user.email}");
-                      googleUser!.correo = user.email!;
-                      googleUser.telefono = user.phoneNumber as int?;
+                      googleUser.correo = userCredential.user!.email!;
+                      googleUser.telefono = userCredential.user!.phoneNumber as int?;
                       googleUser.fechaCreacion = DateTime.now();
                       googleUser.status = 1;
                       googleUser.role=null;
-                      googleUser.names = user.displayName!;
-                      //
+                      googleUser.names = userCredential.user!.displayName!;
                     }
 
                     AdditionalUserInfo? additionalUserInfo = userCredential.additionalUserInfo;
                     if (additionalUserInfo != null) {
-                      print("Es nuevo usuario: ${additionalUserInfo.isNewUser}");
-                      print("Nombre de usuario: ${additionalUserInfo.username}");
-                      print("ID del proveedor: ${additionalUserInfo.providerId}");
-                      print("Perfil: ${additionalUserInfo.profile}");
-                      googleUser!.names = additionalUserInfo.profile?["given_name"];
-                      googleUser.lastnames = additionalUserInfo.profile?["family_name"];
+                      googleUser.names = userCredential.additionalUserInfo!.profile?["given_name"];
+                      googleUser.lastnames = userCredential.additionalUserInfo!.profile?["family_name"];
                     }
 
-                    GoogleSignIn().signOut();
-                    GoogleSignIn().disconnect();
+                    try {
+                      await GoogleSignIn().disconnect();
+                      await GoogleSignIn().signOut();
+                    } catch (error) {
+                      print("Error al desconectar o cerrar sesión con Google: $error");
+                    }
 
-                    var res = await registerUser2(googleUser!);
+
+
+                    var res = await registerUser2(googleUser);
                     if(res == 1){
-                      miembroActual = googleUser;
+                      miembroActual = await getPersonByEMail(googleUser.correo);
                     }else{
-                      //Mostrar_Error(context, "Error al iniciar sesión");
+                      Mostrar_Error1(context, "Error al iniciar sesión");
                       return;
                     }
                     
-                    
+                    setState(() {
+                      isloading=false;    
+                    }); 
+                     if (miembroActual!.role == "Carnetizador"||miembroActual!.role=="Super Admin") {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeCarnetizador(
+                            userId: miembroActual!.id,
+                          ),
+                        ),
+                      );
+                    } else if (miembroActual!.role == "Cliente") {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewClient(
+                            userId: miembroActual!.id,
+                          ), 
+                        ),
+                      );
+                    }
 
                   } catch (error) {
                     if (error is PlatformException && error.code == 'sign_in_canceled') {
@@ -499,7 +521,7 @@ class _LoginPageState extends State<LoginPage> {
                 fbAccessToken: accessToken!.token,
                 profileImage: imageUrl!,
                 fbName: profile!.name!,
-                fbfirstname: profile!.firstName!,
+                fbfirstname: profile.firstName!,
                 fbLastname: profile.lastName!,
                 fbId: profile.userId,
                 fbEmail: email!),

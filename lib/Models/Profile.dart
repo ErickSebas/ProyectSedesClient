@@ -33,22 +33,28 @@ class Member {
       this.fechaCreacion,
       this.status});
 
-  factory Member.fromJson(Map<String, dynamic> json) {
-    return Member(
-        id: json['idPerson'],
-        names: json['Nombres'],
-        lastnames: json['Apellidos'],
-        fechaNacimiento: DateTime.parse(json['FechaNacimiento']),
-        correo: json['Correo'],
-        contrasena: json['Password'],
-        carnet: json['Carnet'],
-        telefono: json['Telefono'],
-        fechaCreacion: DateTime.parse(json['FechaCreacion']),
-        status: json['Status'],
-        longitud: json['Longitud'],
-        latitud: json['Latitud'],
-        role: json['NombreRol']);
-  }
+ factory Member.fromJson(Map<String, dynamic> json) {
+  return Member(
+    id: json['idPerson'],
+    names: json['Nombres'] ?? '',
+    lastnames: json['Apellidos'] ?? '',
+    fechaNacimiento: json['FechaNacimiento'] != null 
+        ? DateTime.parse(json['FechaNacimiento']) 
+        : null, 
+    correo: json['Correo'] ?? '',
+    contrasena: json['Password'] ?? '',
+    carnet: json['Carnet'] ?? '',
+    telefono: json['Telefono'] ?? 0,
+    fechaCreacion: json['FechaCreacion'] != null 
+        ? DateTime.parse(json['FechaCreacion']) 
+        : null, 
+    status: json['Status'],
+    longitud: json['Longitud'],
+    latitud: json['Latitud'],
+    role: json['NombreRol'] 
+  );
+}
+
 factory Member.fromJson2(Map<String, dynamic> json) {
 
     final result = json['result'];
@@ -73,6 +79,11 @@ factory Member.fromJson2(Map<String, dynamic> json) {
 
     );
 
+  }
+
+  @override
+  String toString() {
+    return 'Member(names: $names, lastnames: $lastnames, fechaNacimiento: $fechaNacimiento, role: $role, contrasena: $contrasena, correo: $correo, telefono: $telefono, carnet: $carnet, longitud: $longitud, latitud: $latitud, fechaCreacion: $fechaCreacion, status: $status)';
   }
 
   Future<List<Member>> fetchMembers() async {
@@ -104,6 +115,21 @@ Future<Member> getCardByUser(int id) async {
       throw Exception('Failed to load members');
     }
   }
+
+  Future<Member> getPersonByEMail(String email) async {
+    final response = await http.get(
+        Uri.parse('http://10.0.2.2:3000/personbyemail/'+email)); 
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final member = Member.fromJson(data);
+      return member;
+    } else {
+      throw Exception('Failed to load member');
+    }
+  }
+
+
   Future<int> getNextIdPerson() async {
   final response = await http.get(Uri.parse(
       'http://181.188.191.35:3000/nextidperson')); //////
@@ -119,7 +145,7 @@ Future<Member> getCardByUser(int id) async {
 
   Future<int> registerUser2(Member miembro) async {
     print(miembro.toString());
-    final url = Uri.parse('http://181.188.191.35:3000/register');
+    final url = Uri.parse('http://10.0.2.2:3000/register');
     var idRol=0;
     if (miembro.role == 'Carnetizador') {
       idRol = 3;
@@ -151,9 +177,10 @@ Future<Member> getCardByUser(int id) async {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200||response.statusCode==400) {
       return 1;
-    } else {
+    } 
+    else{
       return 0;
     }
   }

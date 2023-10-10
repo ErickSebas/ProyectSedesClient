@@ -41,6 +41,7 @@ class ViewMascotasInfo extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class InfoMascotas extends StatelessWidget {
   final Mascota mascota;
   final Propietario propietario;
