@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image/image.dart' as img;
+import 'package:qr_flutter/qr_flutter.dart';
 
 int? idUser;
 
@@ -77,6 +78,26 @@ class _RegisterPetState extends State<RegisterPet> {
     return compressedBytes;
   }
 
+  Future<void> registerQr(int id) async {
+    final url = Uri.parse('http://10.0.2.2:3000/registerqr');
+
+    final response = await http.post(
+      url,
+      body: jsonEncode({
+        'id': id.toString(),
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      // Registro exitoso
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al registrar el qr')),
+      );
+    }
+  }
+
   Future<bool> uploadImages(List<File?> images) async {
     try {
       final firebase_storage.Reference storageRef =
@@ -84,6 +105,8 @@ class _RegisterPetState extends State<RegisterPet> {
       int ultimoId = await fetchLastPetId();
       print("Ultimo ID ======== $ultimoId" + "---" + widget.userId.toString());
       String carpeta = 'cliente/${widget.userId}/$ultimoId';
+
+      await registerQr(ultimoId);
 
       int contador = 1;
 
@@ -536,4 +559,6 @@ Future<bool> uploadImages(List<File?> images) async {
         razaValido &&
         colorValido;
   }
+  
+  
 }

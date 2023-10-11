@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
+import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:http/http.dart' as http;
 
 class QRScannerPage extends StatefulWidget {
   @override
@@ -76,7 +81,9 @@ class _QRScannerPageState extends State<QRScannerPage> {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       print('QR Data: ${scanData.code}');
-      //Navigator.pop(context);  
+      getPetById(scanData.code as int).then((value) => {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewMascotasInfo(value)))
+      });
     });
   }
 
@@ -84,5 +91,18 @@ class _QRScannerPageState extends State<QRScannerPage> {
   void dispose() {
     controller?.dispose();
     super.dispose();
+  }
+  
+  Future<Mascota> getPetById(int id) async {
+    final response = await http.get(
+        Uri.parse('http://10.0.2.2:3000/getpetbyid/'+id.toString())); 
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final pet = Mascota.fromJson(data);
+      return pet;
+    } else {
+      throw Exception('Failed to load member');
+    }
   }
 }
