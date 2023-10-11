@@ -118,7 +118,7 @@ Future<Member> getCardByUser(int id) async {
 
   Future<Member> getPersonByEMail(String email) async {
     final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/personbyemail/'+email)); 
+        Uri.parse('http://181.188.191.35:3000/personbyemail/'+email)); 
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -145,7 +145,7 @@ Future<Member> getCardByUser(int id) async {
 
   Future<int> registerUser2(Member miembro) async {
     print(miembro.toString());
-    final url = Uri.parse('http://10.0.2.2:3000/register');
+    final url = Uri.parse('http://181.188.191.35:3000/register');
     var idRol=0;
     if (miembro.role == 'Carnetizador') {
       idRol = 3;
