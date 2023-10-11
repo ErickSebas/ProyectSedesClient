@@ -50,6 +50,19 @@ class _RegisterUpdateState extends State<Register> {
     super.initState();
   }
 
+  Future<bool> checkEmailExist(String email) async {
+    final url = Uri.parse('http://181.188.191.35:3000/checkemail/$email');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return true; // El correo existe en la base de datos
+    } else if (response.statusCode == 404) {
+      return false; // El correo no existe en la base de datos
+    } else {
+      throw Exception('Error al checkear el email la contraseña');
+    }
+  }
+
   Future<void> registerUser() async {
     final url = Uri.parse('http://181.188.191.35:3000/register');
     if (selectedRole == 'Carnetizador') {
@@ -214,50 +227,40 @@ class _RegisterUpdateState extends State<Register> {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    dateCreation = new DateTime.now();
+                    dateCreation = DateTime.now();
                     status = 1;
-                    if (esCarnetizador &&
+
+                    if (
                         _formKey.currentState!.validate() &&
                         latitude != '' &&
-                        selectedRole != '' &&
                         datebirthday != null) {
                       if (password != "") {
-                        dateCreation = new DateTime.now();
-                        status = 1;
-                        await registerUser();
-                        idPerson =
-                            await getNextIdPerson(); //metodo que hace que el id sea el siguiente en la base de datos
-                        mostrarFinalizar.Mostrar_FinalizadosLogin(
-                            context, "Registro con exito!");
+                        bool emailExists = await checkEmailExist(email);
+                        if (emailExists) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'El correo ya existe en la base de datos')),
+                          );
+                        } else {
+                          await registerUser();
+                          idPerson = await getNextIdPerson();
+                          mostrarFinalizar.Mostrar_FinalizadosLogin(
+                              context, "Registro con éxito!");
+                        }
                       }
                       esCarnetizador = false;
                     } else {
-                      if (esCarnetizador == false &&
-                          _formKey.currentState!.validate() &&
-                          latitude != '' &&
-                          selectedRole != '' &&
-                          datebirthday != null) {
-                        if (password != "") {
-                          dateCreation = new DateTime.now();
-                          status = 1;
-                          await registerUser();
-                          mostrarFinalizar.Mostrar_FinalizadosLogin(
-                              context, "Registro con exito!");
-                        }
-
-                        esCarnetizador = false;
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Ingrese todos los campos')),
-                        );
-                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Ingrese todos los campos')),
+                      );
                     }
                   },
                   child: Text('Registrar'),
                   style: ElevatedButton.styleFrom(
                     primary: Color(0xFF1A2946),
                   ),
-                ),
+                )
               ],
             ),
           ),
