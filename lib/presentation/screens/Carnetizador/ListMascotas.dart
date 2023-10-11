@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/UpdatePet.dart';
+import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
@@ -76,14 +77,6 @@ class ListMascotas extends StatelessWidget {
             List<Mascota> mascotas = snapshot.data!;
             return Scaffold(
               appBar: AppBar(
-                leading: Builder(
-                  builder: (context) => IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
                 backgroundColor: Color.fromARGB(255, 241, 245, 255),
                 title: Text(
                   'Mascotas',
