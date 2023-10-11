@@ -345,7 +345,7 @@ class CampaignPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed("/createClient");
+          Navigator.of(context).pushNamed("/qrpage");
         },
         child: Icon(Icons.qr_code),
         backgroundColor: Color(0xFF5C8ECB),

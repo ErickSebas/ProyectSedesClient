@@ -537,7 +537,7 @@ class _LoginPageState extends State<LoginPage> {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200||response.statusCode==400) {
       return 1;
     } else {
       return 0;
