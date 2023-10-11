@@ -97,7 +97,7 @@ class CampaignPage extends StatelessWidget {
             );
           },
         );
-      });
+      });//Prueba
     }
     return Scaffold(
       appBar: AppBar(
