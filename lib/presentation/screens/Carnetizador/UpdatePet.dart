@@ -288,12 +288,6 @@ class _UpdatePetState extends State<UpdatePet> {
                         edadController.text +
                         colorController.text +
                         descripcionController.text);
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ListMascotas(),
-                      ),
-                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -303,14 +297,7 @@ class _UpdatePetState extends State<UpdatePet> {
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () async {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ListMascotas(),
-                    ),
-                  );
-                },
+                onPressed: () async {},
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
                 ),

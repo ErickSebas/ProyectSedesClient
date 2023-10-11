@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ProfilePage.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
@@ -11,12 +12,13 @@ import 'package:http/http.dart' as http;
 Member?
     loggedInPerson; // Variable para almacenar los datos de la persona autenticada
 int? useridROL;
+
 class ListMembersScreen extends StatefulWidget {
   late final Member? userData;
   final int userId;
   ListMembersScreen({required this.userId}) {
-        useridROL = this.userId;
-        print('ID de usuario en Buscar Clientes: $useridROL');
+    useridROL = this.userId;
+    print('ID de usuario en Buscar Clientes: $useridROL');
   }
 
   @override
@@ -38,6 +40,7 @@ Future<Member?> getPersonById(int userId) async {
     throw Exception('Error al obtener la persona por ID');
   }
 }
+
 MostrarFinalizar mostrarFinalizar = new MostrarFinalizar();
 
 class _ListMembersScreenState extends State<ListMembersScreen> {
@@ -45,8 +48,8 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
   Future<List<Member>>? members;
 
   Future<List<Member>> fetchMembers() async {
-    final response =
-        await http.get(Uri.parse('http://181.188.191.35:3000/allaccountsclient'));
+    final response = await http
+        .get(Uri.parse('http://181.188.191.35:3000/allaccountsclient'));
     //        await http.get(Uri.parse('http://10.10.0.14:3000/allaccountsclient'));
     print('Fetching members...'); // Agregar esto para verificar si se llama
 
@@ -102,9 +105,9 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
       }).toList();
     }
   }
+
   Future<void> deleteUser(String userId) async {
-    final url = Uri.parse(
-        'http://181.188.191.35:3000/deleteperson/$userId');
+    final url = Uri.parse('http://181.188.191.35:3000/deleteperson/$userId');
     final response = await http.put(url);
 
     if (response.statusCode == 200) {
@@ -218,7 +221,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
-                                                            SizedBox(height: 8),
+                              SizedBox(height: 8),
                               Text(
                                 "Fecha Nacimiento: ${member.fechaNacimiento?.day}/${member.fechaNacimiento?.month}/${member.fechaNacimiento?.year}",
                                 style: TextStyle(
@@ -276,12 +279,27 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                ProfilePage(member: member, carnetizadorMember: loggedInPerson),
+                                            builder: (context) => ProfilePage(
+                                                member: member,
+                                                carnetizadorMember:
+                                                    loggedInPerson),
                                           ),
                                         );
                                       },
                                       child: Text("Ver Perfil"),
+                                    ),
+                                    SizedBox(width: 10),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ListMascotas(userId: member.id),
+                                          ),
+                                        );
+                                      },
+                                      child: Text("Ver Mascotas"),
                                     ),
                                   ],
                                 ),
@@ -304,8 +322,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => RegisterUpdate(
-                      isUpdate: false, carnetizadorMember: personaMember
-                    )),
+                    isUpdate: false, carnetizadorMember: personaMember)),
           );
         },
         child: Icon(Icons.add),

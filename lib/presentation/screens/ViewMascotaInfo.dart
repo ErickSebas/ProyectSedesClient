@@ -5,6 +5,7 @@ import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/Models/Propietario.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ViewMascotasInfo extends StatelessWidget {
   final Mascota mascota;
@@ -47,7 +48,7 @@ class InfoMascotas extends StatelessWidget {
   final Propietario propietario;
 
   InfoMascotas({required this.mascota, required this.propietario});
-
+/*
   List<String> imagenes = [
     'assets/Perro.png',
     'assets/Perro.png',
@@ -55,6 +56,70 @@ class InfoMascotas extends StatelessWidget {
     'assets/Perro.png',
     'assets/Perro.png',
   ];
+*/
+
+  Future<List<String>> getImagesUrls(
+      String carpeta, int idCliente, int idMascota) async {
+    List<String> imageUrls = [];
+
+    try {
+      Reference storageRef =
+          FirebaseStorage.instance.ref('$carpeta/$idCliente/$idMascota');
+      ListResult result = await storageRef.list();
+
+      for (var item in result.items) {
+        String downloadURL = await item.getDownloadURL();
+        imageUrls.add(downloadURL);
+      }
+    } catch (e) {
+      print('Error al obtener URLs de imágenes: $e');
+    }
+
+    return imageUrls;
+  }
+
+  List<String> imagenes = [
+    'cliente/16/1.jpg',
+    'cliente/16/2.jpg',
+    'cliente/16/3.jpg',
+  ];
+
+/*
+SizedBox(
+                  height: 300,
+                  child: Swiper(
+                    itemCount: imagenes.length,
+                    viewportFraction: 0.8,
+                    scale: 0.9,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        elevation: 5,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                  'https://firebasestorage.googleapis.com/v0/b/flutter-test-d1cb6.appspot.com/o/${"20"[index]}?alt=media'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+*/
 
   @override
   Widget build(BuildContext context) {
@@ -82,38 +147,56 @@ class InfoMascotas extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-                SizedBox(
-                  height: 300,
-                  child: Swiper(
-                    itemCount: imagenes.length,
-                    viewportFraction: 0.8,
-                    scale: 0.9,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        elevation: 5,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: Offset(0, 3),
+                FutureBuilder<List<String>>(
+                  //future: getImagesUrls('cliente', mascota.idPersona, mascota.idMascotas),
+                  future: getImagesUrls('cliente', 20, mascota.idMascotas),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<String>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      print('Lista de URLs de imágenes: ${snapshot.data}');
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      print('Lista de URLs: ${snapshot.data}');
+                      List<String> imagenes = snapshot.data!;
+                      print(
+                          'Lista de URLs de imágenes: $imagenes'); // Añade este print
+                      return SizedBox(
+                        height: 300,
+                        child: Swiper(
+                          itemCount: imagenes.length,
+                          viewportFraction: 0.8,
+                          scale: 0.9,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
                               ),
-                            ],
-                            image: DecorationImage(
-                              image: AssetImage(imagenes[index]),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                              elevation: 5,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.5),
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                  image: DecorationImage(
+                                    image: NetworkImage(imagenes[index]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       );
-                    },
-                  ),
+                    }
+                  },
                 ),
                 Container(
                   width: double.infinity,

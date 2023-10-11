@@ -5,6 +5,7 @@ import 'package:fluttapp/Implementation/Conversation.dart';
 import 'package:fluttapp/Models/Conversation.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
@@ -172,52 +173,70 @@ class CampaignPage extends StatelessWidget {
                 leading: Icon(Icons.credit_card),
               ),
               ListTile(
-              leading: Icon(Icons.message),
-              title: Text('Mensaje'),
-              onTap: () async {
-                if(miembroActual!.role=='Cliente'){
-                  print(miembroActual!.role);
-                  Chat chatCliente = Chat(idChats: 0, idPerson: null, idPersonDestino: miembroActual!.id, fechaActualizacion: DateTime.now());
-                  int lastId =0;
-                  List<Chat> filteredList=[];
-                  await fetchChatsClient().then((value) => {
-                    filteredList = value.where((element) => element.idPersonDestino == miembroActual!.id).toList(),
-                    if(filteredList.isEmpty){
-                      registerNewChat(chatCliente).then((value) => {
-                        getLastIdChat().then((value) => {
-                          lastId = value,
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => ChatPage(idChat: lastId, nombreChat: 'Soporte',idPersonDestino: 0,)),
-                          ) 
-                        })
-                      })
-                    }else{
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ChatPage(idChat: filteredList[0].idChats, nombreChat: 'Soporte', idPersonDestino: 0,)),
-                      ) 
-                    }
-                  });
-                  
-                }
-                
-              },
-            ),
-              Align(
-              alignment: Alignment.bottomRight,
-              child: ListTile(
-                leading: Icon(Icons.logout),
-                title: Text('Cerrar Sesión'),
-                onTap: () {
-                  miembroActual = loggedInPerson!;
-                  Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
+                leading: Icon(Icons.message),
+                title: Text('Mensaje'),
+                onTap: () async {
+                  if (miembroActual!.role == 'Cliente') {
+                    print(miembroActual!.role);
+                    Chat chatCliente = Chat(
+                        idChats: 0,
+                        idPerson: null,
+                        idPersonDestino: miembroActual!.id,
+                        fechaActualizacion: DateTime.now());
+                    int lastId = 0;
+                    List<Chat> filteredList = [];
+                    await fetchChatsClient().then((value) => {
+                          filteredList = value
+                              .where((element) =>
+                                  element.idPersonDestino == miembroActual!.id)
+                              .toList(),
+                          if (filteredList.isEmpty)
+                            {
+                              registerNewChat(chatCliente).then((value) => {
+                                    getLastIdChat().then((value) => {
+                                          lastId = value,
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => ChatPage(
+                                                      idChat: lastId,
+                                                      nombreChat: 'Soporte',
+                                                      idPersonDestino: 0,
+                                                    )),
+                                          )
+                                        })
+                                  })
+                            }
+                          else
+                            {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                          idChat: filteredList[0].idChats,
+                                          nombreChat: 'Soporte',
+                                          idPersonDestino: 0,
+                                        )),
+                              )
+                            }
+                        });
+                  }
                 },
               ),
-            ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text('Cerrar Sesión'),
+                  onTap: () {
+                    miembroActual = loggedInPerson!;
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -235,7 +254,8 @@ class CampaignPage extends StatelessWidget {
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[// Espacio entre botones
+                children: <Widget>[
+                  // Espacio entre botones
                   Column(
                     children: <Widget>[
                       Card(
@@ -250,7 +270,12 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/viewPetInfo");
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListMascotas(
+                                        userId: loggedInPerson!.id)),
+                              );
                             },
                           ),
                         ),
@@ -264,7 +289,6 @@ class CampaignPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  
                 ],
               ),
               SizedBox(height: 20),
@@ -316,12 +340,16 @@ class CampaignPage extends StatelessWidget {
                             onPressed: () {
                               //Navigator.of(context).pushNamed("/updateClient", arguments: loggedInPerson);
                               if (loggedInPerson!.role == "Carnetizador") {
-                              esCarnetizador = true;
-                              } 
+                                esCarnetizador = true;
+                              }
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RegisterUpdate(isUpdate: true, userData: loggedInPerson, carnetizadorMember: loggedInPerson,)),
+                                    builder: (context) => RegisterUpdate(
+                                          isUpdate: true,
+                                          userData: loggedInPerson,
+                                          carnetizadorMember: loggedInPerson,
+                                        )),
                               );
                             },
                           ),

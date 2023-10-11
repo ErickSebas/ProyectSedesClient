@@ -34,14 +34,14 @@ Future<void> main() async {
   //  print('MyApp: $message');
   //});
 
-  runApp(
-
-    MultiProvider(providers: [
-      Provider<LocalNotificationService>(create: (context) => LocalNotificationService()),
+  runApp(MultiProvider(
+    providers: [
+      Provider<LocalNotificationService>(
+          create: (context) => LocalNotificationService()),
       //Provider<PushNotificationService>(create: (context) => PushNotificationService(),)
     ],
-    child: const MainApp(),)
-    );
+    child: const MainApp(),
+  ));
 }
 
 class MainApp extends StatelessWidget {
@@ -63,10 +63,10 @@ class MainApp extends StatelessWidget {
         '/viewClient': (context) => ViewClient(userId: 0),
         '/viewCarnetizador': (context) => HomeCarnetizador(userId: 0),
         '/register': (context) => Register(),
-        '/createPet': (context) => RegisterPet(),
         '/viewMap': (context) => VerCamapanas(),
-        '/listPets': (context) => ListMascotas(),
-        '/searchClientNew': (context) => ListMembersScreen(userId: 0,),
+        '/searchClientNew': (context) => ListMembersScreen(
+              userId: 0,
+            ),
       },
     );
   }

@@ -3,10 +3,24 @@ import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/UpdatePet.dart';
 import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
 
+int? idUser;
+
+Future<List<Mascota>> fetchMembers(int idPersona) async {
+  final response = await http
+      .get(Uri.parse('http://10.10.0.42:3000/propietariomascotas/$idPersona'));
+
+  final List<dynamic> data = json.decode(response.body);
+  final members =
+      data.map((memberData) => Mascota.fromJson(memberData)).toList();
+  return members;
+}
+
+/*
 Future<List<Mascota>> fetchMembers() async {
   final response =
       await http.get(Uri.parse('http://181.188.191.35:3000/allmascotas'));
@@ -16,6 +30,7 @@ Future<List<Mascota>> fetchMembers() async {
       data.map((memberData) => Mascota.fromJson(memberData)).toList();
   return members;
 }
+*/
 
 Future<void> disablePet(int idMascota) async {
   final url = Uri.parse('http://181.188.191.35:3000/disablemascota/$idMascota');
@@ -33,12 +48,17 @@ Future<void> disablePet(int idMascota) async {
 }
 
 class ListMascotas extends StatelessWidget {
+  late final int userId;
+  ListMascotas({required this.userId}) {
+    idUser = this.userId;
+    print('ID de usuario en Buscar Clientes: $idUser');
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<List<Mascota>>(
-        future: fetchMembers(),
+        future: fetchMembers(userId),
         builder: (BuildContext context, AsyncSnapshot<List<Mascota>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
@@ -65,18 +85,21 @@ class ListMascotas extends StatelessWidget {
                 centerTitle: true,
               ),
               body: CampaignPage(mascotas: mascotas),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            RegisterPet(), // Pasa el ID del usuario aquí
-                      ));
-                },
-                child: Icon(Icons.add_box),
-                backgroundColor: Color(0xFF5C8ECB),
-              ),
+              floatingActionButton: miembroActual.role == "Carnetizador"
+                  ? FloatingActionButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegisterPet(
+                                userId: userId,
+                              ), // Pasa el ID del usuario aquí
+                            ));
+                      },
+                      child: Icon(Icons.add_box),
+                      backgroundColor: Color(0xFF5C8ECB),
+                    )
+                  : Text("NO TIENES MASCOTAS"),
             );
           }
         },
@@ -207,8 +230,3 @@ class _CampaignPageState extends State<CampaignPage> {
     );
   }
 }
-
-void main() {
-  runApp(ListMascotas());
-}
-

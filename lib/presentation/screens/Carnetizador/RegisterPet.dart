@@ -7,8 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:image/image.dart' as img;
+
+int? idUser;
 
 class RegisterPet extends StatefulWidget {
+  late final int userId;
+  RegisterPet({required this.userId}) {
+    idUser = this.userId;
+    print('ID de usuario en Buscar Clientes: $idUser');
+  }
+
   @override
   _RegisterPetState createState() => _RegisterPetState();
 }
@@ -53,6 +64,148 @@ class _RegisterPetState extends State<RegisterPet> {
     );
   }
 
+  Future<List<int>> compressImage(File imageFile) async {
+    // Leer la imagen
+    List<int> imageBytes = await imageFile.readAsBytes();
+
+    // Decodificar la imagen
+    img.Image image = img.decodeImage(Uint8List.fromList(imageBytes))!;
+
+    // Comprimir la imagen con una calidad específica (85 en este caso)
+    List<int> compressedBytes = img.encodeJpg(image, quality: 85);
+
+    return compressedBytes;
+  }
+
+  Future<bool> uploadImages(List<File?> images) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+      int ultimoId = await fetchLastPetId();
+      print("Ultimo ID ======== $ultimoId" + "---" + widget.userId.toString());
+      String carpeta = 'cliente/${widget.userId}/$ultimoId';
+
+      int contador = 1;
+
+      for (var image in images) {
+        if (image != null) {
+          String imageName = '$contador';
+
+          firebase_storage.Reference imageRef =
+              storageRef.child('$carpeta/$imageName.jpg');
+
+          // Comprimir la imagen antes de subirla
+          List<int> compressedBytes = await compressImage(image);
+
+          await imageRef.putData(Uint8List.fromList(compressedBytes));
+
+          contador++;
+        }
+      }
+
+      return true;
+    } catch (e) {
+      print('Error al subir imágenes: $e');
+      return false;
+    }
+  }
+
+  Future<int> fetchLastPetId() async {
+    final response =
+        await http.get(Uri.parse('http://10.10.0.42:3000/lastidmascota'));
+
+    final dynamic data = json.decode(response.body);
+    return data['ultimo_id'] as int;
+  }
+
+/*
+comprimir
+
+Future<List<int>> compressImage(File imageFile) async {
+  // Leer la imagen
+  List<int> imageBytes = await imageFile.readAsBytes();
+
+  // Decodificar la imagen
+  img.Image image = img.decodeImage(Uint8List.fromList(imageBytes))!;
+
+  // Calcular la calidad de compresión necesaria para que el tamaño sea inferior a 200 KB
+  int quality = 100;
+  while (image.length > 200 * 1024 && quality > 0) {
+    quality -= 5;
+    List<int> compressedBytes = img.encodeJpg(image, quality: quality);
+    image = img.decodeImage(Uint8List.fromList(compressedBytes))!;
+  }
+
+  return img.encodeJpg(image, quality: quality);
+}
+
+Future<bool> uploadImages(List<File?> images) async {
+  try {
+    final firebase_storage.Reference storageRef =
+        firebase_storage.FirebaseStorage.instance.ref();
+
+    String carpeta = 'cliente/16';
+
+    for (var image in images) {
+      if (image != null) {
+        String imageName = DateTime.now().millisecondsSinceEpoch.toString();
+        firebase_storage.Reference imageRef =
+            storageRef.child('$carpeta/$imageName.jpg');
+
+        // Comprimir la imagen antes de subirla
+        List<int> compressedBytes = await compressImage(image);
+
+        await imageRef.putData(Uint8List.fromList(compressedBytes));
+      }
+    }
+
+    return true;
+  } catch (e) {
+    print('Error al subir imágenes: $e');
+    return false;
+  }
+}
+
+subir imagenes
+Future<bool> uploadImages(List<File?> images) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+
+      // Obtener el último ID de mascota
+      //int ultimoId = await fetchLastPetId();
+      //print("Ultimo ID ======== $ultimoId");
+
+      // Crear el nombre de la carpeta
+      //String carpeta = 'cliente/$ultimoId';
+      String carpeta = 'cliente/16';
+      // Iterar sobre las imágenes y subirlas
+      for (var image in images) {
+        if (image != null) {
+          String imageName = DateTime.now().millisecondsSinceEpoch.toString();
+          // Usar el nombre de la carpeta en la ruta
+          firebase_storage.Reference imageRef =
+              storageRef.child('$carpeta/$imageName.jpg');
+
+          await imageRef.putFile(image);
+        }
+      }
+
+      return true;
+    } catch (e) {
+      print('Error al subir imágenes: $e');
+      return false;
+    }
+  }
+
+  Future<int> fetchLastPetId() async {
+    final response =
+        await http.get(Uri.parse('http://181.188.191.35:3000/lastidmascota'));
+
+    final dynamic data = json.decode(response.body);
+    return data['ultimo_id'] as int;
+  }
+*/
   Future<void> registerPet() async {
     final url = Uri.parse('http://181.188.191.35:3000/registerPet');
 
@@ -64,7 +217,7 @@ class _RegisterPetState extends State<RegisterPet> {
         'Edad': edadController.text,
         'Color': colorController.text,
         'Descripcion': descripcionController.text,
-        'IdPersona': '9',
+        'IdPersona': '${widget.userId}',
         'Sexo': 'H',
         'IdQr': '1'
       }),
@@ -79,6 +232,59 @@ class _RegisterPetState extends State<RegisterPet> {
       );
     }
   }
+
+/*
+  Future<void> registerPet() async {
+    final url = Uri.parse('http://181.188.191.35:3000/registerPet2');
+
+    var request = http.MultipartRequest('POST', url);
+
+    // Agregar las imágenes a la petición
+    for (var image in _selectedImages) {
+      if (image != null) {
+        print('Nombre del archivo: ${image.path.split('/').last}');
+
+        var stream = http.ByteStream(Stream.castFrom(image.openRead()));
+        var length = await image.length();
+
+        var multipartFile = http.MultipartFile('Imagenes', stream, length,
+            filename: image.path.split('/').last);
+        print('MultipartFile: $multipartFile');
+        request.files.add(multipartFile);
+      }
+    }
+
+    // Agregar los otros datos
+    request.fields.addAll({
+      'Nombre': nombreController.text,
+      'Raza': razaController.text,
+      'Edad': edadController.text,
+      'Color': colorController.text,
+      'Descripcion': descripcionController.text,
+      'IdPersona': '9',
+      'Sexo': 'H',
+      'IdQr': '1',
+    });
+
+    try {
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        // Registro exitoso
+        print('Mascota registrada con éxito');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al registrar la mascota')),
+        );
+      }
+    } catch (error) {
+      print('Error en la solicitud: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al enviar la solicitud')),
+      );
+    }
+  }
+*/
 
   String valorSeleccionado = 'H'; // Valor por defecto seleccionado
 
@@ -200,20 +406,21 @@ class _RegisterPetState extends State<RegisterPet> {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () async {
-                  if (_selectedImages.length < 3) {
-                    final picker = ImagePicker();
-                    final pickedFile =
-                        await picker.pickImage(source: ImageSource.gallery);
-
-                    if (pickedFile != null) {
-                      setState(() {
-                        _selectedImages.add(File(pickedFile.path));
-                      });
-                    }
-                  } else {
+                  if (_selectedImages.length >= 5) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Se ha alcanzado el límite de 3 imágenes.'),
+                      content: Text('Se ha alcanzado el límite de 5 imágenes.'),
                     ));
+                    return;
+                  }
+
+                  final picker = ImagePicker();
+                  final pickedFile =
+                      await picker.pickImage(source: ImageSource.gallery);
+
+                  if (pickedFile != null) {
+                    setState(() {
+                      _selectedImages.add(File(pickedFile.path));
+                    });
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -250,6 +457,14 @@ class _RegisterPetState extends State<RegisterPet> {
               ElevatedButton(
                 onPressed: () async {
                   bool camposValidos = validarCampos();
+
+                  if (_selectedImages.length < 3) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Debe cargar al menos 3 imágenes.'),
+                    ));
+                    return; // Sale de la función si no hay suficientes imágenes.
+                  }
+
                   if (camposValidos) {
                     print("1.-" +
                         nombreController.text +
@@ -259,6 +474,9 @@ class _RegisterPetState extends State<RegisterPet> {
                         descripcionController.text);
                     await registerPet();
 
+                    // Aquí se ejecuta el método uploadImages
+                    await uploadImages(_selectedImages);
+
                     await mostrarFinalizar.Mostrar_Finalizados(
                         context, "Registro Con Éxito!");
                     print("3.-" +
@@ -267,10 +485,6 @@ class _RegisterPetState extends State<RegisterPet> {
                         edadController.text +
                         colorController.text +
                         descripcionController.text);
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ListMascotas(), // Pasa el ID del usuario aquí
-                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(

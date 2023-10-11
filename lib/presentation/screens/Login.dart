@@ -45,9 +45,8 @@ class _LoginPageState extends State<LoginPage> {
   String? mensajeErrorCorreo;
   String? mensajeErrorContrasena;
   final AuthGoogle authGoogle = AuthGoogle();
-  bool isloading=false;
+  bool isloading = false;
 
-  
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
         'http://181.188.191.35:3000/user?correo=$email&password=$password');
@@ -234,246 +233,268 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isloading? Center(child: CircularProgressIndicator()) : Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/Splash.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image.asset(
-                "assets/Univallenavbar.png",
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: correoController,
-                decoration: InputDecoration(
-                  labelText: 'Correo electrónico',
-                  errorText: mensajeErrorCorreo,
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.lightBlueAccent),
-                  ),
+      body: isloading
+          ? Center(child: CircularProgressIndicator())
+          : Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/Splash.png'),
+                  fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: 20),
-              TextField(
-                controller: contrasenaController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Contraseña',
-                  errorText: mensajeErrorContrasena,
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.lightBlueAccent),
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                      "assets/Univallenavbar.png",
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: correoController,
+                      decoration: InputDecoration(
+                        labelText: 'Correo electrónico',
+                        errorText: mensajeErrorCorreo,
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.lightBlueAccent),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: contrasenaController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        errorText: mensajeErrorContrasena,
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.lightBlueAccent),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Register()),
+                            );
+                          },
+                          child: Text(
+                            'Regístrate!',
+                            style:
+                                TextStyle(decoration: TextDecoration.underline),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () async {
+                            _showEmailDialog(context);
+                            isLogin =
+                                1; // Mostrar el diálogo de recuperación de contraseña
+                          },
+                          child: Text(
+                            '¿Olvidaste tu contraseña?',
+                            style:
+                                TextStyle(decoration: TextDecoration.underline),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Validación de campos vacíos
+                        if (correoController.text.isEmpty ||
+                            contrasenaController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Por favor, complete todos los campos.')),
+                          );
+                          return; // Sale de la función si hay campos vacíos
+                        }
+
+                        // Validación de formato de correo electrónico
+                        if (!isValidEmail(correoController.text)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Ingrese un correo electrónico válido.')),
+                          );
+                          return; // Sale de la función si el correo es inválido
+                        }
+
+                        final loggedInMember = await authenticateHttp(
+                          correoController.text,
+                          md5
+                              .convert(utf8.encode(contrasenaController.text))
+                              .toString(),
+                        );
+                        if (loggedInMember != null) {
+                          if (loggedInMember.role == "Carnetizador") {
+                            // Redirigir al administrador a la pantalla de administrador
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomeCarnetizador(
+                                  userId: loggedInMember.id,
+                                ), // Pasa el ID del usuario aquí
+                              ),
+                            );
+                          } else if (loggedInMember.role == "Cliente") {
+                            // Redirigir al usuario normal a la pantalla de usuario
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewClient(
+                                  userId: loggedInMember.id,
+                                ), // Pasa el ID del usuario aquí
+                              ),
+                            );
+                          } else {
+                            // Rol desconocido, puedes mostrar un mensaje de error o manejarlo según tus necesidades.
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Rol de usuario desconocido')),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('Usuario o Contraseña Incorrectos')),
+                          );
+                        }
+                      },
+                      child: Text('LOGIN'), // Agregar el texto "LOGIN" aquí
+                    )
+                  ],
                 ),
               ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Register()),
-                      );
-                    },
-                    child: Text(
-                      'Regístrate!',
-                      style: TextStyle(decoration: TextDecoration.underline),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      _showEmailDialog(context);
-                      isLogin =
-                          1; // Mostrar el diálogo de recuperación de contraseña
-                    },
-                    child: Text(
-                      '¿Olvidaste tu contraseña?',
-                      style: TextStyle(decoration: TextDecoration.underline),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  // Validación de campos vacíos
-                  if (correoController.text.isEmpty ||
-                      contrasenaController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text('Por favor, complete todos los campos.')),
-                    );
-                    return; // Sale de la función si hay campos vacíos
-                  }
-
-                  // Validación de formato de correo electrónico
-                  if (!isValidEmail(correoController.text)) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text('Ingrese un correo electrónico válido.')),
-                    );
-                    return; // Sale de la función si el correo es inválido
-                  }
-
-                  final loggedInMember = await authenticateHttp(
-                    correoController.text,
-                    md5
-                        .convert(utf8.encode(contrasenaController.text))
-                        .toString(),
-                  );
-                 if (loggedInMember != null) {
-                    if (loggedInMember.role == "Carnetizador") {
-                      // Redirigir al administrador a la pantalla de administrador
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeCarnetizador(
-                            userId: loggedInMember.id,
-                          ), // Pasa el ID del usuario aquí
-                        ),
-                      );
-                    } else if (loggedInMember.role == "Cliente") {
-                      // Redirigir al usuario normal a la pantalla de usuario
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewClient(
-                            userId: loggedInMember.id,
-                          ), // Pasa el ID del usuario aquí
-                        ),
-                      );
-                    } else {
-                      // Rol desconocido, puedes mostrar un mensaje de error o manejarlo según tus necesidades.
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Rol de usuario desconocido')),
-                      );
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Usuario o Contraseña Incorrectos')),
-                    );
-                  } 
-                },
-                child: Text('LOGIN'), // Agregar el texto "LOGIN" aquí
-              )
-            ],
-          ),
-        ),
-      ),
+            ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            isloading?'':'O inicia sesión con:',
+            isloading ? '' : 'O inicia sesión con:',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 16),
-          isloading?Container():Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  _facebookLogin();
-                },
-                icon: Icon(Icons.facebook),
-                label: Text('Facebook'),
-              ),
-              SizedBox(width: 16),
-             ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.white, 
-                  onPrimary: Colors.black, 
+          isloading
+              ? Container()
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _facebookLogin();
+                      },
+                      icon: Icon(Icons.facebook),
+                      label: Text('Facebook'),
+                    ),
+                    SizedBox(width: 16),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                        onPrimary: Colors.black,
+                      ),
+                      onPressed: () async {
+                        try {
+                          UserCredential userCredential =
+                              await authGoogle.signInWithGoogle();
+                          setState(() {
+                            isloading = true;
+                          });
+                          User? user = userCredential.user;
+                          Member googleUser = Member(
+                              names: "",
+                              id: 0,
+                              correo: "",
+                              latitud: 0.1,
+                              longitud: 0.1);
+                          if (user != null) {
+                            googleUser.correo = userCredential.user!.email!;
+                            googleUser.telefono =
+                                userCredential.user!.phoneNumber as int?;
+                            googleUser.fechaCreacion = DateTime.now();
+                            googleUser.status = 1;
+                            googleUser.role = null;
+                            googleUser.names =
+                                userCredential.user!.displayName!;
+                          }
+
+                          AdditionalUserInfo? additionalUserInfo =
+                              userCredential.additionalUserInfo;
+                          if (additionalUserInfo != null) {
+                            googleUser.names = userCredential
+                                .additionalUserInfo!.profile?["given_name"];
+                            googleUser.lastnames = userCredential
+                                .additionalUserInfo!.profile?["family_name"];
+                          }
+
+                          try {
+                            await GoogleSignIn().disconnect();
+                            await GoogleSignIn().signOut();
+                          } catch (error) {
+                            print(
+                                "Error al desconectar o cerrar sesión con Google: $error");
+                          }
+
+                          var res = await registerUser2(googleUser);
+                          if (res == 1) {
+                            miembroActual =
+                                await getPersonByEMail(googleUser.correo);
+                          } else {
+                            Mostrar_Error1(context, "Error al iniciar sesión");
+                            return;
+                          }
+
+                          setState(() {
+                            isloading = false;
+                          });
+                          if (miembroActual!.role == "Carnetizador" ||
+                              miembroActual!.role == "Super Admin") {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomeCarnetizador(
+                                  userId: miembroActual!.id,
+                                ),
+                              ),
+                            );
+                          } else if (miembroActual!.role == "Cliente") {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewClient(
+                                  userId: miembroActual!.id,
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (error) {
+                          if (error is PlatformException &&
+                              error.code == 'sign_in_canceled') {
+                            print(
+                                "Inicio de sesión con Google cancelado por el usuario");
+                          } else {
+                            print("Error al iniciar sesión con Google: $error");
+                          }
+                        }
+                      },
+                      icon: Image(
+                        image: AssetImage('assets/google.png'),
+                        height: 24.0,
+                      ),
+                      label: Text('Continuar con Google'),
+                    ),
+                  ],
                 ),
-                onPressed: () async {
-                  try {
-                    UserCredential userCredential = await authGoogle.signInWithGoogle();
-                    setState(() {
-                      isloading=true;    
-                    }); 
-                    User? user = userCredential.user;
-                    Member googleUser= Member(names: "", id: 0, correo: "", latitud: 0.1, longitud: 0.1);
-                    if (user != null) {
-                      googleUser.correo = userCredential.user!.email!;
-                      googleUser.telefono = userCredential.user!.phoneNumber as int?;
-                      googleUser.fechaCreacion = DateTime.now();
-                      googleUser.status = 1;
-                      googleUser.role=null;
-                      googleUser.names = userCredential.user!.displayName!;
-                    }
-
-                    AdditionalUserInfo? additionalUserInfo = userCredential.additionalUserInfo;
-                    if (additionalUserInfo != null) {
-                      googleUser.names = userCredential.additionalUserInfo!.profile?["given_name"];
-                      googleUser.lastnames = userCredential.additionalUserInfo!.profile?["family_name"];
-                    }
-
-                    try {
-                      await GoogleSignIn().disconnect();
-                      await GoogleSignIn().signOut();
-                    } catch (error) {
-                      print("Error al desconectar o cerrar sesión con Google: $error");
-                    }
-
-
-
-                    var res = await registerUser2(googleUser);
-                    if(res == 1){
-                      miembroActual = await getPersonByEMail(googleUser.correo);
-                    }else{
-                      Mostrar_Error1(context, "Error al iniciar sesión");
-                      return;
-                    }
-                    
-                    setState(() {
-                      isloading=false;    
-                    }); 
-                     if (miembroActual!.role == "Carnetizador"||miembroActual!.role=="Super Admin") {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeCarnetizador(
-                            userId: miembroActual!.id,
-                          ),
-                        ),
-                      );
-                    } else if (miembroActual!.role == "Cliente") {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewClient(
-                            userId: miembroActual!.id,
-                          ), 
-                        ),
-                      );
-                    }
-
-                  } catch (error) {
-                    if (error is PlatformException && error.code == 'sign_in_canceled') {
-                      print("Inicio de sesión con Google cancelado por el usuario");
-                    } else {
-                      print("Error al iniciar sesión con Google: $error");
-                    }
-                  }
-                },
-                icon: Image(
-                  image: AssetImage('assets/google.png'),
-                  height: 24.0, 
-                ),
-                label: Text('Continuar con Google'),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -484,7 +505,7 @@ class _LoginPageState extends State<LoginPage> {
     return emailRegex.hasMatch(email);
   }
 
- Future<Member?> checkemailexist(String email) async {
+  Future<Member?> checkemailexist(String email) async {
     final url = Uri.parse('http://181.188.191.35:3000/checkemail/$email');
 
     final response = await http.get(url);
@@ -591,14 +612,15 @@ class _LoginPageState extends State<LoginPage> {
           );
         } else {
           // El usuario de Facebook no está registrado, regístralo
-          final newMember = Member(names: "", id: 0, correo: "", latitud: 0.1, longitud: 0.1);
-            newMember.correo = email;
-            newMember.fechaCreacion= DateTime.now();
-            newMember.status= 1;
-            newMember.role= null;
-            newMember.names= profile!.firstName!;
-            newMember.lastnames= profile.lastName!;
-            // Agrega otros campos necesarios aquí
+          final newMember =
+              Member(names: "", id: 0, correo: "", latitud: 0.1, longitud: 0.1);
+          newMember.correo = email;
+          newMember.fechaCreacion = DateTime.now();
+          newMember.status = 1;
+          newMember.role = null;
+          newMember.names = profile!.firstName!;
+          newMember.lastnames = profile.lastName!;
+          // Agrega otros campos necesarios aquí
 
           final registrationResult = await registerUser2(newMember);
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
@@ -215,11 +216,12 @@ class CampaignPage extends StatelessWidget {
                               color: const Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ListMembersScreen(userId: loggedInPerson!.id
-                                  ), // Pasa el ID del usuario aquí
+                                  builder: (context) => ListMembersScreen(
+                                      userId: loggedInPerson!
+                                          .id), // Pasa el ID del usuario aquí
                                 ),
                               );
                             },
@@ -250,7 +252,12 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/listPets");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListMascotas(
+                                        userId: loggedInPerson!.id)),
+                              );
                             },
                           ),
                         ),
@@ -321,8 +328,10 @@ class CampaignPage extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => RegisterUpdate(
-                                        isUpdate: true,
-                                        userData: loggedInPerson, carnetizadorMember: loggedInPerson,)),
+                                          isUpdate: true,
+                                          userData: loggedInPerson,
+                                          carnetizadorMember: loggedInPerson,
+                                        )),
                               );
                             },
                           ),
