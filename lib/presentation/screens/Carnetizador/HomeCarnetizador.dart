@@ -15,10 +15,10 @@ Member?
 int estadoPerfil = 0;
 
 // ignore: must_be_immutable
-class HomeCarnetizador extends StatelessWidget {
+class HomeCarnetizador1 extends StatelessWidget {
   final int userId;
 
-  HomeCarnetizador({required this.userId}) {
+  HomeCarnetizador1({required this.userId}) {
     print('ID de usuario en ViewClient: $userId');
   }
   @override

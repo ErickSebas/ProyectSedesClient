@@ -6,6 +6,7 @@ import 'package:fluttapp/Implementation/Conversation.dart';
 import 'package:fluttapp/Models/Conversation.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
@@ -63,7 +64,7 @@ Future<Member?> getPersonById(int userId) async {
     final member = Member.fromJson(data);
     return member;
   } else if (response.statusCode == 404) {
-    return null; // Persona no encontrada
+    return null; 
   } else {
     throw Exception('Error al obtener la persona por ID');
   }
@@ -262,7 +263,41 @@ class CampaignPage extends StatelessWidget {
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[// Espacio entre botones
+                children: <Widget>[miembroActual.role=="Carnetizador"?
+                  Column(
+                    children: <Widget>[
+                      Card(
+                        color: Colors.transparent,
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              size: 60,
+                              color: const Color(0xFF5C8ECB),
+                            ),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ListMembersScreen(userId: loggedInPerson!.id
+                                  ), 
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'Buscar Cliente',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: const Color(0xFF5C8ECB),
+                        ),
+                      ),
+                    ],
+                  ):Container(),miembroActual.role=="Carnetizador"?SizedBox(width: 20):Container(),
                   Column(
                     children: <Widget>[
                       Card(

@@ -62,7 +62,7 @@ class MainApp extends StatelessWidget {
         '/home': (context) => SplashScreen(),
         '/login': (context) => LoginPage(),
         '/viewClient': (context) => ViewClient(userId: 0),
-        '/viewCarnetizador': (context) => HomeCarnetizador(userId: 0),
+        //'/viewCarnetizador': (context) => HomeCarnetizador(userId: 0),
         '/register': (context) => Register(),
         '/createPet': (context) => RegisterPet(),
         '/viewMap': (context) => VerCamapanas(),

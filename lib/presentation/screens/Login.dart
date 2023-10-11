@@ -331,28 +331,16 @@ class _LoginPageState extends State<LoginPage> {
                         .toString(),
                   );
                  if (loggedInMember != null) {
-                    if (loggedInMember.role == "Carnetizador") {
-                      // Redirigir al administrador a la pantalla de administrador
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeCarnetizador(
-                            userId: loggedInMember.id,
-                          ), // Pasa el ID del usuario aquí
-                        ),
-                      );
-                    } else if (loggedInMember.role == "Cliente") {
-                      // Redirigir al usuario normal a la pantalla de usuario
+                    if (loggedInMember.role == "Carnetizador"||loggedInMember.role == "Cliente") {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ViewClient(
                             userId: loggedInMember.id,
-                          ), // Pasa el ID del usuario aquí
+                          ), 
                         ),
                       );
                     } else {
-                      // Rol desconocido, puedes mostrar un mensaje de error o manejarlo según tus necesidades.
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Rol de usuario desconocido')),
                       );
@@ -364,7 +352,7 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   } 
                 },
-                child: Text('LOGIN'), // Agregar el texto "LOGIN" aquí
+                child: Text('LOGIN'), 
               )
             ],
           ),
@@ -441,7 +429,7 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HomeCarnetizador(
+                          builder: (context) => ViewClient(
                             userId: miembroActual!.id,
                           ),
                         ),
