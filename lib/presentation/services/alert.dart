@@ -1,6 +1,7 @@
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 
 Member? personaMember;
@@ -117,9 +118,10 @@ class Mostrar_Finalizados_Update {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => HomeCarnetizador(
-                            userId: persona,
-                          )),
+                    builder: (context) => ViewClient(
+                      userId: miembroActual!.id,
+                    ),
+                  ),
                 );
               },
             ),

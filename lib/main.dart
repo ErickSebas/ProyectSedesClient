@@ -13,6 +13,7 @@ import 'package:fluttapp/firebase_options.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/Maps.dart';
+import 'package:fluttapp/presentation/screens/QRPage.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/Register.dart';
@@ -61,12 +62,14 @@ class MainApp extends StatelessWidget {
         '/home': (context) => SplashScreen(),
         '/login': (context) => LoginPage(),
         '/viewClient': (context) => ViewClient(userId: 0),
-        '/viewCarnetizador': (context) => HomeCarnetizador(userId: 0),
+        //'/viewCarnetizador': (context) => HomeCarnetizador(userId: 0),
         '/register': (context) => Register(),
         '/viewMap': (context) => VerCamapanas(),
+        '/listPets': (context) => ListMascotas(),
         '/searchClientNew': (context) => ListMembersScreen(
               userId: 0,
             ),
+        '/qrpage': (context) => QRScannerPage(),
       },
     );
   }

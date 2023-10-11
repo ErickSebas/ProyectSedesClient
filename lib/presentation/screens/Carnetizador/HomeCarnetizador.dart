@@ -16,10 +16,10 @@ Member?
 int estadoPerfil = 0;
 
 // ignore: must_be_immutable
-class HomeCarnetizador extends StatelessWidget {
+class HomeCarnetizador1 extends StatelessWidget {
   final int userId;
 
-  HomeCarnetizador({required this.userId}) {
+  HomeCarnetizador1({required this.userId}) {
     print('ID de usuario en ViewClient: $userId');
   }
   @override
@@ -354,7 +354,7 @@ class CampaignPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed("/createClient");
+          Navigator.of(context).pushNamed("/qrpage");
         },
         child: Icon(Icons.qr_code),
         backgroundColor: Color(0xFF5C8ECB),

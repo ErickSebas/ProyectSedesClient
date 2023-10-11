@@ -228,9 +228,9 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomeCarnetizador(
-                      userId: miembroActual!.id, //El carnetizador saldra con el miembro actual que entre , pero se valida con el carnetizadorglobal
-                    ), 
+                    builder: (context) => ViewClient(
+                      userId: miembroActual!.id,
+                    ),
                   ),
                 );
               }

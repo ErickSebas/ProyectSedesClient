@@ -5,7 +5,6 @@ import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/ChangePassword.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
-import 'package:fluttapp/presentation/screens/Cliente/HomeClientFacebook.dart';
 import 'package:fluttapp/presentation/screens/Register.dart';
 import 'package:fluttapp/presentation/services/auth_google.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
@@ -376,7 +375,97 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
+<<<<<<< HEAD
             ),
+=======
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Register()),
+                      );
+                    },
+                    child: Text(
+                      'Regístrate!',
+                      style: TextStyle(decoration: TextDecoration.underline),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      _showEmailDialog(context);
+                      isLogin =
+                          1; // Mostrar el diálogo de recuperación de contraseña
+                    },
+                    child: Text(
+                      '¿Olvidaste tu contraseña?',
+                      style: TextStyle(decoration: TextDecoration.underline),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  // Validación de campos vacíos
+                  if (correoController.text.isEmpty ||
+                      contrasenaController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Por favor, complete todos los campos.')),
+                    );
+                    return; // Sale de la función si hay campos vacíos
+                  }
+
+                  // Validación de formato de correo electrónico
+                  if (!isValidEmail(correoController.text)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Ingrese un correo electrónico válido.')),
+                    );
+                    return; // Sale de la función si el correo es inválido
+                  }
+
+                  final loggedInMember = await authenticateHttp(
+                    correoController.text,
+                    md5
+                        .convert(utf8.encode(contrasenaController.text))
+                        .toString(),
+                  );
+                 if (loggedInMember != null) {
+                    if (loggedInMember.role == "Carnetizador"||loggedInMember.role == "Cliente") {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewClient(
+                            userId: loggedInMember.id,
+                          ), 
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Rol de usuario desconocido')),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text('Usuario o Contraseña Incorrectos')),
+                    );
+                  } 
+                },
+                child: Text('LOGIN'), 
+              )
+            ],
+          ),
+        ),
+      ),
+>>>>>>> b59ae1cad9cf4cd1025ed62bec4f11dee7572f23
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -495,6 +584,88 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
+<<<<<<< HEAD
+=======
+                onPressed: () async {
+                  try {
+                    UserCredential userCredential = await authGoogle.signInWithGoogle();
+                    setState(() {
+                      isloading=true;    
+                    }); 
+                    User? user = userCredential.user;
+                    Member googleUser= Member(names: "", id: 0, correo: "", latitud: 0.1, longitud: 0.1);
+                    if (user != null) {
+                      googleUser.correo = userCredential.user!.email!;
+                      googleUser.telefono = userCredential.user!.phoneNumber as int?;
+                      googleUser.fechaCreacion = DateTime.now();
+                      googleUser.status = 1;
+                      googleUser.role=null;
+                      googleUser.names = userCredential.user!.displayName!;
+                    }
+
+                    AdditionalUserInfo? additionalUserInfo = userCredential.additionalUserInfo;
+                    if (additionalUserInfo != null) {
+                      googleUser.names = userCredential.additionalUserInfo!.profile?["given_name"];
+                      googleUser.lastnames = userCredential.additionalUserInfo!.profile?["family_name"];
+                    }
+
+                    try {
+                      await GoogleSignIn().disconnect();
+                      await GoogleSignIn().signOut();
+                    } catch (error) {
+                      print("Error al desconectar o cerrar sesión con Google: $error");
+                    }
+
+
+
+                    var res = await registerUser2(googleUser);
+                    if(res == 1){
+                      miembroActual = await getPersonByEMail(googleUser.correo);
+                    }else{
+                      Mostrar_Error1(context, "Error al iniciar sesión");
+                      return;
+                    }
+                    
+                    setState(() {
+                      isloading=false;    
+                    }); 
+                     if (miembroActual!.role == "Carnetizador"||miembroActual!.role=="Super Admin") {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewClient(
+                            userId: miembroActual!.id,
+                          ),
+                        ),
+                      );
+                    } else if (miembroActual!.role == "Cliente") {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewClient(
+                            userId: miembroActual!.id,
+                          ), 
+                        ),
+                      );
+                    }
+
+                  } catch (error) {
+                    if (error is PlatformException && error.code == 'sign_in_canceled') {
+                      print("Inicio de sesión con Google cancelado por el usuario");
+                    } else {
+                      print("Error al iniciar sesión con Google: $error");
+                    }
+                  }
+                },
+                icon: Image(
+                  image: AssetImage('assets/google.png'),
+                  height: 24.0, 
+                ),
+                label: Text('Continuar con Google'),
+              ),
+            ],
+          ),
+>>>>>>> b59ae1cad9cf4cd1025ed62bec4f11dee7572f23
         ],
       ),
     );
@@ -558,7 +729,7 @@ class _LoginPageState extends State<LoginPage> {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200||response.statusCode==400) {
       return 1;
     } else {
       return 0;

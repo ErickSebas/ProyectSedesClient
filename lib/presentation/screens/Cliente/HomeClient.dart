@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:fluttapp/Implementation/ChatImp.dart';
@@ -5,17 +6,19 @@ import 'package:fluttapp/Implementation/Conversation.dart';
 import 'package:fluttapp/Models/Conversation.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
+import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Member?
     loggedInPerson; // Variable para almacenar los datos de la persona autenticada
-
+MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
 // ignore: must_be_immutable
 
 class ViewClient extends StatelessWidget {
@@ -42,6 +45,8 @@ class ViewClient extends StatelessWidget {
           print('Datos obtenidossss: $loggedInPerson'); // Agrega esta línea
           print('Nombres: ${loggedInPerson?.names}');
           print('Rol: ${loggedInPerson?.role}');
+          print('Latitud: ${loggedInPerson?.latitud}');
+
           return CampaignPage();
         }
       },
@@ -59,7 +64,7 @@ Future<Member?> getPersonById(int userId) async {
     final member = Member.fromJson(data);
     return member;
   } else if (response.statusCode == 404) {
-    return null; // Persona no encontrada
+    return null;
   } else {
     throw Exception('Error al obtener la persona por ID');
   }
@@ -73,6 +78,27 @@ Future<void> Mostrar_Informacion(BuildContext context) async {
 class CampaignPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    if (loggedInPerson?.latitud == 0.1) {
+      Future.delayed(Duration(seconds: 0), () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Actualizar Datos"),
+              content: Text("Debes actualizar tus datos."),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Aceptar"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }); //Prueba
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
@@ -255,7 +281,45 @@ class CampaignPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  // Espacio entre botones
+                  miembroActual.role == "Carnetizador"
+                      ? Column(
+                          children: <Widget>[
+                            Card(
+                              color: Colors.transparent,
+                              child: Container(
+                                width: 120,
+                                height: 120,
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.add,
+                                    size: 60,
+                                    color: const Color(0xFF5C8ECB),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ListMembersScreen(
+                                            userId: loggedInPerson!.id),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Text(
+                              'Buscar Cliente',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: const Color(0xFF5C8ECB),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container(),
+                  miembroActual.role == "Carnetizador"
+                      ? SizedBox(width: 20)
+                      : Container(),
                   Column(
                     children: <Widget>[
                       Card(
@@ -372,7 +436,7 @@ class CampaignPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          //NAVEGACION A LOS COSOS DEL QR
+          Navigator.of(context).pushNamed("/qrpage");
         },
         child: Icon(Icons.qr_code),
         backgroundColor: Color(0xFF5C8ECB),
