@@ -76,6 +76,14 @@ class ListMascotas extends StatelessWidget {
             List<Mascota> mascotas = snapshot.data!;
             return Scaffold(
               appBar: AppBar(
+                leading: Builder(
+                  builder: (context) => IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
                 backgroundColor: Color.fromARGB(255, 241, 245, 255),
                 title: Text(
                   'Mascotas',

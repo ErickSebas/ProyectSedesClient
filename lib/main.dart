@@ -65,7 +65,7 @@ class MainApp extends StatelessWidget {
         //'/viewCarnetizador': (context) => HomeCarnetizador(userId: 0),
         '/register': (context) => Register(),
         '/viewMap': (context) => VerCamapanas(),
-        '/listPets': (context) => ListMascotas(),
+        //'/listPets': (context) => ListMascotas(),
         '/searchClientNew': (context) => ListMembersScreen(
               userId: 0,
             ),

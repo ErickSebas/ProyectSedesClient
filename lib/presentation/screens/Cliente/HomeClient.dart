@@ -334,7 +334,7 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ListMascotas(

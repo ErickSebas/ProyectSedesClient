@@ -1,22 +1,41 @@
 import 'dart:convert';
+
 import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:fluttapp/Models/Profile.dart';
+
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
+
 import 'package:fluttapp/presentation/screens/ChangePassword.dart';
+
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
+
 import 'package:fluttapp/presentation/screens/Register.dart';
+
 import 'package:fluttapp/presentation/services/auth_google.dart';
+
 import 'package:fluttapp/presentation/services/services_firebase.dart';
+
 import 'package:fluttapp/services/firebase_service.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:crypto/crypto.dart';
+
 import 'package:flutter/services.dart';
+
 import 'package:google_sign_in/google_sign_in.dart';
+
 import 'package:http/http.dart' as http;
+
 import 'package:fluttapp/presentation/services/alert.dart';
+
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
+
 import 'package:mailer/mailer.dart';
+
 import 'package:mailer/smtp_server/gmail.dart';
 
 void main() => runApp(MyApp());
@@ -40,24 +59,34 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   TextEditingController correoController = TextEditingController();
+
   TextEditingController contrasenaController = TextEditingController();
+
   String? mensajeErrorCorreo;
+
   String? mensajeErrorContrasena;
+
   final AuthGoogle authGoogle = AuthGoogle();
+
   bool isloading = false;
 
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
         'http://181.188.191.35:3000/user?correo=$email&password=$password');
+
     //http://181.188.191.35:3000/userbyrol?correo=pepe@gmail.com&password=827ccb0eea8a706c4c34a16891f84e7b
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
+
       final member = Member.fromJson(data);
+
       miembroActual = member;
+
       insertToken();
+
       return member;
     } else if (response.statusCode == 404) {
       return null; // Usuario no encontrado
@@ -68,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
 
   insertToken() async {
     final url = 'http://181.188.191.35:3000/inserttoken';
+
     final response = await http.post(
       Uri.parse(url),
       headers: {
@@ -104,54 +134,75 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<bool> sendEmailAndUpdateCode(int userId) async {
     final code = generateRandomCode();
+
     final exists = await checkCodeExists(userId);
+
     final smtpServer = gmail('bdcbba96@gmail.com', 'ehbh ugsw srnj jxsf');
+
     final message = Message()
       ..from = Address('bdcbba96@gmail.com', 'Admin')
       ..recipients.add(globalLoggedInMember!.correo)
       ..subject = 'Cambiar Contraseña MaYpiVaC'
       ..text = 'Código de recuperación de contraseña: $code';
+
     try {
       final sendReport = await send(message, smtpServer);
+
       print('Message sent: ' + sendReport.toString());
+
       // Actualiza la base de datos
+
       final url = exists
           ? Uri.parse(
               'http://181.188.191.35:3000/updateCode/$userId/$code') // URL para actualizar el código
+
           : Uri.parse(
               'http://181.188.191.35:3000/insertCode/$userId/$code'); // URL para insertar un nuevo registro
+
       final response = await (exists ? http.put(url) : http.post(url));
+
       if (response.statusCode == 200) {
         print('Código actualizado/insertado en la base de datos.');
+
         return true; // Devuelve true si todo fue exitoso
       } else {
         print('Error al actualizar/insertar el código en la base de datos.');
+
         return false; // Devuelve false en caso de error
       }
     } catch (e) {
       print('Message not sent.');
+
       print(e.toString());
+
       return false; // Devuelve false en caso de error
     }
   }
 
   String generateRandomCode() {
     final random = Random();
+
     final firstDigit =
         random.nextInt(9) + 1; // Genera un número aleatorio entre 1 y 9
+
     final restOfDigits = List.generate(4, (index) => random.nextInt(10)).join();
+
     final code = '$firstDigit$restOfDigits';
+
     return code;
   }
 
   Future<bool> checkCodeExists(int userId) async {
     var userId = globalLoggedInMember?.id;
+
     final response = await http.get(
       Uri.parse(
           'http://181.188.191.35:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
     );
+
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+
       return data[
           'exists']; // Suponiendo que la API devuelve un booleano llamado "exists"
     } else {
@@ -161,6 +212,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _showEmailDialog(BuildContext context) async {
     String email = '';
+
     await showDialog<Member?>(
       context: context,
       builder: (context) {
@@ -176,6 +228,7 @@ class _LoginPageState extends State<LoginPage> {
             ElevatedButton(
               onPressed: () async {
                 // Mostrar el mensaje de espera
+
                 showDialog(
                   context: context,
                   barrierDismissible: false,
@@ -188,17 +241,22 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   },
                 );
+
                 final member = await recoverPassword(email);
+
                 Future.microtask(() async {
                   final success = await sendEmailAndUpdateCode(member!.id);
 
                   // Cerrar el diálogo de espera
+
                   Navigator.of(context, rootNavigator: true).pop();
 
                   Navigator.of(context)
                       .pop(member); // Cerrar el diálogo y pasar el resultado
+
                   if (success) {
                     isLogin = 1;
+
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -207,6 +265,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     );
+
                     Mostrar_Mensaje(
                       context,
                       "Se ha enviado un código a tu correo electrónico.",
@@ -293,6 +352,7 @@ class _LoginPageState extends State<LoginPage> {
                         InkWell(
                           onTap: () async {
                             _showEmailDialog(context);
+
                             isLogin =
                                 1; // Mostrar el diálogo de recuperación de contraseña
                           },
@@ -308,6 +368,7 @@ class _LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       onPressed: () async {
                         // Validación de campos vacíos
+
                         if (correoController.text.isEmpty ||
                             contrasenaController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -315,16 +376,19 @@ class _LoginPageState extends State<LoginPage> {
                                 content: Text(
                                     'Por favor, complete todos los campos.')),
                           );
+
                           return; // Sale de la función si hay campos vacíos
                         }
 
                         // Validación de formato de correo electrónico
+
                         if (!isValidEmail(correoController.text)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content: Text(
                                     'Ingrese un correo electrónico válido.')),
                           );
+
                           return; // Sale de la función si el correo es inválido
                         }
 
@@ -334,29 +398,19 @@ class _LoginPageState extends State<LoginPage> {
                               .convert(utf8.encode(contrasenaController.text))
                               .toString(),
                         );
+
                         if (loggedInMember != null) {
-                          if (loggedInMember.role == "Carnetizador") {
-                            // Redirigir al administrador a la pantalla de administrador
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HomeCarnetizador(
-                                  userId: loggedInMember.id,
-                                ), // Pasa el ID del usuario aquí
-                              ),
-                            );
-                          } else if (loggedInMember.role == "Cliente") {
-                            // Redirigir al usuario normal a la pantalla de usuario
+                          if (loggedInMember.role == "Carnetizador" ||
+                              loggedInMember.role == "Cliente") {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ViewClient(
                                   userId: loggedInMember.id,
-                                ), // Pasa el ID del usuario aquí
+                                ),
                               ),
                             );
                           } else {
-                            // Rol desconocido, puedes mostrar un mensaje de error o manejarlo según tus necesidades.
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content: Text('Rol de usuario desconocido')),
@@ -370,102 +424,12 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         }
                       },
-                      child: Text('LOGIN'), // Agregar el texto "LOGIN" aquí
+                      child: Text('LOGIN'),
                     )
                   ],
                 ),
               ),
-<<<<<<< HEAD
             ),
-=======
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Register()),
-                      );
-                    },
-                    child: Text(
-                      'Regístrate!',
-                      style: TextStyle(decoration: TextDecoration.underline),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      _showEmailDialog(context);
-                      isLogin =
-                          1; // Mostrar el diálogo de recuperación de contraseña
-                    },
-                    child: Text(
-                      '¿Olvidaste tu contraseña?',
-                      style: TextStyle(decoration: TextDecoration.underline),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  // Validación de campos vacíos
-                  if (correoController.text.isEmpty ||
-                      contrasenaController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text('Por favor, complete todos los campos.')),
-                    );
-                    return; // Sale de la función si hay campos vacíos
-                  }
-
-                  // Validación de formato de correo electrónico
-                  if (!isValidEmail(correoController.text)) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text('Ingrese un correo electrónico válido.')),
-                    );
-                    return; // Sale de la función si el correo es inválido
-                  }
-
-                  final loggedInMember = await authenticateHttp(
-                    correoController.text,
-                    md5
-                        .convert(utf8.encode(contrasenaController.text))
-                        .toString(),
-                  );
-                 if (loggedInMember != null) {
-                    if (loggedInMember.role == "Carnetizador"||loggedInMember.role == "Cliente") {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewClient(
-                            userId: loggedInMember.id,
-                          ), 
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Rol de usuario desconocido')),
-                      );
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Usuario o Contraseña Incorrectos')),
-                    );
-                  } 
-                },
-                child: Text('LOGIN'), 
-              )
-            ],
-          ),
-        ),
-      ),
->>>>>>> b59ae1cad9cf4cd1025ed62bec4f11dee7572f23
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -496,38 +460,50 @@ class _LoginPageState extends State<LoginPage> {
                         try {
                           UserCredential userCredential =
                               await authGoogle.signInWithGoogle();
+
                           setState(() {
                             isloading = true;
                           });
+
                           User? user = userCredential.user;
+
                           Member googleUser = Member(
                               names: "",
                               id: 0,
                               correo: "",
                               latitud: 0.1,
                               longitud: 0.1);
+
                           if (user != null) {
                             googleUser.correo = userCredential.user!.email!;
+
                             googleUser.telefono =
                                 userCredential.user!.phoneNumber as int?;
+
                             googleUser.fechaCreacion = DateTime.now();
+
                             googleUser.status = 1;
+
                             googleUser.role = null;
+
                             googleUser.names =
                                 userCredential.user!.displayName!;
                           }
 
                           AdditionalUserInfo? additionalUserInfo =
                               userCredential.additionalUserInfo;
+
                           if (additionalUserInfo != null) {
                             googleUser.names = userCredential
                                 .additionalUserInfo!.profile?["given_name"];
+
                             googleUser.lastnames = userCredential
                                 .additionalUserInfo!.profile?["family_name"];
                           }
 
                           try {
                             await GoogleSignIn().disconnect();
+
                             await GoogleSignIn().signOut();
                           } catch (error) {
                             print(
@@ -535,23 +511,26 @@ class _LoginPageState extends State<LoginPage> {
                           }
 
                           var res = await registerUser2(googleUser);
+
                           if (res == 1) {
                             miembroActual =
                                 await getPersonByEMail(googleUser.correo);
                           } else {
                             Mostrar_Error1(context, "Error al iniciar sesión");
+
                             return;
                           }
 
                           setState(() {
                             isloading = false;
                           });
+
                           if (miembroActual!.role == "Carnetizador" ||
                               miembroActual!.role == "Super Admin") {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => HomeCarnetizador(
+                                builder: (context) => ViewClient(
                                   userId: miembroActual!.id,
                                 ),
                               ),
@@ -584,88 +563,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-<<<<<<< HEAD
-=======
-                onPressed: () async {
-                  try {
-                    UserCredential userCredential = await authGoogle.signInWithGoogle();
-                    setState(() {
-                      isloading=true;    
-                    }); 
-                    User? user = userCredential.user;
-                    Member googleUser= Member(names: "", id: 0, correo: "", latitud: 0.1, longitud: 0.1);
-                    if (user != null) {
-                      googleUser.correo = userCredential.user!.email!;
-                      googleUser.telefono = userCredential.user!.phoneNumber as int?;
-                      googleUser.fechaCreacion = DateTime.now();
-                      googleUser.status = 1;
-                      googleUser.role=null;
-                      googleUser.names = userCredential.user!.displayName!;
-                    }
-
-                    AdditionalUserInfo? additionalUserInfo = userCredential.additionalUserInfo;
-                    if (additionalUserInfo != null) {
-                      googleUser.names = userCredential.additionalUserInfo!.profile?["given_name"];
-                      googleUser.lastnames = userCredential.additionalUserInfo!.profile?["family_name"];
-                    }
-
-                    try {
-                      await GoogleSignIn().disconnect();
-                      await GoogleSignIn().signOut();
-                    } catch (error) {
-                      print("Error al desconectar o cerrar sesión con Google: $error");
-                    }
-
-
-
-                    var res = await registerUser2(googleUser);
-                    if(res == 1){
-                      miembroActual = await getPersonByEMail(googleUser.correo);
-                    }else{
-                      Mostrar_Error1(context, "Error al iniciar sesión");
-                      return;
-                    }
-                    
-                    setState(() {
-                      isloading=false;    
-                    }); 
-                     if (miembroActual!.role == "Carnetizador"||miembroActual!.role=="Super Admin") {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewClient(
-                            userId: miembroActual!.id,
-                          ),
-                        ),
-                      );
-                    } else if (miembroActual!.role == "Cliente") {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewClient(
-                            userId: miembroActual!.id,
-                          ), 
-                        ),
-                      );
-                    }
-
-                  } catch (error) {
-                    if (error is PlatformException && error.code == 'sign_in_canceled') {
-                      print("Inicio de sesión con Google cancelado por el usuario");
-                    } else {
-                      print("Error al iniciar sesión con Google: $error");
-                    }
-                  }
-                },
-                icon: Image(
-                  image: AssetImage('assets/google.png'),
-                  height: 24.0, 
-                ),
-                label: Text('Continuar con Google'),
-              ),
-            ],
-          ),
->>>>>>> b59ae1cad9cf4cd1025ed62bec4f11dee7572f23
         ],
       ),
     );
@@ -673,6 +570,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+
     return emailRegex.hasMatch(email);
   }
 
@@ -689,6 +587,7 @@ class _LoginPageState extends State<LoginPage> {
       return globalLoggedInMember;
     } else if (response.statusCode == 404) {
       print("Correo no encontrado en la base de datos");
+
       return null;
     } else {
       throw Exception('Error al checkear el email la contraseña');
@@ -697,8 +596,11 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<int> registerUser2(Member miembro) async {
     print(miembro.toString());
+
     final url = Uri.parse('http://181.188.191.35:3000/register');
+
     var idRol = 0;
+
     if (miembro.role == 'Carnetizador') {
       idRol = 3;
     } else if (miembro.role == 'Cliente') {
@@ -706,7 +608,9 @@ class _LoginPageState extends State<LoginPage> {
     } else if (miembro.role == null) {
       idRol = 4;
     }
+
     String? md5Password = null;
+
     if (miembro.contrasena != null)
       md5Password = md5.convert(utf8.encode(miembro.contrasena!)).toString();
 
@@ -729,7 +633,7 @@ class _LoginPageState extends State<LoginPage> {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 200||response.statusCode==400) {
+    if (response.statusCode == 200 || response.statusCode == 400) {
       return 1;
     } else {
       return 0;
@@ -740,41 +644,55 @@ class _LoginPageState extends State<LoginPage> {
     Member? facebookUser;
 
     // Create an instance of FacebookLogin
+
     final fb = FacebookLogin();
 
     // Log in
+
     final res = await fb.logIn(permissions: [
       FacebookPermission.publicProfile, // Permiso para perfil
+
       FacebookPermission.email, // Permiso para tener el correo electrónico
     ]);
 
     // Check result status
+
     switch (res.status) {
       case FacebookLoginStatus.success:
+
         // Logged in
 
         // Send access token to server for validation and auth
+
         final FacebookAccessToken? accessToken =
             res.accessToken; // Obtener el token
 
         // Get profile data
+
         final profile = await fb.getUserProfile();
 
         // Get user profile image URL
+
         final imageUrl =
             await fb.getProfileImageUrl(width: 100); // Obtener la imagen
+
         print('Access token: ${accessToken?.token}');
+
         print('Hello, ${profile?.name}! You ID: ${profile?.userId}');
+
         print('Your profile image: $imageUrl');
 
         // Get email (since we request email permission)
+
         final email = await fb.getUserEmail();
 
         // Verificar si el correo de Facebook ya está registrado
+
         final existingMember = await checkemailexist(email!);
 
         if (existingMember != null) {
           // El usuario ya está registrado, puedes redirigirlo a la pantalla de menú
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -783,21 +701,31 @@ class _LoginPageState extends State<LoginPage> {
           );
         } else {
           // El usuario de Facebook no está registrado, regístralo
+
           final newMember =
               Member(names: "", id: 0, correo: "", latitud: 0.1, longitud: 0.1);
+
           newMember.correo = email;
+
           newMember.fechaCreacion = DateTime.now();
+
           newMember.status = 1;
+
           newMember.role = null;
+
           newMember.names = profile!.firstName!;
+
           newMember.lastnames = profile.lastName!;
+
           // Agrega otros campos necesarios aquí
 
           final registrationResult = await registerUser2(newMember);
 
           if (registrationResult == 1) {
             miembroActual = (await checkemailexist(newMember.correo))!;
+
             // Registro exitoso, redirigir al usuario a la pantalla de menú
+
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -808,13 +736,21 @@ class _LoginPageState extends State<LoginPage> {
             // Error en el registro, manejar de acuerdo a tus necesidades
           }
         }
+
         break;
+
       case FacebookLoginStatus.cancel:
+
         // Usuario canceló el inicio de sesión
+
         break;
+
       case FacebookLoginStatus.error:
+
         // Error en el inicio de sesión
+
         print('Error while log in: ${res.error}');
+
         break;
     }
   }
