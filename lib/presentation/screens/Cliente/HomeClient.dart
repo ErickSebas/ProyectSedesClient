@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:fluttapp/Implementation/ChatImp.dart';
@@ -8,13 +9,14 @@ import 'package:fluttapp/presentation/littlescreens/Popout.dart';
 import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
+import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Member?
     loggedInPerson; // Variable para almacenar los datos de la persona autenticada
-
+MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
 // ignore: must_be_immutable
 
 class ViewClient extends StatelessWidget {
@@ -41,12 +43,15 @@ class ViewClient extends StatelessWidget {
           print('Datos obtenidossss: $loggedInPerson'); // Agrega esta línea
           print('Nombres: ${loggedInPerson?.names}');
           print('Rol: ${loggedInPerson?.role}');
+          print('Latitud: ${loggedInPerson?.latitud}');
+          
           return CampaignPage();
         }
       },
     );
   }
 }
+
 
 Future<Member?> getPersonById(int userId) async {
   final response = await http.get(
@@ -70,8 +75,30 @@ Future<void> Mostrar_Informacion(BuildContext context) async {
 
 // ignore: must_be_immutable
 class CampaignPage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+      if (loggedInPerson?.latitud == 0.1) {
+      Future.delayed(Duration(seconds: 0), () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Actualizar Datos"),
+              content: Text("Debes actualizar tus datos."),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Aceptar"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
