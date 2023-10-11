@@ -5,7 +5,6 @@ import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/ChangePassword.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
-import 'package:fluttapp/presentation/screens/Cliente/HomeClientFacebook.dart';
 import 'package:fluttapp/presentation/screens/Register.dart';
 import 'package:fluttapp/presentation/services/auth_google.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
