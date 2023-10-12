@@ -12,7 +12,7 @@ import 'package:crypto/crypto.dart'; // Importa la librería crypto
 
 void main() => runApp(MyApp());
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
-late Member carnetizadorglobal;
+Member? carnetizadorglobal;
 Mostrar_Finalizados_Update mostrarMensaje = Mostrar_Finalizados_Update();
 
 class MyApp extends StatelessWidget {
@@ -84,19 +84,19 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
       print(widget.userData?.role);
     }
     print("probando si envia los datos ahora global");
-    print(carnetizadorglobal.id);
-    print(carnetizadorglobal.correo);
+    print(carnetizadorglobal?.id);
+    print(carnetizadorglobal?.correo);
 
 
+
+  }
+
+  void Cargar_Datos_Persona() async {
     print("probando si llegan los datos del cliente facebook");
     print(widget.userData?.id);
     idPerson = widget.userData!.id;
     print("probando si llegan los datos del cliente facebook pero con idPerson");
     print(idPerson);
-  }
-
-  void Cargar_Datos_Persona() async {
-    idPerson;
     nombre = widget.userData!.names;
     apellido = widget.userData!.lastnames!;
     datebirthday = widget.userData?.fechaNacimiento;
@@ -223,7 +223,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
           builder: (context) => IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              if (carnetizadorglobal.role == "Carnetizador") {
+              if (carnetizadorglobal?.role == "Carnetizador") {
                 print("volver carnetizador");
                 Navigator.pushReplacement(
                   context,
@@ -234,7 +234,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   ),
                 );
               }
-              else if(carnetizadorglobal.role != "Carnetizador"){
+              else if(carnetizadorglobal?.role != "Carnetizador"){
               print("volver cliente");
               print(widget.userData!.id);
               Navigator.pushReplacement(
@@ -389,7 +389,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           datebirthday != null) {
                         if (widget.isUpdate) {
                           await updateUser();
-                          if (carnetizadorglobal.role == 'Carnetizador') {
+                          if (carnetizadorglobal?.role == 'Carnetizador') {
                             mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                                 context,
                                 "Actializacion con exito! de Cliente con Carnetizador",
