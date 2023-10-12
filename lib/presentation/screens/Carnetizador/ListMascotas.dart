@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/UpdatePet.dart';
@@ -9,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
 
-int? idUser;
+int? idUsuario;
 
 Future<List<Mascota>> fetchMembers(int idPersona) async {
   final response = await http
@@ -48,11 +49,28 @@ Future<void> disablePet(int idMascota) async {
   }
 }
 
+Future<bool> deleteImages(int userId, int petId) async {
+  try {
+    final firebase_storage.Reference storageRef =
+        firebase_storage.FirebaseStorage.instance.ref();
+
+    String carpeta = 'cliente/$userId/$petId';
+
+    // Elimina la carpeta con el nombre del ID de la mascota
+    await storageRef.child(carpeta).delete();
+
+    return true;
+  } catch (e) {
+    print('Error al eliminar imágenes: $e');
+    return false;
+  }
+}
+
 class ListMascotas extends StatelessWidget {
   late final int userId;
   ListMascotas({required this.userId}) {
-    idUser = this.userId;
-    print('ID de usuario en Buscar Clientes: $idUser');
+    idUsuario = this.userId;
+    print('ID de usuario en Buscar Clientes: $idUsuario');
   }
   @override
   Widget build(BuildContext context) {
@@ -194,6 +212,8 @@ class _CampaignPageState extends State<CampaignPage> {
                                       onPressed: () {
                                         // Aquí se ejecuta la función deleteUser si el usuario confirma
                                         disablePet(mascota.idMascotas);
+                                        deleteImages(mascota.idPersona,
+                                            mascota.idMascotas);
                                         eliminarMascota(index);
                                         print("id" +
                                             mascota.idMascotas.toString());
