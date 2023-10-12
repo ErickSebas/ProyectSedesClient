@@ -132,6 +132,24 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<Member?> comprobarPassword(String email) async {
+    final url = Uri.parse('http://10.253.2.1:3000/checkemailpassword/$email');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      globalLoggedInMember = Member.fromJson3(data);
+
+      return globalLoggedInMember;
+    } else if (response.statusCode == 404) {
+      return null; // Correo no encontrado en la base de datos
+    } else {
+      throw Exception('Error al recuperar la contraseña');
+    }
+  }
+
   Future<bool> sendEmailAndUpdateCode(int userId) async {
     final code = generateRandomCode();
 
@@ -229,56 +247,77 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 // Mostrar el mensaje de espera
 
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('Espere unos 3 segundos por favor...'),
-                      content: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  },
-                );
+                final member = await comprobarPassword(email);
 
-                final member = await recoverPassword(email);
-
-                Future.microtask(() async {
-                  final success = await sendEmailAndUpdateCode(member!.id);
-
-                  // Cerrar el diálogo de espera
-
-                  Navigator.of(context, rootNavigator: true).pop();
-
-                  Navigator.of(context)
-                      .pop(member); // Cerrar el diálogo y pasar el resultado
-
-                  if (success) {
-                    isLogin = 1;
-
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChangePasswordPage(
-                          member: globalLoggedInMember,
-                        ),
-                      ),
-                    );
-
-                    Mostrar_Mensaje(
-                      context,
-                      "Se ha enviado un código a tu correo electrónico.",
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                if (member!.contrasena == null) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Confirmacioooooooooon"),
                         content: Text(
-                            'Ocurrió un error al enviar el código de recuperación.'),
-                      ),
-                    );
-                  }
-                });
+                            "No puede recuperar la contrasena si es usuario de Facebook o Google"),
+                        actions: [
+                          TextButton(
+                            child: Text("Cancelar"),
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pop(); // Cierra el cuadro de diálogo
+                            },
+                          )
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Espere unos 3 segundos por favor...'),
+                        content: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
+                  );
+
+                  Future.microtask(() async {
+                    final success = await sendEmailAndUpdateCode(member!.id);
+                    // Cerrar el diálogo de espera
+
+                    Navigator.of(context, rootNavigator: true).pop();
+
+                    Navigator.of(context)
+                        .pop(member); // Cerrar el diálogo y pasar el resultado
+
+                    if (success) {
+                      isLogin = 1;
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChangePasswordPage(
+                            member: globalLoggedInMember,
+                          ),
+                        ),
+                      );
+
+                      Mostrar_Mensaje(
+                        context,
+                        "Se ha enviado un código a tu correo electrónico.",
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Ocurrió un error al enviar el código de recuperación.'),
+                        ),
+                      );
+                    }
+                  });
+                }
               },
               child: Text('Recuperar Contraseña'),
             ),
