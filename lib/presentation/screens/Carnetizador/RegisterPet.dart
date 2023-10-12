@@ -135,7 +135,7 @@ class _RegisterPetState extends State<RegisterPet> {
 
   Future<int> fetchLastPetId() async {
     final response =
-        await http.get(Uri.parse('http://10.10.0.42:3000/lastidmascota'));
+        await http.get(Uri.parse('http://10.0.2.2:3000/lastidmascota'));
 
     final dynamic data = json.decode(response.body);
     return data['ultimo_id'] as int;
