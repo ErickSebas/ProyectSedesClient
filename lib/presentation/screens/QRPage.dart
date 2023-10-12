@@ -15,6 +15,8 @@ class QRScannerPage extends StatefulWidget {
 class _QRScannerPageState extends State<QRScannerPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
+  bool isProcessing = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -78,17 +80,22 @@ class _QRScannerPageState extends State<QRScannerPage> {
   }
 
   void _onQRViewCreated(QRViewController controller) {
-    //controller.resumeCamera();
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) async {
+      if (isProcessing) {
+        return; 
+      }
+      isProcessing = true; 
       await controller.pauseCamera();
       print('QR Data: ${scanData.code}');
-      getPetById(scanData.code.toString()).then((value) => {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewMascotasInfo(value))),
-        controller.resumeCamera()
+      getPetById(scanData.code.toString()).then((value) async {
+        await Navigator.push(context, MaterialPageRoute(builder: (context) => ViewMascotasInfo(value)));
+        controller.resumeCamera();
+        isProcessing = false; 
       });
     });
   }
+
  
 
   @override

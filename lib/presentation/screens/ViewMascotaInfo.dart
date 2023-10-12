@@ -1,12 +1,20 @@
 import 'dart:convert';
-
+import 'dart:ui';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/Models/Propietario.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'dart:typed_data';
+import 'package:qr/qr.dart';
+import 'package:image/image.dart' as img;
+import 'package:screenshot/screenshot.dart';
+
 
 class ViewMascotasInfo extends StatelessWidget {
   final Mascota mascota;
@@ -79,6 +87,10 @@ class InfoMascotas extends StatelessWidget {
     return imageUrls;
   }
 
+  final GlobalKey _qrKey = GlobalKey();
+
+
+
   List<String> imagenes = [
     'cliente/16/1.jpg',
     'cliente/16/2.jpg',
@@ -121,6 +133,7 @@ SizedBox(
                   ),
                 ),
 */
+final ScreenshotController screenshotController = ScreenshotController();
 
   @override
   Widget build(BuildContext context) {
@@ -484,10 +497,29 @@ SizedBox(
                       padding: EdgeInsets.all(10),
                       child: Column(
                         children: [
-                          QrImageView(
-                            data: mascota.idMascotas.toString(),
-                            version: QrVersions.auto,
-                            size: 200.0,
+                          Screenshot(
+                            key: _qrKey,
+                            controller: screenshotController,
+                            child: QrImageView(
+                              backgroundColor: Colors.white,
+                              data: mascota.idMascotas.toString(),
+                              version: QrVersions.auto,
+                              size: 200.0,
+                            ),
+                          ),SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () async {
+                              await takeScreenshot(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary: const Color.fromARGB(255, 28, 100, 209), 
+                              onPrimary: Colors.white, 
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Text('Descargar QR'),
                           ),
                         ],
                       ),
@@ -500,5 +532,23 @@ SizedBox(
         ),
       ),
     );
+  }
+  
+Future<void> takeScreenshot(BuildContext context) async {    
+
+    Uint8List? image = await screenshotController.capture();
+
+    if (image != null) {
+
+      String fileName = 'screenshot_${DateTime.now().millisecondsSinceEpoch}';
+      final result = await ImageGallerySaver.saveImage(image, name: fileName);
+      if (result['isSuccess']) {
+        Mostrar_Mensaje(context,'Guardado' );
+      } else {
+        Mostrar_Mensaje(context,'Error al Guardar' );
+      }
+    } else {
+      Mostrar_Mensaje(context,'Error al Guardar' );
+    }
   }
 }
