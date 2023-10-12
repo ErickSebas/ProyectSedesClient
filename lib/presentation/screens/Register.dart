@@ -68,7 +68,8 @@ class _RegisterUpdateState extends State<Register> {
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
-      idRolSeleccionada = 4;
+      idRolSeleccionada = 4;//test
+      
     }
 
     // Calcula el hash MD5 de la contraseña
