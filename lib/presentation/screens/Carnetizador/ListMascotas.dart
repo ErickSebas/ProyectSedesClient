@@ -13,7 +13,7 @@ int? idUser;
 
 Future<List<Mascota>> fetchMembers(int idPersona) async {
   final response = await http
-      .get(Uri.parse('http://10.10.0.42:3000/propietariomascotas/$idPersona'));
+      .get(Uri.parse('http://10.10.0.106:3000/propietariomascotas/$idPersona'));
 
   final List<dynamic> data = json.decode(response.body);
   final members =
@@ -174,8 +174,41 @@ class _CampaignPageState extends State<CampaignPage> {
                       children: [
                         SlidableAction(
                           onPressed: ((context) {
-                            disablePet(mascota.idMascotas);
-                            print("id" + mascota.idMascotas.toString());
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Confirmación"),
+                                  content: Text(
+                                      "¿Estás seguro de que quieres eliminar este registro?"),
+                                  actions: [
+                                    TextButton(
+                                      child: Text("Cancelar"),
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Cierra el cuadro de diálogo
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text("Eliminar"),
+                                      onPressed: () {
+                                        // Aquí se ejecuta la función deleteUser si el usuario confirma
+                                        disablePet(mascota.idMascotas);
+                                        eliminarMascota(index);
+                                        print("id" +
+                                            mascota.idMascotas.toString());
+                                        Navigator.of(context)
+                                            .pop(); // Cierra el cuadro de diálogo
+                                        mostrarFinalizar.Mostrar_Finalizados(
+                                            context,
+                                            "Registro Eliminado con éxito");
+                                        //refreshMembersList();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           }),
                           borderRadius: BorderRadius.circular(20),
                           backgroundColor: Colors.red,

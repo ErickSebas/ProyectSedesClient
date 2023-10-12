@@ -429,7 +429,7 @@ Future<bool> uploadImages(List<File?> images) async {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () async {
-                  if (_selectedImages.length >= 5) {
+                  if (_selectedImages.length >= 3) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('Se ha alcanzado el límite de 5 imágenes.'),
                     ));
@@ -481,9 +481,9 @@ Future<bool> uploadImages(List<File?> images) async {
                 onPressed: () async {
                   bool camposValidos = validarCampos();
 
-                  if (_selectedImages.length < 3) {
+                  if (_selectedImages.length < 1) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Debe cargar al menos 3 imágenes.'),
+                      content: Text('Debe cargar al menos 1 imágene.'),
                     ));
                     return; // Sale de la función si no hay suficientes imágenes.
                   }
@@ -559,6 +559,4 @@ Future<bool> uploadImages(List<File?> images) async {
         razaValido &&
         colorValido;
   }
-  
-  
 }
