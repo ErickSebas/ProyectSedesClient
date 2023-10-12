@@ -198,7 +198,7 @@ class CampaignPage extends StatelessWidget {
               ListTile(
                 title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
                 leading: Icon(Icons.credit_card),
-              ),
+              ),miembroActual.role=="Cliente"?
               ListTile(
                 leading: Icon(Icons.message),
                 title: Text('Mensaje'),
@@ -249,7 +249,7 @@ class CampaignPage extends StatelessWidget {
                         });
                   }
                 },
-              ),
+              ):Container(),
               Align(
                 alignment: Alignment.bottomRight,
                 child: ListTile(

@@ -186,12 +186,17 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     print(widget.userData!.id);
     print(miembroActual!.id);
     if (miembroActual!.id == idPerson) {
+      if (selectedRole == 'Carnetizador') {
+        idRolSeleccionada = 3;
+      } else if (selectedRole == 'Cliente') {
+        idRolSeleccionada = 4;
+      }
       miembroActual!.names = nombre;
       miembroActual!.lastnames = apellido;
       miembroActual!.fechaNacimiento = datebirthday;
       miembroActual!.carnet = carnet;
       miembroActual!.telefono = int.parse(telefono);
-      miembroActual!.role = "4";
+      miembroActual!.role = selectedRole;
       miembroActual!.latitud = double.parse(latitude);
       miembroActual!.longitud = double.parse(longitude);
       miembroActual!.correo = email;
