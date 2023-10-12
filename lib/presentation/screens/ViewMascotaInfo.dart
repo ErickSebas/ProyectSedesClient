@@ -149,7 +149,8 @@ SizedBox(
                 ),
                 FutureBuilder<List<String>>(
                   //future: getImagesUrls('cliente', mascota.idPersona, mascota.idMascotas),
-                  future: getImagesUrls('cliente', 20, mascota.idMascotas),
+                  future: getImagesUrls(
+                      'cliente', mascota.idPersona, mascota.idMascotas),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<String>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
