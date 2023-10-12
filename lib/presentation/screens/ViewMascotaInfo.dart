@@ -6,6 +6,7 @@ import 'package:fluttapp/Models/Propietario.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class ViewMascotasInfo extends StatelessWidget {
   final Mascota mascota;
@@ -464,6 +465,29 @@ SizedBox(
                                 ],
                               ),
                             ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(10),
+                  child: Card(
+                    margin: EdgeInsets.all(10),
+                    color: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        children: [
+                          QrImageView(
+                            data: mascota.idMascotas.toString(),
+                            version: QrVersions.auto,
+                            size: 200.0,
                           ),
                         ],
                       ),

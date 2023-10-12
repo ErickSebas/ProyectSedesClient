@@ -78,14 +78,18 @@ class _QRScannerPageState extends State<QRScannerPage> {
   }
 
   void _onQRViewCreated(QRViewController controller) {
+    //controller.resumeCamera();
     this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
+    controller.scannedDataStream.listen((scanData) async {
+      await controller.pauseCamera();
       print('QR Data: ${scanData.code}');
-      getPetById(scanData.code as int).then((value) => {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewMascotasInfo(value)))
+      getPetById(scanData.code.toString()).then((value) => {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewMascotasInfo(value))),
+        controller.resumeCamera()
       });
     });
   }
+ 
 
   @override
   void dispose() {
@@ -93,13 +97,13 @@ class _QRScannerPageState extends State<QRScannerPage> {
     super.dispose();
   }
   
-  Future<Mascota> getPetById(int id) async {
+  Future<Mascota> getPetById(String id) async {
     final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/getpetbyid/'+id.toString())); 
+        Uri.parse('http://181.188.191.35:3000/getpetbyid/'+id)); 
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final pet = Mascota.fromJson(data);
+      Mascota pet = Mascota.fromJson(data[0]);
       return pet;
     } else {
       throw Exception('Failed to load member');

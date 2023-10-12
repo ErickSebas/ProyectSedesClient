@@ -14,7 +14,7 @@ int? idUsuario;
 
 Future<List<Mascota>> fetchMembers(int idPersona) async {
   final response = await http
-      .get(Uri.parse('http://10.0.2.2:3000/propietariomascotas/$idPersona'));
+      .get(Uri.parse('http://181.188.191.35:3000/propietariomascotas/$idPersona'));
 
   final List<dynamic> data = json.decode(response.body);
   final members =

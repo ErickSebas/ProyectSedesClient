@@ -79,7 +79,7 @@ class _RegisterPetState extends State<RegisterPet> {
   }
 
   Future<void> registerQr(int id) async {
-    final url = Uri.parse('http://10.0.2.2:3000/registerqr');
+    final url = Uri.parse('http://181.188.191.35:3000/registerqr');
 
     final response = await http.post(
       url,
@@ -135,7 +135,7 @@ class _RegisterPetState extends State<RegisterPet> {
 
   Future<int> fetchLastPetId() async {
     final response =
-        await http.get(Uri.parse('http://10.0.2.2:3000/lastidmascota'));
+        await http.get(Uri.parse('http://181.188.191.35:3000/lastidmascota'));
 
     final dynamic data = json.decode(response.body);
     return data['ultimo_id'] as int;
@@ -447,7 +447,7 @@ Future<bool> uploadImages(List<File?> images) async {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                  primary: Color.fromARGB(255, 94, 99, 106), // Cambiar el color del botón aquí
                 ),
                 child: Text('Cargar Fotos de la Mascota'),
               ),

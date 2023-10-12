@@ -34,7 +34,7 @@ class Mascota {
       idPersona: json['IdPersona'],
       sexo: json['Sexo'],
       idQr: json['IdQr'],
-      carnetPropietario: json['CarnetPropietario'], // Nuevo campo
+      carnetPropietario: json['CarnetPropietario']??'', // Nuevo campo
     );
   }
 }
