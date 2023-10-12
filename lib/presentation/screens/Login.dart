@@ -133,7 +133,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<Member?> comprobarPassword(String email) async {
-    final url = Uri.parse('http://10.253.2.1:3000/checkemailpassword/$email');
+    final url =
+        Uri.parse('http://181.188.191.35:3000/checkemailpassword/$email');
 
     final response = await http.get(url);
 
