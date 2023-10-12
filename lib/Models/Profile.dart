@@ -81,6 +81,32 @@ factory Member.fromJson2(Map<String, dynamic> json) {
 
   }
 
+
+factory Member.fromJson3(Map<String, dynamic> json) {
+
+    final result = json['result'];
+
+    return Member(
+
+      names: result['Nombres'],
+
+      id: result['idPerson'],
+
+      correo: result['Correo'],
+
+      latitud: result['Latitud'],
+
+      longitud: result['Longitud'],
+      contrasena: result['Password'] ,
+      fechaCreacion: result['FechaCreacion'] != null
+
+          ? DateTime.parse(result['FechaCreacion'])
+
+          : null,
+
+    );
+
+  }
   @override
   String toString() {
     return 'Member(names: $names, lastnames: $lastnames, fechaNacimiento: $fechaNacimiento, role: $role, contrasena: $contrasena, correo: $correo, telefono: $telefono, carnet: $carnet, longitud: $longitud, latitud: $latitud, fechaCreacion: $fechaCreacion, status: $status)';
