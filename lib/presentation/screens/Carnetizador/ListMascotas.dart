@@ -110,7 +110,7 @@ class ListMascotas extends StatelessWidget {
                   ),
                   centerTitle: true,
                 ),
-                body: CampaignPage(mascotas: mascotas),
+                body: mascotas.isEmpty? Center(child: Text("No tienes Mascotas"),): CampaignPage(mascotas: mascotas),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
                     print("Usuario que se esta yendo a la otra pagina es");
