@@ -8,6 +8,7 @@
 // Esta clase está restringida para su uso, sin la previa autorización de Sedes-Univalle.
 // </copyright>
 
+import 'package:fluttapp/Models/CampaignModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -166,8 +167,9 @@ class _SplashScreenState extends State<SplashScreen> {
   /// Te lleva a la pantalla de inicio
   Future<void> Navegar_Pantalla_Main() async {
     lstlinks = await Obtener_Links();
-    locations = await Obtener_Archivo();
+    
     lstVersions = await Obtener_Version();
+    campaigns = await fetchCampaigns();
     print("lstVersions: $lstVersions");
     if (int.tryParse(lstVersions[0]["version"]) != versionactual) {
       print("La versión NO es igual a 1 inicializando verificarversion");

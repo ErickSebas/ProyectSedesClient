@@ -6,6 +6,7 @@ import 'package:fluttapp/Implementation/Conversation.dart';
 import 'package:fluttapp/Models/Conversation.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/Campaign.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
@@ -385,7 +386,7 @@ class CampaignPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => VerCamapanas(),
+                                  builder: (context) => ListCampaignPage(),//VerCamapanas(),
                                 ),
                               );
                             },
