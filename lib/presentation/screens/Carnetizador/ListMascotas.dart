@@ -13,7 +13,6 @@ import 'package:http/http.dart' as http;
 
 int? idUsuario;
 
-
 Future<List<Mascota>> fetchMembers(int idPersona) async {
   final response = await http.get(
       Uri.parse('http://181.188.191.35:3000/propietariomascotas/$idPersona'));
@@ -51,19 +50,25 @@ Future<void> disablePet(int idMascota) async {
   }
 }
 
-Future<bool> deleteImages(int userId, int petId) async {
+Future<bool> deletePetFolder(int userId, int petId) async {
   try {
     final firebase_storage.Reference storageRef =
         firebase_storage.FirebaseStorage.instance.ref();
 
     String carpeta = 'cliente/$userId/$petId';
 
-    // Elimina la carpeta con el nombre del ID de la mascota
-    await storageRef.child(carpeta).delete();
+    // Listamos los elementos en la carpeta de la mascota
+    firebase_storage.ListResult listResult =
+        await storageRef.child(carpeta).listAll();
+
+    // Eliminamos cada elemento individualmente
+    for (var item in listResult.items) {
+      await item.delete();
+    }
 
     return true;
   } catch (e) {
-    print('Error al eliminar imágenes: $e');
+    print('Error al eliminar carpeta de mascota: $e');
     return false;
   }
 }
@@ -214,7 +219,7 @@ class _CampaignPageState extends State<CampaignPage> {
                                       onPressed: () {
                                         // Aquí se ejecuta la función deleteUser si el usuario confirma
                                         disablePet(mascota.idMascotas);
-                                        deleteImages(mascota.idPersona,
+                                        deletePetFolder(mascota.idPersona,
                                             mascota.idMascotas);
                                         eliminarMascota(index);
                                         print("id" +
