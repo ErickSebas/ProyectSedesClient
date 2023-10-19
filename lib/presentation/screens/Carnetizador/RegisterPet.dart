@@ -36,7 +36,7 @@ class _RegisterPetState extends State<RegisterPet> {
   TextEditingController colorController = TextEditingController();
   String? mensajeError;
   List<File?> _selectedImages = [];
-  MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
+  Mostrar_Finalizados_Update mostrarFinalizar = Mostrar_Finalizados_Update();
   Future<void> Confirmacion_Eliminar_Imagen(int index) async {
     return showDialog<void>(
       context: context,
@@ -503,8 +503,10 @@ Future<bool> uploadImages(List<File?> images) async {
                     // Aquí se ejecuta el método uploadImages
                     await uploadImages(_selectedImages);
 
-                    await mostrarFinalizar.Mostrar_Finalizados(
-                        context, "Registro Con Éxito!");
+                    await mostrarFinalizar.Mostrar_Finalizados_Clientes(
+                                   context,
+                                "Registro de Mascota con exito",
+                                miembroActual!.id);
                     print("3.-" +
                         nombreController.text +
                         razaController.text +
