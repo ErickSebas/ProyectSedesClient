@@ -6,10 +6,12 @@ import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img;
 
 class UpdatePet extends StatefulWidget {
   final Mascota mascota; // Agregar este campo para recibir el objeto Mascota
@@ -71,6 +73,74 @@ class _UpdatePetState extends State<UpdatePet> {
         );
       },
     );
+  }
+
+  Future<List<int>> compressImage(File imageFile) async {
+    // Leer la imagen
+    List<int> imageBytes = await imageFile.readAsBytes();
+
+    // Decodificar la imagen
+    img.Image image = img.decodeImage(Uint8List.fromList(imageBytes))!;
+
+    // Comprimir la imagen con una calidad específica (85 en este caso)
+    List<int> compressedBytes = img.encodeJpg(image, quality: 85);
+
+    return compressedBytes;
+  }
+
+  Future<bool> uploadImages(List<File?> images, int userId, int petId) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+      print("Ultimo ID ======== $userId" + "---" + petId.toString());
+      String carpeta = 'cliente/$userId/$petId';
+
+      int contador = 1;
+
+      for (var image in images) {
+        if (image != null) {
+          String imageName = '$contador';
+
+          firebase_storage.Reference imageRef =
+              storageRef.child('$carpeta/$imageName.jpg');
+
+          // Comprimir la imagen antes de subirla
+          List<int> compressedBytes = await compressImage(image);
+
+          await imageRef.putData(Uint8List.fromList(compressedBytes));
+
+          contador++;
+        }
+      }
+
+      return true;
+    } catch (e) {
+      print('Error al subir imágenes: $e');
+      return false;
+    }
+  }
+
+  Future<bool> deletePetFolder(int userId, int petId) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+
+      String carpeta = 'cliente/$userId/$petId';
+
+      // Listamos los elementos en la carpeta de la mascota
+      firebase_storage.ListResult listResult =
+          await storageRef.child(carpeta).listAll();
+
+      // Eliminamos cada elemento individualmente
+      for (var item in listResult.items) {
+        await item.delete();
+      }
+
+      return true;
+    } catch (e) {
+      print('Error al eliminar carpeta de mascota: $e');
+      return false;
+    }
   }
 
   Future<void> updatePet() async {
@@ -280,12 +350,14 @@ class _UpdatePetState extends State<UpdatePet> {
                         edadController.text +
                         colorController.text +
                         descripcionController.text);
+                    deletePetFolder(
+                        widget.mascota.idPersona, widget.mascota.idMascotas);
+                    await uploadImages(_selectedImages,
+                        widget.mascota.idPersona, widget.mascota.idMascotas);
                     await updatePet();
 
-                    await mostrarFinalizar.Mostrar_Finalizados_Clientes(
-                        context,
-                        "Mascota actualizada con exito",
-                        miembroActual.id);
+                    await mostrarFinalizar.Mostrar_Finalizados_Clientes(context,
+                        "Mascota actualizada con exito", miembroActual.id);
                     print("3.-" +
                         nombreController.text +
                         razaController.text +
