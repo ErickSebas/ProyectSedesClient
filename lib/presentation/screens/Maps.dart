@@ -155,15 +155,9 @@ class _VerCamapanasState extends State<VerCamapanas> {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
         centerTitle: true,
-        leading: GestureDetector(
-          onTap: () {
-            // Agrega la redirección que desees al presionar la flecha hacia atrás
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => ViewClient(userId: miembroActual.id,),
-            ));
-          },
-          child: Icon(Icons
-              .arrow_back), // Cambia esto por tu ícono personalizado si lo deseas
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.blueAccent),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: Row(
           children: [

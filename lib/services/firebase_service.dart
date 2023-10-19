@@ -32,9 +32,9 @@ int currentChatId = 0;
 late IO.Socket socket;
 String? token;
 // Obtener el archivo de Firebase Storage
-Future<List> Obtener_Archivo() async {
+Future<List> Obtener_Archivo(int id) async {
   List lstUbicaciones = [];
-  Reference ref = storage.ref().child('ubications.json');
+  Reference ref = storage.ref().child('campana$id.json');
   var datosUrl = await ref.getDownloadURL();
   var response = await http.get(Uri.parse(datosUrl));
   if (response.statusCode == 200) {
