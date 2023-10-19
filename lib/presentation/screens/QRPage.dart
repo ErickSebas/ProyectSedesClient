@@ -6,6 +6,8 @@ import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:scan/scan.dart';
 
 class QRScannerPage extends StatefulWidget {
   @override
@@ -74,9 +76,44 @@ class _QRScannerPageState extends State<QRScannerPage> {
               ),
             ),
           ),
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton(
+                onPressed: _pickImageAndScanQR,
+                child: Text("Seleccionar imagen QR"),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _pickImageAndScanQR() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      String? result = await Scan.parse(pickedFile.path);
+      if (result !=null) {
+        getPetById(result).then((value) async {
+          if(value!=null){
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => ViewMascotasInfo(value)));
+          }else{
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('No se encontró la mascota.')),
+            );
+          }
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No se pudo escanear el código QR de la imagen.')),
+        );
+      }
+    }
   }
 
   void _onQRViewCreated(QRViewController controller) {
@@ -89,7 +126,13 @@ class _QRScannerPageState extends State<QRScannerPage> {
       await controller.pauseCamera();
       print('QR Data: ${scanData.code}');
       getPetById(scanData.code.toString()).then((value) async {
-        await Navigator.push(context, MaterialPageRoute(builder: (context) => ViewMascotasInfo(value)));
+        if(value!=null){
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => ViewMascotasInfo(value)));
+        }else{
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('No se encontró la mascota.')),
+          );
+        }
         controller.resumeCamera();
         isProcessing = false; 
       });
@@ -104,7 +147,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
     super.dispose();
   }
   
-  Future<Mascota> getPetById(String id) async {
+  Future<Mascota?> getPetById(String id) async {
     final response = await http.get(
         Uri.parse('http://181.188.191.35:3000/getpetbyid/'+id)); 
 
@@ -113,7 +156,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
       Mascota pet = Mascota.fromJson(data[0]);
       return pet;
     } else {
-      throw Exception('Failed to load member');
+      return null;
     }
   }
 }
