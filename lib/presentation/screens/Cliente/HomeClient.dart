@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:fluttapp/Implementation/ChatImp.dart';
 import 'package:fluttapp/Implementation/Conversation.dart';
+import 'package:fluttapp/Implementation/TokensImpl.dart';
 import 'package:fluttapp/Models/Conversation.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
@@ -18,6 +19,7 @@ import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 Member?
     loggedInPerson; // Variable para almacenar los datos de la persona autenticada
@@ -265,8 +267,11 @@ class CampaignPage extends StatelessWidget {
                 child: ListTile(
                   leading: Icon(Icons.logout),
                   title: Text('Cerrar Sesión'),
-                  onTap: () {
+                  onTap: () async {
                     miembroActual = loggedInPerson!;
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setInt('miembroLocal', 0);
+                    tokenClean();
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => LoginPage()),
