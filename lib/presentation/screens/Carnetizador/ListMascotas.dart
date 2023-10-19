@@ -23,6 +23,17 @@ Future<List<Mascota>> fetchMembers(int idPersona) async {
   return members;
 }
 
+@override
+void initState() {
+  initState();
+  getPersonData();
+  print("Estan llegando los datos del chico");
+  print(loggedInPerson?.names);
+}
+
+Future<void> getPersonData() async {
+  loggedInPerson = await getPersonById(idUsuario!);
+}
 /*
 Future<List<Mascota>> fetchMembers() async {
   final response =
@@ -81,6 +92,9 @@ class ListMascotas extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
+    getPersonData();
+    print("Estan llegando los datos del chico");
+    print(loggedInPerson?.names);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<List<Mascota>>(
@@ -113,16 +127,26 @@ class ListMascotas extends StatelessWidget {
                 body: CampaignPage(mascotas: mascotas),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
-                    print("Usuario que se esta yendo a la otra pagina es");
-                    print(loggedInPerson?.id);
-                    print(loggedInPerson?.names);
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterPet(
-                            userId: idUsuario!,
-                          ), // Pasa el ID del usuario aquí
-                        ));
+                    if (loggedInPerson?.latitud == 0.1) {
+                      print(
+                          "NO PUEDES USAR ESTO HASTA QUE ACTUALICES TUS DATOS");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content:
+                                Text('Actualiza tus datos para poder usar esta opcion')),
+                      );
+                    } else {
+                      print("Usuario que se esta yendo a la otra pagina es");
+                      print(loggedInPerson?.id);
+                      print(loggedInPerson?.names);
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegisterPet(
+                              userId: idUsuario!,
+                            ), // Pasa el ID del usuario aquí
+                          ));
+                    }
                   },
                   child: Icon(Icons.add_box),
                   backgroundColor: Color(0xFF5C8ECB),

@@ -37,6 +37,17 @@ class _RegisterPetState extends State<RegisterPet> {
   String? mensajeError;
   List<File?> _selectedImages = [];
   Mostrar_Finalizados_Update mostrarFinalizar = Mostrar_Finalizados_Update();
+    @override
+  void initState() {
+    super.initState();
+    getPersonData();
+    print("Estan llegando los datos del chico");
+    print(loggedInPerson?.names);
+  }
+
+  Future<void> getPersonData() async {
+    loggedInPerson = await getPersonById(idUsuario!);
+  }
   Future<void> Confirmacion_Eliminar_Imagen(int index) async {
     return showDialog<void>(
       context: context,
@@ -527,7 +538,7 @@ Future<bool> uploadImages(List<File?> images) async {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          ViewClient(userId: miembroActual.id),
+                          ViewClient(userId: loggedInPerson!.id),
                     ),
                   );
                 },
