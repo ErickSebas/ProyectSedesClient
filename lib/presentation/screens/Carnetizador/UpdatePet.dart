@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
+import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,7 +29,7 @@ class _UpdatePetState extends State<UpdatePet> {
   TextEditingController colorController = TextEditingController();
   String? mensajeError;
   List<File?> _selectedImages = [];
-  MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
+  Mostrar_Finalizados_Update mostrarFinalizar = Mostrar_Finalizados_Update();
 
   @override
   void initState() {
@@ -72,7 +74,7 @@ class _UpdatePetState extends State<UpdatePet> {
   }
 
   Future<void> updatePet() async {
-    final url = Uri.parse('http://10.10.0.146:3000/updatemascota/' +
+    final url = Uri.parse('http://181.188.191.35:3000/updatemascota/' +
         widget.mascota.idMascotas.toString());
 
     final response = await http.put(
@@ -110,7 +112,7 @@ class _UpdatePetState extends State<UpdatePet> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
-        title: Text('Registro Mascota',
+        title: Text('Actualizar Mascota',
             style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65))),
         centerTitle: true,
       ),
@@ -280,8 +282,10 @@ class _UpdatePetState extends State<UpdatePet> {
                         descripcionController.text);
                     await updatePet();
 
-                    await mostrarFinalizar.Mostrar_Finalizados(
-                        context, "Registro Con Éxito!");
+                    await mostrarFinalizar.Mostrar_Finalizados_Clientes(
+                        context,
+                        "Mascota actualizada con exito",
+                        miembroActual.id);
                     print("3.-" +
                         nombreController.text +
                         razaController.text +
@@ -293,11 +297,17 @@ class _UpdatePetState extends State<UpdatePet> {
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
                 ),
-                child: Text('Registrar Mascota'),
+                child: Text('Actualizar Mascota'),
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () async {},
+                onPressed: () async {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => ViewClient(
+                      userId: miembroActual.id,
+                    ),
+                  ));
+                },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
                 ),
