@@ -124,7 +124,7 @@ class ListMascotas extends StatelessWidget {
                   ),
                   centerTitle: true,
                 ),
-                body: CampaignPage(mascotas: mascotas),
+                body: mascotas.isEmpty? Center(child: Text("No tienes Mascotas"),): CampaignPage(mascotas: mascotas),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
                     if (loggedInPerson?.latitud == 0.1) {
