@@ -48,6 +48,7 @@ class ViewClient extends StatelessWidget {
           print('Nombres: ${loggedInPerson?.names}');
           print('Rol: ${loggedInPerson?.role}');
           print('Latitud: ${loggedInPerson?.latitud}');
+          print('ID : ${loggedInPerson?.id}');
 
           return CampaignPage();
         }

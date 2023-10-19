@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:fluttapp/Models/Mascota.dart';
+import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/UpdatePet.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
@@ -12,9 +13,10 @@ import 'package:http/http.dart' as http;
 
 int? idUsuario;
 
+
 Future<List<Mascota>> fetchMembers(int idPersona) async {
-  final response = await http
-      .get(Uri.parse('http://181.188.191.35:3000/propietariomascotas/$idPersona'));
+  final response = await http.get(
+      Uri.parse('http://181.188.191.35:3000/propietariomascotas/$idPersona'));
 
   final List<dynamic> data = json.decode(response.body);
   final members =
@@ -70,7 +72,7 @@ class ListMascotas extends StatelessWidget {
   late final int userId;
   ListMascotas({required this.userId}) {
     idUsuario = this.userId;
-    print('ID de usuario en Buscar Clientes: $idUsuario');
+    print('ID de usuario en Lista mascotas: $idUsuario');
   }
   @override
   Widget build(BuildContext context) {
@@ -94,32 +96,32 @@ class ListMascotas extends StatelessWidget {
           } else {
             List<Mascota> mascotas = snapshot.data!;
             return Scaffold(
-              appBar: AppBar(
-                backgroundColor: Color.fromARGB(255, 241, 245, 255),
-                title: Text(
-                  'Mascotas',
-                  style:
-                      TextStyle(color: const Color.fromARGB(255, 70, 65, 65)),
+                appBar: AppBar(
+                  backgroundColor: Color.fromARGB(255, 241, 245, 255),
+                  title: Text(
+                    'Mascotas',
+                    style:
+                        TextStyle(color: const Color.fromARGB(255, 70, 65, 65)),
+                  ),
+                  centerTitle: true,
                 ),
-                centerTitle: true,
-              ),
-              body: CampaignPage(mascotas: mascotas),
-              floatingActionButton: miembroActual.role == "Carnetizador"
-                  ? FloatingActionButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => RegisterPet(
-                                userId: userId,
-                              ), // Pasa el ID del usuario aquí
-                            ));
-                      },
-                      child: Icon(Icons.add_box),
-                      backgroundColor: Color(0xFF5C8ECB),
-                    )
-                  : Text("NO TIENES MASCOTAS"),
-            );
+                body: CampaignPage(mascotas: mascotas),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    print("Usuario que se esta yendo a la otra pagina es");
+                    print(loggedInPerson?.id);
+                    print(loggedInPerson?.names);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegisterPet(
+                            userId: idUsuario!,
+                          ), // Pasa el ID del usuario aquí
+                        ));
+                  },
+                  child: Icon(Icons.add_box),
+                  backgroundColor: Color(0xFF5C8ECB),
+                ));
           }
         },
       ),

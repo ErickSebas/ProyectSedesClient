@@ -20,7 +20,7 @@ class RegisterPet extends StatefulWidget {
   late final int userId;
   RegisterPet({required this.userId}) {
     idUser = this.userId;
-    print('ID de usuario en Buscar Clientes: $idUser');
+    print('ID de usuario que llega de la lista mascotas: $idUser');
   }
 
   @override
