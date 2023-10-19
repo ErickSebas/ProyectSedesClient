@@ -37,6 +37,9 @@ import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:mailer/mailer.dart';
 
 import 'package:mailer/smtp_server/gmail.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 void main() => runApp(MyApp());
 
@@ -67,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
   String? mensajeErrorContrasena;
 
   final AuthGoogle authGoogle = AuthGoogle();
-
+  int? memberId = 0;
   bool isloading = false;
 
   Future<Member?> authenticateHttp(String email, String password) async {
@@ -84,6 +87,7 @@ class _LoginPageState extends State<LoginPage> {
       final member = Member.fromJson(data);
 
       miembroActual = member;
+      await saveMemberIdToCache(member.id);
 
       insertToken();
 
@@ -92,6 +96,60 @@ class _LoginPageState extends State<LoginPage> {
       return null; // Usuario no encontrado
     } else {
       throw Exception('Error al autenticar el usuario');
+    }
+  }
+
+  Future<void> saveMemberIdToCache(int memberId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('miembroLocal', memberId);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (mounted) tryAutoLogin(context);
+  }
+
+    Future<void> tryAutoLogin(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    memberId = prefs.getInt('miembroLocal');
+    print(memberId);
+    if (memberId != 0 && memberId != null) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Espere unos momentos....'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Center(
+                    child: SpinKitFadingCube(
+                      color: Colors.blue, 
+                      size: 50.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      final member = await fetchMemberById(memberId!);
+      miembroActual = member!;
+      if (mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ViewClient(
+              userId: miembroActual.id,
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -104,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
         'Content-Type': 'application/json',
       },
       body: json.encode({
-        'idPerson': miembroActual!.id,
+        'idPerson': miembroActual.id,
         'token': token,
       }),
     );
@@ -554,7 +612,9 @@ class _LoginPageState extends State<LoginPage> {
 
                           if (res == 1) {
                             miembroActual =
-                                await getPersonByEMail(googleUser.correo);
+                            await getPersonByEMail(googleUser.correo);
+                            await saveMemberIdToCache(miembroActual.id);
+                            insertToken();
                           } else {
                             Mostrar_Error1(context, "Error al iniciar sesión");
 
@@ -729,10 +789,11 @@ class _LoginPageState extends State<LoginPage> {
         // Verificar si el correo de Facebook ya está registrado
 
         final existingMember = await checkemailexist(email!);
-
+        
         if (existingMember != null) {
-          // El usuario ya está registrado, puedes redirigirlo a la pantalla de menú
-
+          miembroActual = existingMember;
+          await saveMemberIdToCache(miembroActual.id);
+          insertToken();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -763,7 +824,8 @@ class _LoginPageState extends State<LoginPage> {
 
           if (registrationResult == 1) {
             miembroActual = (await checkemailexist(newMember.correo))!;
-
+            await saveMemberIdToCache(miembroActual.id);
+            insertToken();
             // Registro exitoso, redirigir al usuario a la pantalla de menú
 
             Navigator.pushReplacement(

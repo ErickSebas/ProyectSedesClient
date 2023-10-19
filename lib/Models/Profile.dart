@@ -210,3 +210,18 @@ Future<Member> getCardByUser(int id) async {
       return 0;
     }
   }
+
+  Future<Member?> fetchMemberById(int memberId) async {
+    final url =
+        Uri.parse('http://181.188.191.35:3000/userbyid?idUser=$memberId');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      final member = Member.fromJson(data);
+      return member;
+    } else {
+      return null;
+    }
+  }
