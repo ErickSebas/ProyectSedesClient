@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/SearchLocation.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
@@ -6,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
-import 'package:crypto/crypto.dart'; // Importa la librería crypto
+import 'package:crypto/crypto.dart';
+import 'package:image_picker/image_picker.dart'; // Importa la librería crypto
 
 void main() => runApp(MyApp());
 MostrarFinalizarLogin mostrarFinalizar = MostrarFinalizarLogin();
@@ -68,8 +71,7 @@ class _RegisterUpdateState extends State<Register> {
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
-      idRolSeleccionada = 4;//test
-      
+      idRolSeleccionada = 4; //test
     }
 
     // Calcula el hash MD5 de la contraseña
@@ -114,9 +116,23 @@ class _RegisterUpdateState extends State<Register> {
     }
   }
 
+  File? _image;
+
+  Future<void> _getImageFromGallery() async {
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedImage != null) {
+        _image = File(pickedImage.path);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = 'Registrar Usuario'; // Título dinámico
+    File? selectedImage;
 
     return Scaffold(
       appBar: AppBar(
@@ -139,10 +155,25 @@ class _RegisterUpdateState extends State<Register> {
             child: ListView(
               children: [
                 Center(
-                  child: Image.asset(
-                    'assets/SplashMaypivac.png',
-                    height: 100,
-                    width: 100,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      ElevatedButton(
+                        onPressed: _getImageFromGallery,
+                        child: _image == null
+                            ? Text('Seleccionar Imagen')
+                            : Image.file(_image!,
+                                height: 100, width: 100, fit: BoxFit.cover),
+                      ),
+                      SizedBox(height: 20),
+                      selectedImage != null
+                          ? Image.file(
+                              selectedImage!,
+                              height: 200,
+                              width: 200,
+                            )
+                          : Container(),
+                    ],
                   ),
                 ),
                 _buildTextField(
@@ -184,25 +215,11 @@ class _RegisterUpdateState extends State<Register> {
                 ),
                 Text("Dirección:", style: TextStyle(color: Colors.white)),
                 ElevatedButton(
-                  child: Text("Selecciona una ubicación"),
-                  onPressed: () async {
-                    await Permisos();
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LocationPicker(),
-                      ),
-                    );
-                    if (result != null) {
-                      setState(() {
-                        latitude = result.latitude.toString();
-                        longitude = result.longitude.toString();
-                      });
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF1A2946),
-                  ),
+                  onPressed: _getImageFromGallery,
+                  child: _image == null
+                      ? Text('Seleccionar Imagen')
+                      : Image.file(_image!,
+                          height: 100, width: 100, fit: BoxFit.cover),
                 ),
                 Align(
                   alignment: Alignment.center,
@@ -231,8 +248,7 @@ class _RegisterUpdateState extends State<Register> {
                     dateCreation = DateTime.now();
                     status = 1;
 
-                    if (
-                        _formKey.currentState!.validate() &&
+                    if (_formKey.currentState!.validate() &&
                         latitude != '' &&
                         datebirthday != null) {
                       if (password != "") {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
@@ -8,7 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
-import 'package:crypto/crypto.dart'; // Importa la librería crypto
+import 'package:crypto/crypto.dart';
+import 'package:image_picker/image_picker.dart'; // Importa la librería crypto
 
 void main() => runApp(MyApp());
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
@@ -41,7 +44,6 @@ class RegisterUpdate extends StatefulWidget {
     print("intentando mandar los datos de name con:");
     print(carnetizadorMember?.names);
     carnetizadorglobal = this.carnetizadorMember!;
-
 
     print("Esta llegando el ID de Facebook");
     print(userData?.id);
@@ -86,16 +88,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     print("probando si envia los datos ahora global");
     print(carnetizadorglobal?.id);
     print(carnetizadorglobal?.correo);
-
-
-
   }
 
   void Cargar_Datos_Persona() async {
     print("probando si llegan los datos del cliente facebook");
     print(widget.userData?.id);
     idPerson = widget.userData!.id;
-    print("probando si llegan los datos del cliente facebook pero con idPerson");
+    print(
+        "probando si llegan los datos del cliente facebook pero con idPerson");
     print(idPerson);
     nombre = widget.userData!.names;
     apellido = widget.userData!.lastnames!;
@@ -149,8 +149,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   }
 
   Future<void> updateUser() async {
-    final url =
-        Uri.parse('http://181.188.191.35:3000/update/' + idPerson.toString()); //
+    final url = Uri.parse(
+        'http://181.188.191.35:3000/update/' + idPerson.toString()); //
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
@@ -214,11 +214,25 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     }
   }
 
+  File? _image;
+
+  Future<void> _getImageFromGallery() async {
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedImage != null) {
+        _image = File(pickedImage.path);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = widget.isUpdate
         ? 'Actualizar Usuario'
         : 'Registrar Usuario'; // Título dinámico
+    File? selectedImage;
 
     return Scaffold(
       appBar: AppBar(
@@ -238,18 +252,18 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                     ),
                   ),
                 );
-              }
-              else if(carnetizadorglobal?.role != "Carnetizador"){
-              print("volver cliente");
-              print(widget.userData!.id);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ViewClient(
-                    userId: widget.userData!.id, //El cliente entrara con la misma variable carnetizadorglobal.role pero en este caso se controla que sea diferente el Rol
+              } else if (carnetizadorglobal?.role != "Carnetizador") {
+                print("volver cliente");
+                print(widget.userData!.id);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewClient(
+                      userId: widget.userData!
+                          .id, //El cliente entrara con la misma variable carnetizadorglobal.role pero en este caso se controla que sea diferente el Rol
+                    ),
                   ),
-                ),
-              );
+                );
               }
             },
           ),
@@ -271,10 +285,25 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
             child: ListView(
               children: [
                 Center(
-                  child: Image.asset(
-                    'assets/SplashMaypivac.png',
-                    height: 100,
-                    width: 100,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      ElevatedButton(
+                        onPressed: _getImageFromGallery,
+                        child: _image == null
+                            ? Text('Seleccionar Imagen')
+                            : Image.file(_image!,
+                                height: 100, width: 100, fit: BoxFit.cover),
+                      ),
+                      SizedBox(height: 20),
+                      selectedImage != null
+                          ? Image.file(
+                              selectedImage!,
+                              height: 200,
+                              width: 200,
+                            )
+                          : Container(),
+                    ],
                   ),
                 ),
                 _buildTextField(
