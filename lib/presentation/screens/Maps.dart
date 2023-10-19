@@ -10,6 +10,8 @@
 
 import 'dart:async';
 import 'package:fluttapp/presentation/littlescreens/Popout.dart';
+import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -57,6 +59,7 @@ class _VerCamapanasState extends State<VerCamapanas> {
       });
     });
   }
+
   @override
   void dispose() {
     searchController.dispose();
@@ -91,14 +94,16 @@ class _VerCamapanasState extends State<VerCamapanas> {
       ),
     ));
   }
-   Future<void> Cancelar_Rutas() async {
+
+  Future<void> Cancelar_Rutas() async {
     setState(() {
       estaCentrado = false;
       estaSiguiendo = false;
       lstPuntosdeCoordenadas.clear();
     });
   }
- Future<void> Camara_TO_Location(LatLng location) async {
+
+  Future<void> Camara_TO_Location(LatLng location) async {
     controlMapa.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
         target: LatLng(location.latitude, location.longitude),
@@ -106,6 +111,7 @@ class _VerCamapanasState extends State<VerCamapanas> {
       ),
     ));
   }
+
   /// Llamamos al metodo al inicio del programa para poder usar los URLs de la aplicacion
   Activar_Links(String url) async {
     if (await canLaunch(url)) {
@@ -143,13 +149,22 @@ class _VerCamapanasState extends State<VerCamapanas> {
     await InfoDialog.MostrarInformacion(context);
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
         centerTitle: true,
+        leading: GestureDetector(
+          onTap: () {
+            // Agrega la redirección que desees al presionar la flecha hacia atrás
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => ViewClient(userId: miembroActual.id,),
+            ));
+          },
+          child: Icon(Icons
+              .arrow_back), // Cambia esto por tu ícono personalizado si lo deseas
+        ),
         title: Row(
           children: [
             Expanded(
@@ -426,7 +441,6 @@ class _VerCamapanasState extends State<VerCamapanas> {
       ),
     );
   }
-
 
   /// Crea las ubicaciones para que aparezcan en el mapa , heredando
   /// los puntos que llegan desde Firebase

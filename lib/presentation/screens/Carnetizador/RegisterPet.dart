@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:fluttapp/presentation/littlescreens/validator.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
+import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -447,7 +449,8 @@ Future<bool> uploadImages(List<File?> images) async {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 94, 99, 106), // Cambiar el color del botón aquí
+                  primary: Color.fromARGB(
+                      255, 94, 99, 106), // Cambiar el color del botón aquí
                 ),
                 child: Text('Cargar Fotos de la Mascota'),
               ),
@@ -517,8 +520,14 @@ Future<bool> uploadImages(List<File?> images) async {
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(context).pushNamed("/listPets");
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ViewClient(userId: miembroActual.id),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí

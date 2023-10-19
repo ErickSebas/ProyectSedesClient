@@ -11,6 +11,7 @@ import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/Maps.dart';
+import 'package:fluttapp/presentation/screens/QRPage.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
@@ -198,58 +199,65 @@ class CampaignPage extends StatelessWidget {
               ListTile(
                 title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
                 leading: Icon(Icons.credit_card),
-              ),miembroActual.role=="Cliente"?
-              ListTile(
-                leading: Icon(Icons.message),
-                title: Text('Mensaje'),
-                onTap: () async {
-                  if (miembroActual!.role == 'Cliente') {
-                    print(miembroActual!.role);
-                    Chat chatCliente = Chat(
-                        idChats: 0,
-                        idPerson: null,
-                        idPersonDestino: miembroActual!.id,
-                        fechaActualizacion: DateTime.now());
-                    int lastId = 0;
-                    List<Chat> filteredList = [];
-                    await fetchChatsClient().then((value) => {
-                          filteredList = value
-                              .where((element) =>
-                                  element.idPersonDestino == miembroActual!.id)
-                              .toList(),
-                          if (filteredList.isEmpty)
-                            {
-                              registerNewChat(chatCliente).then((value) => {
-                                    getLastIdChat().then((value) => {
-                                          lastId = value,
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => ChatPage(
-                                                      idChat: lastId,
-                                                      nombreChat: 'Soporte',
-                                                      idPersonDestino: 0,
-                                                    )),
-                                          )
-                                        })
-                                  })
-                            }
-                          else
-                            {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatPage(
-                                          idChat: filteredList[0].idChats,
-                                          nombreChat: 'Soporte',
-                                          idPersonDestino: 0,
-                                        )),
-                              )
-                            }
-                        });
-                  }
-                },
-              ):Container(),
+              ),
+              miembroActual.role == "Cliente"
+                  ? ListTile(
+                      leading: Icon(Icons.message),
+                      title: Text('Mensaje'),
+                      onTap: () async {
+                        if (miembroActual!.role == 'Cliente') {
+                          print(miembroActual!.role);
+                          Chat chatCliente = Chat(
+                              idChats: 0,
+                              idPerson: null,
+                              idPersonDestino: miembroActual!.id,
+                              fechaActualizacion: DateTime.now());
+                          int lastId = 0;
+                          List<Chat> filteredList = [];
+                          await fetchChatsClient().then((value) => {
+                                filteredList = value
+                                    .where((element) =>
+                                        element.idPersonDestino ==
+                                        miembroActual!.id)
+                                    .toList(),
+                                if (filteredList.isEmpty)
+                                  {
+                                    registerNewChat(chatCliente)
+                                        .then((value) => {
+                                              getLastIdChat().then((value) => {
+                                                    lastId = value,
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ChatPage(
+                                                                idChat: lastId,
+                                                                nombreChat:
+                                                                    'Soporte',
+                                                                idPersonDestino:
+                                                                    0,
+                                                              )),
+                                                    )
+                                                  })
+                                            })
+                                  }
+                                else
+                                  {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ChatPage(
+                                                idChat: filteredList[0].idChats,
+                                                nombreChat: 'Soporte',
+                                                idPersonDestino: 0,
+                                              )),
+                                    )
+                                  }
+                              });
+                        }
+                      },
+                    )
+                  : Container(),
               Align(
                 alignment: Alignment.bottomRight,
                 child: ListTile(
@@ -442,7 +450,13 @@ class CampaignPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed("/qrpage");
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => QRScannerPage(),
+              //Probar si hay algun error de redireccionamiento
+            ),
+          );
         },
         child: Icon(Icons.qr_code),
         backgroundColor: Color(0xFF5C8ECB),
