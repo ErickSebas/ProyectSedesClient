@@ -107,6 +107,8 @@ factory Member.fromJson3(Map<String, dynamic> json) {
     );
 
   }
+
+  get connectionState => null;
   @override
   String toString() {
     return 'Member(names: $names, lastnames: $lastnames, fechaNacimiento: $fechaNacimiento, role: $role, contrasena: $contrasena, correo: $correo, telefono: $telefono, carnet: $carnet, longitud: $longitud, latitud: $latitud, fechaCreacion: $fechaCreacion, status: $status)';
