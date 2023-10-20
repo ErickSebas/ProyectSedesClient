@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
@@ -12,6 +13,8 @@ import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:crypto/crypto.dart';
 import 'package:image_picker/image_picker.dart'; // Importa la librería crypto
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:image/image.dart' as img;
 
 void main() => runApp(MyApp());
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
@@ -227,6 +230,60 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     });
   }
 
+  Future<List<int>> compressImage(File imageFile) async {
+    // Leer la imagen
+    List<int> imageBytes = await imageFile.readAsBytes();
+
+    // Decodificar la imagen
+    img.Image image = img.decodeImage(Uint8List.fromList(imageBytes))!;
+
+    // Comprimir la imagen con una calidad específica (85 en este caso)
+    List<int> compressedBytes = img.encodeJpg(image, quality: 85);
+
+    return compressedBytes;
+  }
+
+  Future<bool> uploadImage(File? image, int userId) async {
+    try {
+      int idPerson = await getNextIdPerson();
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+      print("Ultimo ID =======" + "---" + idPerson.toString());
+      String carpeta = 'cliente/$idPerson';
+
+      if (image != null) {
+        firebase_storage.Reference imageRef =
+            storageRef.child('$carpeta/imagenUsuario.jpg');
+
+        // Comprimir la imagen antes de subirla
+        List<int> compressedBytes = await compressImage(image);
+
+        await imageRef.putData(Uint8List.fromList(compressedBytes));
+      }
+
+      return true;
+    } catch (e) {
+      print('Error al subir la imagen: $e');
+      return false;
+    }
+  }
+
+  Future<bool> deleteImage(int userId) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+      print("ID ------------" + userId.toString());
+      String carpeta = 'cliente/$userId/imagenUsuario.jpg';
+
+      await storageRef.child(carpeta).delete();
+
+      return true;
+    } catch (e) {
+      print('Error al eliminar imagen de mascota: $e');
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = widget.isUpdate
@@ -400,7 +457,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           datebirthday != null) {
                         if (widget.isUpdate) {
                           await updateUser();
-
+                          deleteImage(idPerson);
+                          uploadImage(_image, idPerson);
                           mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                               context,
                               "Actializacion con exito! de Carnetizador",
@@ -410,6 +468,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           status = 1;
                           await registerUser();
                           idPerson = await getNextIdPerson();
+                          deleteImage(idPerson);
+                          uploadImage(_image, idPerson);
                           mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                               context,
                               "Registro carnetizador con exito!",
@@ -423,6 +483,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           datebirthday != null) {
                         if (widget.isUpdate) {
                           await updateUser();
+                          deleteImage(idPerson);
+                          uploadImage(_image, idPerson);
                           if (carnetizadorglobal?.role == 'Carnetizador') {
                             mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                                 context,
@@ -444,7 +506,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                       }
                     }
                   },
-                  child: Text(widget.isUpdate ? 'Actualizar' : 'Registrar'),
+                  child: Text(
+                      widget.isUpdate ? 'Actualizar' : 'Registrar Usuario'),
                   style: ElevatedButton.styleFrom(
                     primary: Color(0xFF1A2946),
                   ),

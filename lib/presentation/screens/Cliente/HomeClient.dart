@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttapp/Implementation/ChatImp.dart';
 import 'package:fluttapp/Implementation/Conversation.dart';
 import 'package:fluttapp/Implementation/TokensImpl.dart';
@@ -20,6 +22,7 @@ import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 Member?
     loggedInPerson; // Variable para almacenar los datos de la persona autenticada
@@ -78,6 +81,24 @@ Future<Member?> getPersonById(int userId) async {
 
 Future<void> Mostrar_Informacion(BuildContext context) async {
   await InfoDialog.MostrarInformacion(context);
+}
+
+Future<String?> getImageUrl(int idCliente) async {
+  try {
+    Reference storageRef = FirebaseStorage.instance.ref('cliente/$idCliente');
+    ListResult result = await storageRef.list();
+
+    for (var item in result.items) {
+      if (item.name == 'imagenUsuario.jpg') {
+        String downloadURL = await item.getDownloadURL();
+        return downloadURL;
+      }
+    }
+  } catch (e) {
+    print('Error al obtener URL de la imagen: $e');
+  }
+
+  return null;
 }
 
 // ignore: must_be_immutable
@@ -151,10 +172,34 @@ class CampaignPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        'assets/univalle.png',
-                        width: 50,
-                        height: 50,
+                      FutureBuilder<String?>(
+                        future: getImageUrl(loggedInPerson?.id ?? 0),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<String?> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text(
+                                'Error al cargar la imagen: ${snapshot.error}');
+                          } else {
+                            final imageUrl = snapshot.data;
+                            print('URL de la imagen: $imageUrl');
+                            print(
+                                'ID enviado a getImageUrl: ${loggedInPerson?.id}');
+                            return imageUrl != null
+                                ? Image.network(
+                                    imageUrl,
+                                    width: 50,
+                                    height: 50,
+                                  )
+                                : Image.asset(
+                                    'assets/univalle.png',
+                                    width: 50,
+                                    height: 50,
+                                  );
+                          }
+                        },
                       ),
                       SizedBox(height: 10),
                       Text(
@@ -398,7 +443,8 @@ class CampaignPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ListCampaignPage(),//VerCamapanas(),
+                                  builder: (context) =>
+                                      ListCampaignPage(), //VerCamapanas(),
                                 ),
                               );
                             },
