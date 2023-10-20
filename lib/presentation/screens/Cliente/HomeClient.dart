@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:fluttapp/Implementation/ChatImp.dart';
 import 'package:fluttapp/Implementation/Conversation.dart';
 import 'package:fluttapp/Implementation/TokensImpl.dart';
@@ -11,12 +10,13 @@ import 'package:fluttapp/presentation/screens/Campaign.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/ListMascotas.dart';
 import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
+import 'package:fluttapp/presentation/screens/Cliente/Conversation.dart';
 import 'package:fluttapp/presentation/screens/Login.dart';
-import 'package:fluttapp/presentation/screens/Maps.dart';
 import 'package:fluttapp/presentation/screens/QRPage.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
+import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -203,9 +203,7 @@ class CampaignPage extends StatelessWidget {
               ListTile(
                 title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
                 leading: Icon(Icons.credit_card),
-              ),
-              miembroActual.role == "Cliente"
-                  ? ListTile(
+              ),ListTile(
                       leading: Icon(Icons.message),
                       title: Text('Mensaje'),
                       onTap: () async {
@@ -259,9 +257,15 @@ class CampaignPage extends StatelessWidget {
                                   }
                               });
                         }
+                        else{
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatScreenState()),
+                          );
+                        }
                       },
-                    )
-                  : Container(),
+                    ),
               Align(
                 alignment: Alignment.bottomRight,
                 child: ListTile(
@@ -271,6 +275,8 @@ class CampaignPage extends StatelessWidget {
                     miembroActual = loggedInPerson!;
                     final prefs = await SharedPreferences.getInstance();
                     prefs.setInt('miembroLocal', 0);
+                    chats.clear();
+                    namesChats.clear();
                     tokenClean();
                     Navigator.pushReplacement(
                       context,
@@ -297,7 +303,7 @@ class CampaignPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  miembroActual.role == "Carnetizador"
+                  miembroActual.role == "Carnetizador" || miembroActual.role=="Super Admin" || miembroActual.role == "Admin"
                       ? Column(
                           children: <Widget>[
                             Card(
@@ -333,7 +339,7 @@ class CampaignPage extends StatelessWidget {
                           ],
                         )
                       : Container(),
-                  miembroActual.role == "Carnetizador"
+                  miembroActual.role == "Carnetizador"|| miembroActual.role=="Super Admin" || miembroActual.role == "Admin"
                       ? SizedBox(width: 20)
                       : Container(),
                   Column(

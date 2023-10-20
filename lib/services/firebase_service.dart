@@ -11,6 +11,7 @@
 
 import "dart:convert";
 import "package:fluttapp/Models/ChatModel.dart";
+import "package:fluttapp/Models/Conversation.dart";
 import "package:fluttapp/Models/Profile.dart";
 import 'package:http/http.dart' as http;
 import "package:cloud_firestore/cloud_firestore.dart";
@@ -31,6 +32,8 @@ List<ChatMessage> messages = [];
 int currentChatId = 0;
 late IO.Socket socket;
 String? token;
+List<dynamic> namesChats=[];
+List<Chat> chats = [];
 // Obtener el archivo de Firebase Storage
 Future<List> Obtener_Archivo(int id) async {
   List lstUbicaciones = [];

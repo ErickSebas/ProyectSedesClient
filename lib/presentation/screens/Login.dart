@@ -498,7 +498,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
 
                         if (loggedInMember != null) {
-                          if (loggedInMember.role == "Carnetizador" ||
+                          if (loggedInMember.role == "Carnetizador" ||loggedInMember.role == "Super Admin" ||loggedInMember.role == "Admin" || loggedInMember.role == "Jefe de Brigada" ||//Jefe de Brigada
                               loggedInMember.role == "Cliente") {
                             Navigator.pushReplacement(
                               context,
@@ -817,6 +817,8 @@ class _LoginPageState extends State<LoginPage> {
           newMember.names = profile!.firstName!;
 
           newMember.lastnames = profile.lastName!;
+
+          newMember.role = "Cliente";
 
           // Agrega otros campos necesarios aquí
 
