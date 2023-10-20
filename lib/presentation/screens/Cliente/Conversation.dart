@@ -36,6 +36,8 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController?.addListener(_handleTabSelection);
 
     if(namesChats.isEmpty){
       fetchNamesPersonDestino(miembroActual!.id).then((value) => {
@@ -63,7 +65,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
     }
 
     
-    _tabController = TabController(length: 2, vsync: this);
+    
     //namesChats = await fetchNamesPersonDestino(miembroActual!.id);
     socket.on('chat message', (data) async {
       if (!mounted) return; 
@@ -84,6 +86,12 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
     });
 
   }
+
+  void _handleTabSelection() {
+  if (mounted) {
+    setState(() {});  // Esto reconstruirá tu widget cada vez que cambies de pestaña.
+  }
+}
 
   
 
@@ -188,7 +196,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
       : Center(
           child: CircularProgressIndicator(),
         ),
-  floatingActionButton:  FloatingActionButton(
+  floatingActionButton: _tabController?.index==0?  FloatingActionButton(
      onPressed: () {
       showDialog(
         context: context,
@@ -245,7 +253,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
     backgroundColor: Color.fromARGB(255, 0, 204, 255),
     foregroundColor: Colors.white,
     tooltip: 'Iniciar nuevo chat',
-  ),
+  ):Container(),
 );
 
   }
