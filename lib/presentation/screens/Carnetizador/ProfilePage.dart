@@ -267,8 +267,8 @@ class ProfilePage extends StatelessWidget {
 
 Widget _buildMap(double lat, double lng) {
   return Container(
-    height: 150, // Altura del cuadro del mapa
-    width: double.infinity, // Ocupa todo el ancho disponible
+    height: 150, 
+    width: double.infinity, 
     child: GoogleMap(
       initialCameraPosition: CameraPosition(
         target: LatLng(lat, lng),

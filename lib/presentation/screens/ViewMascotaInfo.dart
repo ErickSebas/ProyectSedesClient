@@ -14,6 +14,7 @@ import 'dart:typed_data';
 import 'package:qr/qr.dart';
 import 'package:image/image.dart' as img;
 import 'package:screenshot/screenshot.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
 class ViewMascotasInfo extends StatelessWidget {
@@ -479,6 +480,8 @@ final ScreenshotController screenshotController = ScreenshotController();
                               ),
                             ],
                           ),
+                          SizedBox(height: 10),
+                          if(propietario.latitud!=0.1)_buildMap(propietario.latitud, propietario.longitud),
                         ],
                       ),
                     ),
@@ -497,16 +500,31 @@ final ScreenshotController screenshotController = ScreenshotController();
                       padding: EdgeInsets.all(10),
                       child: Column(
                         children: [
-                          Screenshot(
+                         Screenshot(
                             key: _qrKey,
                             controller: screenshotController,
-                            child: QrImageView(
-                              backgroundColor: Colors.white,
-                              data: mascota.idMascotas.toString(),
-                              version: QrVersions.auto,
-                              size: 200.0,
-                            ),
-                          ),SizedBox(height: 20),
+                            child:Container(
+                              decoration: BoxDecoration(color: Colors.white),
+                              child:  Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0, top: 10.0, right: 10.0, left: 10.0), 
+                                  child: Image(
+                                    image: AssetImage('assets/Univallenavbar.png'),
+                                  ),
+                                ),
+                                QrImageView(
+                                  backgroundColor: Colors.white,
+                                  data: mascota.idMascotas.toString(),
+                                  version: QrVersions.auto,
+                                  size: 200.0,
+                                  padding: const EdgeInsets.only(bottom: 20.0),
+                                ),
+                              ],
+                            ),)
+                          )
+                          ,SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () async {
                               await takeScreenshot(context);
@@ -533,6 +551,25 @@ final ScreenshotController screenshotController = ScreenshotController();
       ),
     );
   }
+
+  Widget _buildMap(double lat, double lng) {
+  return Container(
+    height: 150, 
+    width: double.infinity, 
+    child: GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: LatLng(lat, lng),
+        zoom: 15,
+      ),
+      markers: {
+        Marker(
+          markerId: MarkerId('memberLocation'),
+          position: LatLng(lat, lng),
+        ),
+      },
+    ),
+  );
+}
   
 Future<void> takeScreenshot(BuildContext context) async {    
 
