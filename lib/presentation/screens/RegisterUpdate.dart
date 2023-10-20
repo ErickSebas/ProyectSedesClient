@@ -268,6 +268,22 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     }
   }
 
+  Future<bool> deleteImage(int userId) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+      print("ID ------------" + userId.toString());
+      String carpeta = 'cliente/$userId/imagenUsuario.jpg';
+
+      await storageRef.child(carpeta).delete();
+
+      return true;
+    } catch (e) {
+      print('Error al eliminar imagen de mascota: $e');
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = widget.isUpdate
@@ -441,7 +457,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           datebirthday != null) {
                         if (widget.isUpdate) {
                           await updateUser();
-
+                          deleteImage(idPerson);
+                          uploadImage(_image, idPerson);
                           mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                               context,
                               "Actializacion con exito! de Carnetizador",
@@ -451,6 +468,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           status = 1;
                           await registerUser();
                           idPerson = await getNextIdPerson();
+                          deleteImage(idPerson);
                           uploadImage(_image, idPerson);
                           mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                               context,
@@ -465,6 +483,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           datebirthday != null) {
                         if (widget.isUpdate) {
                           await updateUser();
+                          deleteImage(idPerson);
+                          uploadImage(_image, idPerson);
                           if (carnetizadorglobal?.role == 'Carnetizador') {
                             mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                                 context,

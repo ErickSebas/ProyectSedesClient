@@ -9,6 +9,7 @@ import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 Member?
     loggedInPerson; // Variable para almacenar los datos de la persona autenticada
@@ -115,6 +116,29 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
       print('Usuario eliminado con éxito');
     } else {
       print('Error al eliminar el usuario: ${response.statusCode}');
+    }
+  }
+
+  Future<bool> deleteImageAndFolder(int userId) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+      print("ID ------------" + userId.toString());
+      String carpeta = 'cliente/$userId';
+
+      // Listamos los elementos en la carpeta
+      firebase_storage.ListResult listResult =
+          await storageRef.child(carpeta).listAll();
+
+      // Eliminamos cada elemento individualmente
+      for (var item in listResult.items) {
+        await item.delete();
+      }
+
+      return true;
+    } catch (e) {
+      print('Error al eliminar imagen y carpeta: $e');
+      return false;
     }
   }
 
@@ -258,6 +282,8 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                                                     // Aquí se ejecuta la función deleteUser si el usuario confirma
                                                     deleteUser(
                                                         member.id.toString());
+                                                    deleteImageAndFolder(
+                                                        member.id);
                                                     Navigator.of(context)
                                                         .pop(); // Cierra el cuadro de diálogo
                                                     mostrarFinalizar
