@@ -235,8 +235,10 @@ class _RegisterUpdateState extends State<Register> {
                 Text("Fecha Nacimiento:",
                     style: TextStyle(color: Colors.white)),
                 _buildDateOfBirthField(
-                  label: 'Fecha Nacimiento',
+                  label: 'Seleccionar Fecha Nacimiento',
                   onChanged: (value) => datebirthday = value,
+                  validator: (value) => 
+                  value!.isEmpty ? 'La fecha de nacimiento no debe estar vacio' : null,	
                 ),
                 _buildTextField(
                   initialData: carnet,
@@ -256,11 +258,25 @@ class _RegisterUpdateState extends State<Register> {
                 ),
                 Text("Dirección:", style: TextStyle(color: Colors.white)),
                 ElevatedButton(
-                  onPressed: _getImageFromGallery,
-                  child: _image == null
-                      ? Text('Seleccionar Imagen')
-                      : Image.file(_image!,
-                          height: 100, width: 100, fit: BoxFit.cover),
+                  child: Text("Selecciona una ubicación"),
+                  onPressed: () async {
+                    await Permisos();
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LocationPicker(),
+                      ),
+                    );
+                    if (result != null) {
+                      setState(() {
+                        latitude = result.latitude.toString();
+                        longitude = result.longitude.toString();
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0xFF1A2946),
+                  ),
                 ),
                 Align(
                   alignment: Alignment.center,
@@ -331,7 +347,7 @@ class _RegisterUpdateState extends State<Register> {
 
   Widget _buildDateOfBirthField({
     required String label,
-    required Function(DateTime?) onChanged,
+    required Function(DateTime?) onChanged, required String? Function(dynamic value) validator,
   }) {
     return Column(
       children: [

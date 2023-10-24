@@ -147,7 +147,7 @@ class ProfilePage extends StatelessWidget {
                         _buildInfoItem("Carnet: ${member!.carnet}"),
                         _buildInfoItem("Teléfono: ${member!.telefono}"),
                         _buildInfoItem(
-                            "Fecha de Nacimiento: ${member!.fechaNacimiento}"),
+                            "Fecha de Nacimiento: ${member!.fechaNacimiento?.year}-${member!.fechaNacimiento?.month}-${member!.fechaNacimiento?.day}"),
                         _buildMap(member!.latitud, member!.longitud),
                         SizedBox(height: 20),
                         Row(

@@ -230,7 +230,7 @@ class CampaignPage extends StatelessWidget {
               ),
               ListTile(
                 title: Text(
-                    'Fecha de Nacimiento: ${loggedInPerson?.fechaNacimiento ?? ''}'),
+                    'Fecha de Nacimiento: ${loggedInPerson!.fechaNacimiento?.year}-${loggedInPerson!.fechaNacimiento?.month}-${loggedInPerson!.fechaNacimiento?.day}'),
                 leading: Icon(Icons.calendar_today),
               ),
               ListTile(
