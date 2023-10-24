@@ -9,6 +9,7 @@ import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
@@ -176,7 +177,7 @@ class _UpdatePetState extends State<UpdatePet> {
   String valorSeleccionado = 'H'; // Valor por defecto seleccionado
 
   List<String> opciones = ['Hembra', 'Macho']; // Lista de opciones
-
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -340,36 +341,74 @@ class _UpdatePetState extends State<UpdatePet> {
                 ),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  bool camposValidos = validarCampos();
-                  if (camposValidos) {
-                    print("1.-" +
-                        nombreController.text +
-                        razaController.text +
-                        edadController.text +
-                        colorController.text +
-                        descripcionController.text);
-                    deletePetFolder(
-                        widget.mascota.idPersona, widget.mascota.idMascotas);
-                    await uploadImages(_selectedImages,
-                        widget.mascota.idPersona, widget.mascota.idMascotas);
-                    await updatePet();
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        isLoading =
+                            true; // Comienza la carga al presionar el botón
+                      });
 
-                    await mostrarFinalizar.Mostrar_Finalizados_Clientes(context,
-                        "Mascota actualizada con exito", miembroActual.id);
-                    print("3.-" +
-                        nombreController.text +
-                        razaController.text +
-                        edadController.text +
-                        colorController.text +
-                        descripcionController.text);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
-                ),
-                child: Text('Actualizar Mascota'),
+                      bool camposValidos = validarCampos();
+                      if (camposValidos) {
+                        print("1.-" +
+                            nombreController.text +
+                            razaController.text +
+                            edadController.text +
+                            colorController.text +
+                            descripcionController.text);
+                        deletePetFolder(widget.mascota.idPersona,
+                            widget.mascota.idMascotas);
+                        await uploadImages(
+                            _selectedImages,
+                            widget.mascota.idPersona,
+                            widget.mascota.idMascotas);
+                        await updatePet();
+
+                        await mostrarFinalizar.Mostrar_Finalizados_Clientes(
+                            context,
+                            "Mascota actualizada con éxito",
+                            miembroActual.id);
+                        print("3.-" +
+                            nombreController.text +
+                            razaController.text +
+                            edadController.text +
+                            colorController.text +
+                            descripcionController.text);
+                      }
+
+                      setState(() {
+                        isLoading =
+                            false; // Detén la carga después de completar la operación
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary:
+                          Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                    ),
+                    child: Text('Actualizar Mascota'),
+                  ),
+
+                  SizedBox(
+                      height:
+                          16), // Espacio entre el botón y el indicador de carga
+
+                  Visibility(
+                    visible: isLoading,
+                    child: Center(
+                      child: SpinKitThreeBounce(
+                        // Aquí se usa el indicador ThreeBounce
+                        color: Colors
+                            .blue, // Puedes cambiar el color según tus preferencias
+                        size:
+                            50.0, // Puedes cambiar el tamaño según tus preferencias
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 10),
               ElevatedButton(

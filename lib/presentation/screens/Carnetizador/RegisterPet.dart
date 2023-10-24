@@ -7,6 +7,7 @@ import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -37,7 +38,7 @@ class _RegisterPetState extends State<RegisterPet> {
   String? mensajeError;
   List<File?> _selectedImages = [];
   Mostrar_Finalizados_Update mostrarFinalizar = Mostrar_Finalizados_Update();
-    @override
+  @override
   void initState() {
     super.initState();
     getPersonData();
@@ -48,6 +49,7 @@ class _RegisterPetState extends State<RegisterPet> {
   Future<void> getPersonData() async {
     loggedInPerson = await getPersonById(idUsuario!);
   }
+
   Future<void> Confirmacion_Eliminar_Imagen(int index) async {
     return showDialog<void>(
       context: context,
@@ -325,6 +327,7 @@ Future<bool> uploadImages(List<File?> images) async {
   String valorSeleccionado = 'H'; // Valor por defecto seleccionado
 
   List<String> opciones = ['Hembra', 'Macho']; // Lista de opciones
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -491,45 +494,78 @@ Future<bool> uploadImages(List<File?> images) async {
                 ),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  bool camposValidos = validarCampos();
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        isLoading =
+                            true; // Comienza la carga al presionar el botón
+                      });
 
-                  if (_selectedImages.length < 1) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Debe cargar al menos 1 imágene.'),
-                    ));
-                    return; // Sale de la función si no hay suficientes imágenes.
-                  }
+                      bool camposValidos = validarCampos();
 
-                  if (camposValidos) {
-                    print("1.-" +
-                        nombreController.text +
-                        razaController.text +
-                        edadController.text +
-                        colorController.text +
-                        descripcionController.text);
-                    await registerPet();
+                      if (_selectedImages.length < 1) {
+                        setState(() {
+                          isLoading = false; // Detén la carga si hay un error
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Debe cargar al menos 1 imagen.'),
+                        ));
+                        return; // Sale de la función si no hay suficientes imágenes.
+                      }
 
-                    // Aquí se ejecuta el método uploadImages
-                    await uploadImages(_selectedImages);
+                      if (camposValidos) {
+                        print("1.-" +
+                            nombreController.text +
+                            razaController.text +
+                            edadController.text +
+                            colorController.text +
+                            descripcionController.text);
+                        await registerPet();
 
-                    await mostrarFinalizar.Mostrar_Finalizados_Clientes(
-                                   context,
-                                "Registro de Mascota con exito",
-                                miembroActual!.id);
-                    print("3.-" +
-                        nombreController.text +
-                        razaController.text +
-                        edadController.text +
-                        colorController.text +
-                        descripcionController.text);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
-                ),
-                child: Text('Registrar Mascota'),
+                        // Aquí se ejecuta el método uploadImages
+                        await uploadImages(_selectedImages);
+
+                        await mostrarFinalizar.Mostrar_Finalizados_Clientes(
+                            context,
+                            "Registro de Mascota con éxito",
+                            miembroActual!.id);
+                        print("3.-" +
+                            nombreController.text +
+                            razaController.text +
+                            edadController.text +
+                            colorController.text +
+                            descripcionController.text);
+
+                        setState(() {
+                          isLoading =
+                              false; // Detén la carga después de completar la operación
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary:
+                          Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                    ),
+                    child: Text('Registrar Mascota'),
+                  ),
+                  SizedBox(height: 16),
+                  Visibility(
+                    visible: isLoading,
+                    child: Center(
+                      child: SpinKitThreeBounce(
+                        // Aquí se usa el indicador ThreeBounce
+                        color: Colors
+                            .blue, // Puedes cambiar el color según tus preferencias
+                        size:
+                            50.0, // Puedes cambiar el tamaño según tus preferencias
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 10),
               ElevatedButton(
