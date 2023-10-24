@@ -224,6 +224,7 @@ class _RegisterUpdateState extends State<Register> {
                   onChanged: (value) => nombre = value,
                   validator: (value) =>
                       value!.isEmpty ? 'El nombre no puede estar vacío.' : null,
+                  maxLength: 100, // Establece el máximo de caracteres a 100
                 ),
                 _buildTextField(
                   initialData: apellido,
@@ -231,6 +232,7 @@ class _RegisterUpdateState extends State<Register> {
                   onChanged: (value) => apellido = value,
                   validator: (value) =>
                       value!.isEmpty ? 'El nombre no puede estar vacío.' : null,
+                  maxLength: 45,
                 ),
                 SizedBox(height: 10),
                 Text("Fecha Nacimiento:",
@@ -238,8 +240,9 @@ class _RegisterUpdateState extends State<Register> {
                 _buildDateOfBirthField(
                   label: 'Seleccionar Fecha Nacimiento',
                   onChanged: (value) => datebirthday = value,
-                  validator: (value) => 
-                  value!.isEmpty ? 'La fecha de nacimiento no debe estar vacio' : null,	
+                  validator: (value) => value!.isEmpty
+                      ? 'La fecha de nacimiento no debe estar vacio'
+                      : null,
                 ),
                 _buildTextField(
                   initialData: carnet,
@@ -247,6 +250,7 @@ class _RegisterUpdateState extends State<Register> {
                   onChanged: (value) => carnet = value,
                   validator: (value) =>
                       value!.isEmpty ? 'El carnet no puede estar vacío.' : null,
+                  maxLength: 45,
                 ),
                 _buildTextField(
                   initialData: telefono,
@@ -256,8 +260,8 @@ class _RegisterUpdateState extends State<Register> {
                       ? 'El Teléfono no puede estar vacía.'
                       : null,
                   keyboardType: TextInputType.number,
+                  maxLength: 8,
                 ),
-
                 Text("Dirección:", style: TextStyle(color: Colors.white)),
                 ElevatedButton(
                   child: Text("Selecciona una ubicación"),
@@ -294,12 +298,14 @@ class _RegisterUpdateState extends State<Register> {
                   validator: (value) =>
                       value!.isEmpty ? 'El email no puede estar vacío.' : null,
                   keyboardType: TextInputType.emailAddress,
+                  maxLength: 45,
                 ),
                 _buildTextField(
                   initialData: "",
                   label: 'Contraseña',
                   onChanged: (value) => password = value,
                   obscureText: true,
+                  maxLength: 10,
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
@@ -315,8 +321,9 @@ class _RegisterUpdateState extends State<Register> {
                         if (emailExists) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                                content: Text(
-                                    'El correo ya existe en la base de datos')),
+                              content: Text(
+                                  'El correo ya existe en la base de datos'),
+                            ),
                           );
                         } else {
                           await registerUser();
@@ -327,10 +334,23 @@ class _RegisterUpdateState extends State<Register> {
                               context, "Registro con éxito!");
                         }
                       }
-                      esCarnetizador = false;
+
+                      // Verificar si el número de teléfono empieza con 7 o 8
+                      RegExp regex = RegExp(r'^[7-8]');
+                      if (!regex.hasMatch(telefono)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'El número de teléfono debe empezar con 7 u 8'),
+                          ),
+                        );
+                        return;
+                      }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Ingrese todos los campos')),
+                        SnackBar(
+                          content: Text('Ingrese todos los campos'),
+                        ),
                       );
                     }
                   },
@@ -347,10 +367,10 @@ class _RegisterUpdateState extends State<Register> {
     );
   }
 
-                
   Widget _buildDateOfBirthField({
     required String label,
-    required Function(DateTime?) onChanged, required String? Function(dynamic value) validator,
+    required Function(DateTime?) onChanged,
+    required String? Function(dynamic value) validator,
   }) {
     return Column(
       children: [
@@ -393,6 +413,7 @@ class _RegisterUpdateState extends State<Register> {
     String? Function(String?)? validator,
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
+    required int maxLength,
   }) {
     return Column(
       children: [
@@ -407,6 +428,7 @@ class _RegisterUpdateState extends State<Register> {
           validator: validator,
           keyboardType: keyboardType,
           obscureText: obscureText,
+          maxLength: maxLength,
         ),
         SizedBox(height: 15),
       ],

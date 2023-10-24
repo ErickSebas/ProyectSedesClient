@@ -89,7 +89,6 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
       esCliente = false;
       print(widget.userData?.role);
     }
-
   }
 
   void Cargar_Datos_Persona() async {
@@ -364,6 +363,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   onChanged: (value) => nombre = value,
                   validator: (value) =>
                       value!.isEmpty ? 'El nombre no puede estar vacío.' : null,
+                  maxLength: 100,
                 ),
                 _buildTextField(
                   initialData: apellido,
@@ -371,6 +371,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   onChanged: (value) => apellido = value,
                   validator: (value) =>
                       value!.isEmpty ? 'El nombre no puede estar vacío.' : null,
+                  maxLength: 45,
                 ),
                 SizedBox(height: 10),
                 Text("Fecha Nacimiento:",
@@ -385,6 +386,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   onChanged: (value) => carnet = value,
                   validator: (value) =>
                       value!.isEmpty ? 'El carnet no puede estar vacío.' : null,
+                  maxLength: 45,
                 ),
                 _buildTextField(
                   initialData: telefono,
@@ -394,9 +396,10 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                       ? 'El Teléfono no puede estar vacía.'
                       : null,
                   keyboardType: TextInputType.number,
+                  maxLength: 8,
                 ),
                 Text("Dirección:", style: TextStyle(color: Colors.black)),
-                                        _buildMap(latitude , longitude),
+                _buildMap(latitude, longitude),
                 ElevatedButton(
                   child: Text("Selecciona una ubicación"),
                   onPressed: () async {
@@ -418,7 +421,6 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                     primary: Color(0xFF1A2946),
                   ),
                 ),
-
                 _buildTextField(
                   initialData: email,
                   label: 'Email',
@@ -426,6 +428,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   validator: (value) =>
                       value!.isEmpty ? 'El email no puede estar vacío.' : null,
                   keyboardType: TextInputType.emailAddress,
+                  maxLength: 45,
                 ),
                 widget.isUpdate
                     ? Container()
@@ -434,12 +437,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                         label: 'Contraseña',
                         onChanged: (value) => password = value,
                         obscureText: true,
+                        maxLength: 10,
                       ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
                     dateCreation = new DateTime.now();
                     status = 1;
+
                     if (esCliente == false) {
                       if (_formKey.currentState!.validate() &&
                           latitude != '' &&
@@ -451,19 +456,22 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           uploadImage(_image, idPerson);
                           mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                               context,
-                              "Actializacion con exito! de Carnetizador",
+                              "Actualización con éxito de Carnetizador",
                               miembroActual!.id);
                         } else if (password != "") {
-                          dateCreation = new DateTime.now();
-                          status = 1;
-                          await registerUser();
-                          idPerson = await getNextIdPerson();
-                          deleteImage(idPerson);
-                          uploadImage(_image, idPerson);
-                          mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
-                              context,
-                              "Registro carnetizador con exito!",
-                              miembroActual!.id);
+                          // ... Resto del código
+
+                          // Verificar si el número de teléfono empieza con 7 u 8
+                          RegExp regex = RegExp(r'^[7-8]');
+                          if (!regex.hasMatch(telefono)) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'El número de teléfono debe empezar con 7 u 8'),
+                              ),
+                            );
+                            return;
+                          }
                         }
                       }
                     } else if (esCliente == true) {
@@ -478,13 +486,13 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           if (carnetizadorglobal?.role == 'Carnetizador') {
                             mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                                 context,
-                                "Actializacion con exito! de Cliente con Carnetizador",
+                                "Actualización con éxito de Cliente con Carnetizador",
                                 miembroActual!.id);
                             print(miembroActual!.role);
                           } else {
                             mostrarMensaje.Mostrar_Finalizados_Clientes(
                                 context,
-                                "Actializacion con exito! de Cliente",
+                                "Actualización con éxito de Cliente",
                                 widget.userData!.id);
                             print(miembroActual!.role);
                           }
@@ -510,26 +518,25 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     );
   }
 
-
-
-Widget _buildMap(double lat, double lng) {
-  return Container(
-    height: 150, 
-    width: double.infinity, 
-    child: GoogleMap(
-      initialCameraPosition: CameraPosition(
-        target: LatLng(lat, lng),
-        zoom: 15,
-      ),
-      markers: {
-        Marker(
-          markerId: MarkerId('memberLocation'),
-          position: LatLng(lat, lng),
+  Widget _buildMap(double lat, double lng) {
+    return Container(
+      height: 150,
+      width: double.infinity,
+      child: GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: LatLng(lat, lng),
+          zoom: 15,
         ),
-      },
-    ),
-  );
-}
+        markers: {
+          Marker(
+            markerId: MarkerId('memberLocation'),
+            position: LatLng(lat, lng),
+          ),
+        },
+      ),
+    );
+  }
+
   Widget _buildDateOfBirthField({
     required String label,
     required Function(DateTime?) onChanged,
@@ -575,6 +582,7 @@ Widget _buildMap(double lat, double lng) {
     String? Function(String?)? validator,
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
+    required int maxLength,
   }) {
     return Column(
       children: [
@@ -589,6 +597,7 @@ Widget _buildMap(double lat, double lng) {
           validator: validator,
           keyboardType: keyboardType,
           obscureText: obscureText,
+          maxLength: maxLength,
         ),
         SizedBox(height: 15),
       ],

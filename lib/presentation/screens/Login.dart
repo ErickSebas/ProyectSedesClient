@@ -72,6 +72,8 @@ class _LoginPageState extends State<LoginPage> {
   final AuthGoogle authGoogle = AuthGoogle();
   int? memberId = 0;
   bool isloading = false;
+  bool _isLoading = false;
+  bool _isAuthenticated = false;
 
   Future<Member?> authenticateHttp(String email, String password) async {
     final url = Uri.parse(
@@ -110,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
     if (mounted) tryAutoLogin(context);
   }
 
-    Future<void> tryAutoLogin(BuildContext context) async {
+  Future<void> tryAutoLogin(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     memberId = prefs.getInt('miembroLocal');
     print(memberId);
@@ -126,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Center(
                     child: SpinKitFadingCube(
-                      color: Colors.blue, 
+                      color: Colors.blue,
                       size: 50.0,
                     ),
                   ),
@@ -140,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
       final member = await fetchMemberById(memberId!);
       miembroActual = member!;
       if (mounted) {
-      Navigator.of(context, rootNavigator: true).pop();
+        Navigator.of(context, rootNavigator: true).pop();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -409,8 +411,11 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 20),
                     TextField(
                       controller: correoController,
+                      maxLength: 45, // Establece el máximo de caracteres a 45
                       decoration: InputDecoration(
                         labelText: 'Correo electrónico',
+                        counterText:
+                            '', // Si no quieres mostrar el contador de caracteres
                         errorText: mensajeErrorCorreo,
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.lightBlueAccent),
@@ -421,8 +426,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextField(
                       controller: contrasenaController,
                       obscureText: true,
+                      maxLength: 10, // Establece el máximo de caracteres a 10
                       decoration: InputDecoration(
                         labelText: 'Contraseña',
+                        counterText:
+                            '', // Si no quieres mostrar el contador de caracteres
                         errorText: mensajeErrorContrasena,
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.lightBlueAccent),
@@ -463,67 +471,6 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Validación de campos vacíos
-
-                        if (correoController.text.isEmpty ||
-                            contrasenaController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(
-                                    'Por favor, complete todos los campos.')),
-                          );
-
-                          return; // Sale de la función si hay campos vacíos
-                        }
-
-                        // Validación de formato de correo electrónico
-
-                        if (!isValidEmail(correoController.text)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(
-                                    'Ingrese un correo electrónico válido.')),
-                          );
-
-                          return; // Sale de la función si el correo es inválido
-                        }
-
-                        final loggedInMember = await authenticateHttp(
-                          correoController.text,
-                          md5
-                              .convert(utf8.encode(contrasenaController.text))
-                              .toString(),
-                        );
-
-                        if (loggedInMember != null) {
-                          if (loggedInMember.role == "Carnetizador" ||loggedInMember.role == "Super Admin" ||loggedInMember.role == "Admin" || loggedInMember.role == "Jefe de Brigada" ||//Jefe de Brigada
-                              loggedInMember.role == "Cliente") {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ViewClient(
-                                  userId: loggedInMember.id,
-                                ),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Rol de usuario desconocido')),
-                            );
-                          }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content:
-                                    Text('Usuario o Contraseña Incorrectos')),
-                          );
-                        }
-                      },
-                      child: Text('LOGIN'),
-                    )
                   ],
                 ),
               ),
@@ -612,7 +559,7 @@ class _LoginPageState extends State<LoginPage> {
 
                           if (res == 1) {
                             miembroActual =
-                            await getPersonByEMail(googleUser.correo);
+                                await getPersonByEMail(googleUser.correo);
                             await saveMemberIdToCache(miembroActual.id);
                             insertToken();
                           } else {
@@ -789,7 +736,7 @@ class _LoginPageState extends State<LoginPage> {
         // Verificar si el correo de Facebook ya está registrado
 
         final existingMember = await checkemailexist(email!);
-        
+
         if (existingMember != null) {
           miembroActual = existingMember;
           await saveMemberIdToCache(miembroActual.id);

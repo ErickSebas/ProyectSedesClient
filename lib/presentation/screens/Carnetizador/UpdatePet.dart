@@ -16,7 +16,6 @@ import 'package:image/image.dart' as img;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 class UpdatePet extends StatefulWidget {
   final Mascota mascota; // Agregar este campo para recibir el objeto Mascota
 
@@ -39,16 +38,18 @@ class _UpdatePetState extends State<UpdatePet> {
   List<String> _imageUrls = [];
   bool isLoadingImages = true;
 
-
   @override
   void initState() {
     super.initState();
-    getImagesUrls('cliente', widget.mascota.idPersona, widget.mascota.idMascotas).then((urls) {
+    getImagesUrls(
+            'cliente', widget.mascota.idPersona, widget.mascota.idMascotas)
+        .then((urls) {
       setState(() {
         _imageUrls = urls;
       });
     });
-    addImageUrlsToSelectedImages('cliente', widget.mascota.idPersona, widget.mascota.idMascotas);
+    addImageUrlsToSelectedImages(
+        'cliente', widget.mascota.idPersona, widget.mascota.idMascotas);
     // Asignar los valores de la Mascota a los controladores
     nombreController.text = widget.mascota.nombre;
     edadController.text = widget.mascota.edad.toString();
@@ -87,7 +88,7 @@ class _UpdatePetState extends State<UpdatePet> {
     );
   }
 
-    Future<List<String>> getImagesUrls(
+  Future<List<String>> getImagesUrls(
       String carpeta, int idCliente, int idMascota) async {
     List<String> imageUrls = [];
 
@@ -107,38 +108,39 @@ class _UpdatePetState extends State<UpdatePet> {
     return imageUrls;
   }
 
-Future<void> addImageUrlsToSelectedImages(String carpeta, int idCliente, int idMascota) async {
-  try {
-    List<String> imageUrls = await getImagesUrls(carpeta, idCliente, idMascota);
-    for (String url in imageUrls) {
-      File tempImage = await _downloadImage(url);
+  Future<void> addImageUrlsToSelectedImages(
+      String carpeta, int idCliente, int idMascota) async {
+    try {
+      List<String> imageUrls =
+          await getImagesUrls(carpeta, idCliente, idMascota);
+      for (String url in imageUrls) {
+        File tempImage = await _downloadImage(url);
+        setState(() {
+          _selectedImages.add(tempImage);
+        });
+      }
       setState(() {
-        _selectedImages.add(tempImage);
+        isLoadingImages = false;
       });
+    } catch (e) {
+      print('Error al obtener y descargar las imágenes: $e');
     }
-    setState(() {
-      isLoadingImages = false;  
-    });
-    
-  } catch (e) {
-    print('Error al obtener y descargar las imágenes: $e');
   }
-}
 
-Future<File> _downloadImage(String imageUrl) async {
-  final response = await http.get(Uri.parse(imageUrl));
+  Future<File> _downloadImage(String imageUrl) async {
+    final response = await http.get(Uri.parse(imageUrl));
 
-  if (response.statusCode == 200) {
-    final bytes = response.bodyBytes;
-    final tempDir = await getTemporaryDirectory();
-    final tempImageFile = File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
-    await tempImageFile.writeAsBytes(bytes);
-    return tempImageFile;
-  } else {
-    throw Exception('Error al descargar imagen');
+    if (response.statusCode == 200) {
+      final bytes = response.bodyBytes;
+      final tempDir = await getTemporaryDirectory();
+      final tempImageFile =
+          File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
+      await tempImageFile.writeAsBytes(bytes);
+      return tempImageFile;
+    } else {
+      throw Exception('Error al descargar imagen');
+    }
   }
-}
-
 
   Future<List<int>> compressImage(File imageFile) async {
     // Leer la imagen
@@ -299,6 +301,7 @@ Future<File> _downloadImage(String imageUrl) async {
               ),
               TextField(
                 controller: edadController,
+                maxLength: 2, // Establece el máximo de caracteres a 2
                 decoration: InputDecoration(
                   labelText: 'Edad de la Mascota',
                   errorText: validador.mensajeErrorEdadMascota,
@@ -354,76 +357,84 @@ Future<File> _downloadImage(String imageUrl) async {
                   errorText: validador.mensajeErrorColorMascota,
                 ),
                 inputFormatters: [
-                  LengthLimitingTextInputFormatter(
-                      30),
+                  LengthLimitingTextInputFormatter(30),
                 ],
-                maxLength:
-                    30, 
+                maxLength: 30,
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: isLoadingImages? null: () async {
-                  if (_selectedImages.length < 3) {
-                      final picker = ImagePicker();
-                      final List<XFile>? pickedFiles = await picker.pickMultiImage();
+                onPressed: isLoadingImages
+                    ? null
+                    : () async {
+                        if (_selectedImages.length < 3) {
+                          final picker = ImagePicker();
+                          final List<XFile>? pickedFiles =
+                              await picker.pickMultiImage();
 
-                      if (pickedFiles != null && pickedFiles.isNotEmpty) {
-                        int availableSlots = 3 - _selectedImages.length; 
-                        List<File> newImages = pickedFiles.take(availableSlots).map((file) => File(file.path)).toList();
+                          if (pickedFiles != null && pickedFiles.isNotEmpty) {
+                            int availableSlots = 3 - _selectedImages.length;
+                            List<File> newImages = pickedFiles
+                                .take(availableSlots)
+                                .map((file) => File(file.path))
+                                .toList();
 
-                        setState(() {
-                          _selectedImages.addAll(newImages);
-                        });
+                            setState(() {
+                              _selectedImages.addAll(newImages);
+                            });
 
-                        if (pickedFiles.length > availableSlots) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Se ha alcanzado el límite de 3 imágenes.'),
-                            ),
-                          );
+                            if (pickedFiles.length > availableSlots) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Se ha alcanzado el límite de 3 imágenes.'),
+                                ),
+                              );
+                            }
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                'Se ha alcanzado el límite de 3 imágenes.'),
+                          ));
                         }
-                      }
-                    }
-                    else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Se ha alcanzado el límite de 3 imágenes.'),
-                    ));
-                  }
-                },
+                      },
                 style: ElevatedButton.styleFrom(
-                  primary: isLoadingImages?Color.fromARGB(255, 130, 141, 153): Color(0xFF5C8ECB), 
+                  primary: isLoadingImages
+                      ? Color.fromARGB(255, 130, 141, 153)
+                      : Color(0xFF5C8ECB),
                 ),
                 child: Text('Cargar Fotos de la Mascota'),
               ),
               SizedBox(height: 20),
-              isLoadingImages?SpinKitCircle(
-                    color: Colors.blue,
-                    size: 50.0,
-                  )
-                :  SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: _selectedImages.asMap().entries.map((entry) {
-                    final int index = entry.key;
-                    final File? image = entry.value;
-                    return GestureDetector(
-                      onTap: () {
-                        Confirmacion_Eliminar_Imagen(index);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: image != null
-                            ? Image.file(
-                                image,
-                                width: 100,
-                                height: 100,
-                              )
-                            : SizedBox(),
+              isLoadingImages
+                  ? SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    )
+                  : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: _selectedImages.asMap().entries.map((entry) {
+                          final int index = entry.key;
+                          final File? image = entry.value;
+                          return GestureDetector(
+                            onTap: () {
+                              Confirmacion_Eliminar_Imagen(index);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: image != null
+                                  ? Image.file(
+                                      image,
+                                      width: 100,
+                                      height: 100,
+                                    )
+                                  : SizedBox(),
+                            ),
+                          );
+                        }).toList(),
                       ),
-                    );
-                  }).toList(),
-                ),
-              ),
+                    ),
               SizedBox(height: 20),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,

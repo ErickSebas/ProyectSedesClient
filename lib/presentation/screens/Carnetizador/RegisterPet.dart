@@ -381,6 +381,7 @@ Future<bool> uploadImages(List<File?> images) async {
               ),
               TextField(
                 controller: edadController,
+                maxLength: 2, // Establece el máximo de caracteres a 2
                 decoration: InputDecoration(
                   labelText: 'Edad de la Mascota',
                   errorText: validador.mensajeErrorEdadMascota,
