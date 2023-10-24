@@ -355,25 +355,36 @@ Future<File> _downloadImage(String imageUrl) async {
                 ),
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(
-                      30), // Limita a 30 caracteres
+                      30),
                 ],
                 maxLength:
-                    30, // Puedes usar esta propiedad también para indicar el límite máximo
+                    30, 
               ),
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: isLoadingImages? null: () async {
                   if (_selectedImages.length < 3) {
-                    final picker = ImagePicker();
-                    final pickedFile =
-                        await picker.pickImage(source: ImageSource.gallery);
+                      final picker = ImagePicker();
+                      final List<XFile>? pickedFiles = await picker.pickMultiImage();
 
-                    if (pickedFile != null) {
-                      setState(() {
-                        _selectedImages.add(File(pickedFile.path));
-                      });
+                      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+                        int availableSlots = 3 - _selectedImages.length; 
+                        List<File> newImages = pickedFiles.take(availableSlots).map((file) => File(file.path)).toList();
+
+                        setState(() {
+                          _selectedImages.addAll(newImages);
+                        });
+
+                        if (pickedFiles.length > availableSlots) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Se ha alcanzado el límite de 3 imágenes.'),
+                            ),
+                          );
+                        }
+                      }
                     }
-                  } else {
+                    else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('Se ha alcanzado el límite de 3 imágenes.'),
                     ));
