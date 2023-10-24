@@ -105,27 +105,38 @@ Future<String?> getImageUrl(int idCliente) async {
 class CampaignPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (loggedInPerson?.latitud == 0.1) {
-      Future.delayed(Duration(seconds: 0), () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Actualizar Datos"),
-              content: Text("Debes actualizar tus datos."),
-              actions: <Widget>[
-                TextButton(
-                  child: Text("Aceptar"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
+     Widget mensajeCondicional() {
+      if (loggedInPerson?.latitud == 0.1) {
+        return Container(
+          color: Colors.red, // Puedes personalizar el color
+          padding: EdgeInsets.all(10.0), // Personaliza el espaciado
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Debes actualizar tus datos'),
+              TextButton(
+                onPressed: () {
+                  // Navega a la otra página aquí
+                       Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegisterUpdate(
+                                          isUpdate: true,
+                                          userData: loggedInPerson,
+                                          carnetizadorMember: loggedInPerson,
+                                        )),
+                              );
+                },
+                child: Text('Actualizar'),
+              ),
+            ],
+          ),
         );
-      }); //Prueba
+      } else {
+        return SizedBox.shrink(); // Si no se cumple la condición, muestra un widget invisible
+      }
     }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
@@ -248,69 +259,64 @@ class CampaignPage extends StatelessWidget {
               ListTile(
                 title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
                 leading: Icon(Icons.credit_card),
-              ),ListTile(
-                      leading: Icon(Icons.message),
-                      title: Text('Mensaje'),
-                      onTap: () async {
-                        if (miembroActual!.role == 'Cliente') {
-                          print(miembroActual!.role);
-                          Chat chatCliente = Chat(
-                              idChats: 0,
-                              idPerson: null,
-                              idPersonDestino: miembroActual!.id,
-                              fechaActualizacion: DateTime.now());
-                          int lastId = 0;
-                          List<Chat> filteredList = [];
-                          await fetchChatsClient().then((value) => {
-                                filteredList = value
-                                    .where((element) =>
-                                        element.idPersonDestino ==
-                                        miembroActual!.id)
-                                    .toList(),
-                                if (filteredList.isEmpty)
-                                  {
-                                    registerNewChat(chatCliente)
-                                        .then((value) => {
-                                              getLastIdChat().then((value) => {
-                                                    lastId = value,
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ChatPage(
-                                                                idChat: lastId,
-                                                                nombreChat:
-                                                                    'Soporte',
-                                                                idPersonDestino:
-                                                                    0,
-                                                              )),
-                                                    )
-                                                  })
-                                            })
-                                  }
-                                else
-                                  {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ChatPage(
-                                                idChat: filteredList[0].idChats,
-                                                nombreChat: 'Soporte',
-                                                idPersonDestino: 0,
-                                              )),
-                                    )
-                                  }
-                              });
-                        }
-                        else{
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ChatScreenState()),
-                          );
-                        }
-                      },
-                    ),
+              ),
+              ListTile(
+                leading: Icon(Icons.message),
+                title: Text('Mensaje'),
+                onTap: () async {
+                  if (miembroActual!.role == 'Cliente') {
+                    print(miembroActual!.role);
+                    Chat chatCliente = Chat(
+                        idChats: 0,
+                        idPerson: null,
+                        idPersonDestino: miembroActual!.id,
+                        fechaActualizacion: DateTime.now());
+                    int lastId = 0;
+                    List<Chat> filteredList = [];
+                    await fetchChatsClient().then((value) => {
+                          filteredList = value
+                              .where((element) =>
+                                  element.idPersonDestino == miembroActual!.id)
+                              .toList(),
+                          if (filteredList.isEmpty)
+                            {
+                              registerNewChat(chatCliente).then((value) => {
+                                    getLastIdChat().then((value) => {
+                                          lastId = value,
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => ChatPage(
+                                                      idChat: lastId,
+                                                      nombreChat: 'Soporte',
+                                                      idPersonDestino: 0,
+                                                    )),
+                                          )
+                                        })
+                                  })
+                            }
+                          else
+                            {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                          idChat: filteredList[0].idChats,
+                                          nombreChat: 'Soporte',
+                                          idPersonDestino: 0,
+                                        )),
+                              )
+                            }
+                        });
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ChatScreenState()),
+                    );
+                  }
+                },
+              ),
               Align(
                 alignment: Alignment.bottomRight,
                 child: ListTile(
@@ -334,7 +340,13 @@ class CampaignPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Container(
+body: Column(
+  crossAxisAlignment: CrossAxisAlignment.stretch,
+  children: [
+    // Muestra el mensaje en la parte superior si se cumple la condición
+    mensajeCondicional(),
+    Expanded(
+      child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/Splash.png'),
@@ -348,7 +360,9 @@ class CampaignPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  miembroActual.role == "Carnetizador" || miembroActual.role=="Super Admin" || miembroActual.role == "Admin"
+                  miembroActual.role == "Carnetizador" ||
+                      miembroActual.role == "Super Admin" ||
+                      miembroActual.role == "Admin"
                       ? Column(
                           children: <Widget>[
                             Card(
@@ -366,8 +380,10 @@ class CampaignPage extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ListMembersScreen(
-                                            userId: loggedInPerson!.id),
+                                        builder: (context) =>
+                                            ListMembersScreen(
+                                              userId: loggedInPerson!.id,
+                                            ),
                                       ),
                                     );
                                   },
@@ -384,7 +400,9 @@ class CampaignPage extends StatelessWidget {
                           ],
                         )
                       : Container(),
-                  miembroActual.role == "Carnetizador"|| miembroActual.role=="Super Admin" || miembroActual.role == "Admin"
+                  miembroActual.role == "Carnetizador" ||
+                      miembroActual.role == "Super Admin" ||
+                      miembroActual.role == "Admin"
                       ? SizedBox(width: 20)
                       : Container(),
                   Column(
@@ -405,14 +423,15 @@ class CampaignPage extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ListMascotas(
-                                        userId: loggedInPerson!.id)),
+                                          userId: loggedInPerson!.id,
+                                        )),
                               );
                             },
                           ),
                         ),
                       ),
                       Text(
-                        'Ver Tus Mascotas',
+                        'Mis Mascotas',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.blueAccent,
@@ -443,8 +462,7 @@ class CampaignPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      ListCampaignPage(), //VerCamapanas(),
+                                  builder: (context) => ListCampaignPage(),
                                 ),
                               );
                             },
@@ -475,7 +493,6 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              //Navigator.of(context).pushNamed("/updateClient", arguments: loggedInPerson);
                               if (loggedInPerson!.role == "Carnetizador") {
                                 esCarnetizador = true;
                               }
@@ -507,6 +524,10 @@ class CampaignPage extends StatelessWidget {
           ),
         ),
       ),
+    ),
+  ],
+),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
