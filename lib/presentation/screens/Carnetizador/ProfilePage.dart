@@ -98,17 +98,17 @@ class ProfilePage extends StatelessWidget {
     print(carnetizadorMember?.correo);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Perfil de ${member!.names}"),
-        backgroundColor: Color(0xFF4D6596),
+        title: Text("Perfil de ${member!.names}" ,style: TextStyle(color: Colors.blue)),
+        backgroundColor: Colors.white,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.blue),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ListMembersScreen(
-                    userId: miembroActual!.id, //Te manda a la lista con el ID del usuario que se asigno
+                    userId: miembroActual!.id, 
                   ), 
                 ),
               );
@@ -120,26 +120,29 @@ class ProfilePage extends StatelessWidget {
         children: [
           Image.asset(
             'assets/Splash.png',
-            fit: BoxFit.cover, 
+            fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
           ),
           Container(
-            color: Color(
-                0xFF4D6596),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
             child: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  FractionallySizedBox(
-                    widthFactor: 1.0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.grey.withOpacity(0.5),
+                          Colors.grey.withOpacity(0.3),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -148,48 +151,44 @@ class ProfilePage extends StatelessWidget {
                         _buildInfoItem("Teléfono: ${member!.telefono}"),
                         _buildInfoItem(
                             "Fecha de Nacimiento: ${member!.fechaNacimiento?.year}-${member!.fechaNacimiento?.month}-${member!.fechaNacimiento?.day}"),
+                        SizedBox(height: 10),
                         _buildMap(member!.latitud, member!.longitud),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                if (member!.role == "Carnetizador") {
-                                  esCarnetizador = true;
-                                }
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => RegisterUpdate(
-                                        isUpdate: true,
-                                        userData: member,
-                                        carnetizadorMember: carnetizadorMember),
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Color.fromARGB(255, 255, 255, 255),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                ),
-                              ),
-                              child: Text(
-                                "Editar Perfil",
-                                style: TextStyle(
-                                  color: Color(0xFF4D6596),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 20),
-                            _buildSendEmailButton(context)
-                          ],
-                        )
                       ],
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (member!.role == "Carnetizador") {
+                          esCarnetizador = true;
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegisterUpdate(
+                              isUpdate: true,
+                              userData: member,
+                              carnetizadorMember: carnetizadorMember,
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                      child: Text(
+                        "Editar Perfil",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -247,7 +246,7 @@ class ProfilePage extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 13, horizontal: 20),
       child: RichText(
         text: TextSpan(
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: TextStyle(color: Colors.blue, fontSize: 20),
           children: [
             TextSpan(
               text: "${parts[0]}: ", // Parte del título en negrita
