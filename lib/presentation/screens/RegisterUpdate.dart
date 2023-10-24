@@ -8,6 +8,7 @@ import 'package:fluttapp/presentation/screens/SearchLocation.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
@@ -65,8 +66,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   String carnet = '';
   String telefono = '';
   String? selectedRole = 'Cliente';
-  String latitude = '';
-  String longitude = '';
+  double latitude = 0;
+  double longitude = 0;
   String email = '';
   String password = '';
   int status = 1;
@@ -88,18 +89,12 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
       esCliente = false;
       print(widget.userData?.role);
     }
-    print("probando si envia los datos ahora global");
-    print(carnetizadorglobal?.id);
-    print(carnetizadorglobal?.correo);
+
   }
 
   void Cargar_Datos_Persona() async {
-    print("probando si llegan los datos del cliente facebook");
-    print(widget.userData?.id);
     idPerson = widget.userData!.id;
-    print(
-        "probando si llegan los datos del cliente facebook pero con idPerson");
-    print(idPerson);
+
     nombre = widget.userData!.names;
     apellido = widget.userData!.lastnames!;
     datebirthday = widget.userData?.fechaNacimiento;
@@ -108,8 +103,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     telefono = widget.userData!.telefono.toString();
     selectedRole = widget.userData!.role;
 
-    latitude = widget.userData!.latitud.toString();
-    longitude = widget.userData!.longitud.toString();
+    latitude = widget.userData!.latitud;
+    longitude = widget.userData!.longitud;
     email = widget.userData!.correo;
 
     setState(() {});
@@ -200,8 +195,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
       miembroActual!.carnet = carnet;
       miembroActual!.telefono = int.parse(telefono);
       miembroActual!.role = selectedRole;
-      miembroActual!.latitud = double.parse(latitude);
-      miembroActual!.longitud = double.parse(longitude);
+      miembroActual!.latitud = latitude;
+      miembroActual!.longitud = longitude;
       miembroActual!.correo = email;
     }
   }
@@ -400,7 +395,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                       : null,
                   keyboardType: TextInputType.number,
                 ),
-                Text("Dirección:", style: TextStyle(color: Colors.white)),
+                Text("Dirección:", style: TextStyle(color: Colors.black)),
+                                        _buildMap(latitude , longitude),
                 ElevatedButton(
                   child: Text("Selecciona una ubicación"),
                   onPressed: () async {
@@ -413,8 +409,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                     );
                     if (result != null) {
                       setState(() {
-                        latitude = result.latitude.toString();
-                        longitude = result.longitude.toString();
+                        latitude = result.latitude;
+                        longitude = result.longitude;
                       });
                     }
                   },
@@ -422,13 +418,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                     primary: Color(0xFF1A2946),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    latitude + " " + longitude,
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
+
                 _buildTextField(
                   initialData: email,
                   label: 'Email',
@@ -520,6 +510,26 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     );
   }
 
+
+
+Widget _buildMap(double lat, double lng) {
+  return Container(
+    height: 150, 
+    width: double.infinity, 
+    child: GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: LatLng(lat, lng),
+        zoom: 15,
+      ),
+      markers: {
+        Marker(
+          markerId: MarkerId('memberLocation'),
+          position: LatLng(lat, lng),
+        ),
+      },
+    ),
+  );
+}
   Widget _buildDateOfBirthField({
     required String label,
     required Function(DateTime?) onChanged,

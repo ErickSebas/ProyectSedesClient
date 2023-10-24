@@ -115,15 +115,6 @@ class ListMascotas extends StatelessWidget {
           } else {
             List<Mascota> mascotas = snapshot.data!;
             return Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Color.fromARGB(255, 241, 245, 255),
-                  title: Text(
-                    'Mascotas',
-                    style:
-                        TextStyle(color: const Color.fromARGB(255, 70, 65, 65)),
-                  ),
-                  centerTitle: true,
-                ),
                 body: mascotas.isEmpty? Center(child: Text("No tienes Mascotas"),): CampaignPage(mascotas: mascotas),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
@@ -178,7 +169,16 @@ class _CampaignPageState extends State<CampaignPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 241, 245, 255),
+          title: Text(
+            'Lista de Mascota',
+            style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65)),
+          ),
+          centerTitle: true,
+        ),
+      body:  Container(
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/Splash.png'),
@@ -267,7 +267,7 @@ class _CampaignPageState extends State<CampaignPage> {
                         ),
                         SlidableAction(
                           onPressed: ((context) {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => UpdatePet(mascota),
@@ -297,7 +297,12 @@ class _CampaignPageState extends State<CampaignPage> {
                             color: Colors.white,
                           ),
                         ),
-                        onTap: () => Navigator.pushReplacement(
+                        trailing: Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.white.withOpacity(0.6),
+                          size: 18.0,
+                        ),
+                        onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => ViewMascotasInfo(mascota),
@@ -312,6 +317,7 @@ class _CampaignPageState extends State<CampaignPage> {
           ),
         ],
       ),
+    ),
     );
   }
 }

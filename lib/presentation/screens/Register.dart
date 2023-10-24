@@ -6,6 +6,7 @@ import 'package:fluttapp/presentation/screens/SearchLocation.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
@@ -256,6 +257,7 @@ class _RegisterUpdateState extends State<Register> {
                       : null,
                   keyboardType: TextInputType.number,
                 ),
+
                 Text("Dirección:", style: TextStyle(color: Colors.white)),
                 ElevatedButton(
                   child: Text("Selecciona una ubicación"),
@@ -345,6 +347,7 @@ class _RegisterUpdateState extends State<Register> {
     );
   }
 
+                
   Widget _buildDateOfBirthField({
     required String label,
     required Function(DateTime?) onChanged, required String? Function(dynamic value) validator,

@@ -13,6 +13,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
+
 
 class UpdatePet extends StatefulWidget {
   final Mascota mascota; // Agregar este campo para recibir el objeto Mascota
@@ -33,11 +36,19 @@ class _UpdatePetState extends State<UpdatePet> {
   String? mensajeError;
   List<File?> _selectedImages = [];
   Mostrar_Finalizados_Update mostrarFinalizar = Mostrar_Finalizados_Update();
+  List<String> _imageUrls = [];
+  bool isLoadingImages = true;
+
 
   @override
   void initState() {
     super.initState();
-
+    getImagesUrls('cliente', widget.mascota.idPersona, widget.mascota.idMascotas).then((urls) {
+      setState(() {
+        _imageUrls = urls;
+      });
+    });
+    addImageUrlsToSelectedImages('cliente', widget.mascota.idPersona, widget.mascota.idMascotas);
     // Asignar los valores de la Mascota a los controladores
     nombreController.text = widget.mascota.nombre;
     edadController.text = widget.mascota.edad.toString();
@@ -75,6 +86,59 @@ class _UpdatePetState extends State<UpdatePet> {
       },
     );
   }
+
+    Future<List<String>> getImagesUrls(
+      String carpeta, int idCliente, int idMascota) async {
+    List<String> imageUrls = [];
+
+    try {
+      Reference storageRef =
+          FirebaseStorage.instance.ref('$carpeta/$idCliente/$idMascota');
+      ListResult result = await storageRef.list();
+
+      for (var item in result.items) {
+        String downloadURL = await item.getDownloadURL();
+        imageUrls.add(downloadURL);
+      }
+    } catch (e) {
+      print('Error al obtener URLs de imágenes: $e');
+    }
+
+    return imageUrls;
+  }
+
+Future<void> addImageUrlsToSelectedImages(String carpeta, int idCliente, int idMascota) async {
+  try {
+    List<String> imageUrls = await getImagesUrls(carpeta, idCliente, idMascota);
+    for (String url in imageUrls) {
+      File tempImage = await _downloadImage(url);
+      setState(() {
+        _selectedImages.add(tempImage);
+      });
+    }
+    setState(() {
+      isLoadingImages = false;  
+    });
+    
+  } catch (e) {
+    print('Error al obtener y descargar las imágenes: $e');
+  }
+}
+
+Future<File> _downloadImage(String imageUrl) async {
+  final response = await http.get(Uri.parse(imageUrl));
+
+  if (response.statusCode == 200) {
+    final bytes = response.bodyBytes;
+    final tempDir = await getTemporaryDirectory();
+    final tempImageFile = File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
+    await tempImageFile.writeAsBytes(bytes);
+    return tempImageFile;
+  } else {
+    throw Exception('Error al descargar imagen');
+  }
+}
+
 
   Future<List<int>> compressImage(File imageFile) async {
     // Leer la imagen
@@ -185,6 +249,11 @@ class _UpdatePetState extends State<UpdatePet> {
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
         title: Text('Actualizar Mascota',
             style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65))),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.blue,
+          onPressed: () => Navigator.pop(context),
+        ),
         centerTitle: true,
       ),
       body: Container(
@@ -286,37 +355,52 @@ class _UpdatePetState extends State<UpdatePet> {
                 ),
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(
-                      30), // Limita a 30 caracteres
+                      30),
                 ],
                 maxLength:
-                    30, // Puedes usar esta propiedad también para indicar el límite máximo
+                    30, 
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () async {
+                onPressed: isLoadingImages? null: () async {
                   if (_selectedImages.length < 3) {
-                    final picker = ImagePicker();
-                    final pickedFile =
-                        await picker.pickImage(source: ImageSource.gallery);
+                      final picker = ImagePicker();
+                      final List<XFile>? pickedFiles = await picker.pickMultiImage();
 
-                    if (pickedFile != null) {
-                      setState(() {
-                        _selectedImages.add(File(pickedFile.path));
-                      });
+                      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+                        int availableSlots = 3 - _selectedImages.length; 
+                        List<File> newImages = pickedFiles.take(availableSlots).map((file) => File(file.path)).toList();
+
+                        setState(() {
+                          _selectedImages.addAll(newImages);
+                        });
+
+                        if (pickedFiles.length > availableSlots) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Se ha alcanzado el límite de 3 imágenes.'),
+                            ),
+                          );
+                        }
+                      }
                     }
-                  } else {
+                    else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('Se ha alcanzado el límite de 3 imágenes.'),
                     ));
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                  primary: isLoadingImages?Color.fromARGB(255, 130, 141, 153): Color(0xFF5C8ECB), 
                 ),
                 child: Text('Cargar Fotos de la Mascota'),
               ),
               SizedBox(height: 20),
-              SingleChildScrollView(
+              isLoadingImages?SpinKitCircle(
+                    color: Colors.blue,
+                    size: 50.0,
+                  )
+                :  SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: _selectedImages.asMap().entries.map((entry) {

@@ -147,6 +147,11 @@ final ScreenshotController screenshotController = ScreenshotController();
             'Datos de la Mascota',
             style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65)),
           ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Colors.blue,
+            onPressed: () => Navigator.pop(context),
+          ),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
