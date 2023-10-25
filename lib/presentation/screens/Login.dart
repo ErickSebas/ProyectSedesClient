@@ -92,6 +92,9 @@ class _LoginPageState extends State<LoginPage> {
       await saveMemberIdToCache(member.id);
 
       insertToken();
+      setState(() {
+        isloading = false;
+      });
 
       return member;
     } else if (response.statusCode == 404) {
@@ -395,10 +398,17 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isloading
-          ? Center(child: SpinKitCircle(
+          ? Center(child: Container(
+            decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/Splash.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+            child: SpinKitCircle(
                       color: Colors.blue,
                       size: 50.0,
-                    ))
+                    )),) 
           : Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -480,7 +490,9 @@ class _LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       onPressed: () async {
                         // Validación de campos vacíos
-
+                        setState(() {
+                          isloading = true;
+                        });
                         if (correoController.text.isEmpty ||
                             contrasenaController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
