@@ -1,11 +1,14 @@
 import 'package:fluttapp/Implementation/ChatImp.dart';
 import 'package:fluttapp/Implementation/ConversationImpl.dart';
 import 'package:fluttapp/Models/Conversation.dart';
+import 'package:fluttapp/Models/Profile.dart';
+import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 void main() => runApp(Conversations());
 
@@ -31,6 +34,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
   TabController? _tabController;
   final emailController = TextEditingController();
   bool isLoading = true;
+  Member? resPersonDestino;
 
 
   @override
@@ -112,7 +116,12 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
     bool canUser = true;
     int idPersonNewChat=0;
     Chat newChat = Chat(idChats: 0, idPerson: 0, idPersonDestino: 0, fechaActualizacion: DateTime.now());
-    await getIdPersonByEMail(emailController.text).then((value) => {
+    dynamic searchChat;
+    setState(() {
+      isLoading =true;
+    });
+    
+    await getIdPersonByEMail(emailController.text).then((value) async => {
       idPersonNewChat = value,
       if(value==miembroActual!.id){
         Mostrar_Error(context, "No puede iniciar un chat con su correo"),
@@ -120,8 +129,20 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
       }else if(value==0){
         Mostrar_Error(context, "No se encontró el correo"),
         canUser = false
-      },
+      }else{
       newChat = Chat(idChats: 0, idPerson: miembroActual!.id, idPersonDestino: idPersonNewChat, fechaActualizacion: DateTime.now()),
+      await getPersonById(idPersonNewChat).then((value) => {
+        resPersonDestino = value,
+        searchChat=chats.where((element) => element.idPersonDestino==resPersonDestino!.id||element.idPerson==resPersonDestino!.id).toList(),
+        if(searchChat.isNotEmpty){
+          Mostrar_Error(context, "El Chat ya existe"),
+          canUser = false
+        }else if(resPersonDestino?.role=="Cliente"){
+          Mostrar_Error(context, "No se encontró el correo"),
+          canUser = false
+        }
+      })
+      }
     });
     if(canUser){
       int newIdChat = 0;
@@ -145,6 +166,9 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
         
       });
     }
+    setState(() {
+      isLoading =false;
+    });
     //
     
     
@@ -194,7 +218,10 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
           ],
         )
       : Center(
-          child: CircularProgressIndicator(),
+          child: SpinKitCircle(
+                      color: Colors.white,
+                      size: 50.0,
+                    ),
         ),
   floatingActionButton: _tabController?.index==0?  FloatingActionButton(
      onPressed: () {
@@ -230,7 +257,8 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
               ],
             ),
             actions: [
-              TextButton(
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+TextButton(
                 child: Text('Cancelar'),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -240,6 +268,18 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
                 child: Text('Aceptar'),
                 onPressed: () async {
                   Navigator.of(context).pop();
+                  await addNewChat();
+                  emailController.clear();
+                },
+              ),
+              ],),
+              
+              TextButton(
+                child: Text('Abrir Nuevo Chat con Soporte Técnico'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  dynamic res =namesChats.where((element) => element['Nombres']=='erick');
+                  emailController.text = "galaxixsum@gmail.com";   
                   await addNewChat();
                   emailController.clear();
                 },

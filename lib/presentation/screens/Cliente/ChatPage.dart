@@ -4,6 +4,7 @@ import 'package:fluttapp/Models/ChatModel.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 
 void main() => runApp(ChatApp());
@@ -222,7 +223,10 @@ class _ChatPageState extends State<ChatPage> {
             ),
           )
         ],
-      ):Center(child: CircularProgressIndicator(),),
+      ):Center(child: SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    ),),
     );
   }
 }

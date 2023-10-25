@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -111,7 +112,10 @@ class _LocationPickerState extends State<LocationPicker> {
             ),
             if (!mapCreated)
               Center(
-                child: CircularProgressIndicator(),
+                child: SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    ),
               ),
             mapCreated
                 ? Positioned(

@@ -6,6 +6,7 @@ import 'package:fluttapp/Models/Propietario.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -40,7 +41,10 @@ class ViewMascotasInfo extends StatelessWidget {
       future: fetchOwnerById(mascota.idPersona),
       builder: (BuildContext context, AsyncSnapshot<Propietario> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    );
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
@@ -174,7 +178,10 @@ final ScreenshotController screenshotController = ScreenshotController();
                   builder: (BuildContext context,
                       AsyncSnapshot<List<String>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    );
                     } else if (snapshot.hasError) {
                       print('Lista de URLs de imágenes: ${snapshot.data}');
                       return Text('Error: ${snapshot.error}');

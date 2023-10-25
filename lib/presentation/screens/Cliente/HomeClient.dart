@@ -20,12 +20,12 @@ import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-Member?
-    loggedInPerson; // Variable para almacenar los datos de la persona autenticada
+// Variable para almacenar los datos de la persona autenticada
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
 // ignore: must_be_immutable
 
@@ -37,29 +37,8 @@ class ViewClient extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    // Antes de construir la interfaz, obtén los datos de la persona autenticada
-    return FutureBuilder<Member?>(
-      future: getPersonById(userId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Muestra un indicador de carga mientras se obtienen los datos
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData) {
-          return Text('No se encontraron datos de la persona');
-        } else {
-          loggedInPerson = snapshot.data;
-          // Ahora puedes construir la interfaz con los datos de la persona
-          print('Datos obtenidossss: $loggedInPerson'); // Agrega esta línea
-          print('Nombres: ${loggedInPerson?.names}');
-          print('Rol: ${loggedInPerson?.role}');
-          print('Latitud: ${loggedInPerson?.latitud}');
-          print('ID : ${loggedInPerson?.id}');
 
           return CampaignPage();
-        }
-      },
-    );
   }
 }
 
@@ -106,7 +85,7 @@ class CampaignPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
      Widget mensajeCondicional() {
-      if (loggedInPerson?.latitud == 0.1) {
+      if (miembroActual?.latitud == 0.1) {
         return Container(
           color: Colors.red, // Puedes personalizar el color
           padding: EdgeInsets.all(10.0), // Personaliza el espaciado
@@ -122,8 +101,8 @@ class CampaignPage extends StatelessWidget {
                                 MaterialPageRoute(
                                     builder: (context) => RegisterUpdate(
                                           isUpdate: true,
-                                          userData: loggedInPerson,
-                                          carnetizadorMember: loggedInPerson,
+                                          userData: miembroActual,
+                                          carnetizadorMember: miembroActual,
                                         )),
                               );
                 },
@@ -184,12 +163,15 @@ class CampaignPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       FutureBuilder<String?>(
-                        future: getImageUrl(loggedInPerson?.id ?? 0),
+                        future: getImageUrl(miembroActual?.id ?? 0),
                         builder: (BuildContext context,
                             AsyncSnapshot<String?> snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return CircularProgressIndicator();
+                            return SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    );
                           } else if (snapshot.hasError) {
                             return Text(
                                 'Error al cargar la imagen: ${snapshot.error}');
@@ -197,7 +179,7 @@ class CampaignPage extends StatelessWidget {
                             final imageUrl = snapshot.data;
                             print('URL de la imagen: $imageUrl');
                             print(
-                                'ID enviado a getImageUrl: ${loggedInPerson?.id}');
+                                'ID enviado a getImageUrl: ${miembroActual?.id}');
                             return imageUrl != null
                                 ? Image.network(
                                     imageUrl,
@@ -214,14 +196,14 @@ class CampaignPage extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        loggedInPerson?.names ?? '',
+                        miembroActual?.names ?? '',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 22,
                         ),
                       ),
                       Text(
-                        loggedInPerson?.role ?? '',
+                        miembroActual?.role ?? '',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 22,
@@ -232,32 +214,32 @@ class CampaignPage extends StatelessWidget {
                 ),
               ),
               ListTile(
-                title: Text('Nombres: ${loggedInPerson?.names ?? ''}'),
+                title: Text('Nombres: ${miembroActual?.names ?? ''}'),
                 leading: Icon(Icons.person),
               ),
               ListTile(
-                title: Text('Apellidos: ${loggedInPerson?.lastnames ?? ''}'),
+                title: Text('Apellidos: ${miembroActual?.lastnames ?? ''}'),
                 leading: Icon(Icons.person),
               ),
               ListTile(
                 title: Text(
-                    'Fecha de Nacimiento: ${loggedInPerson!.fechaNacimiento?.year}-${loggedInPerson!.fechaNacimiento?.month}-${loggedInPerson!.fechaNacimiento?.day}'),
+                    'Fecha de Nacimiento: ${miembroActual!.fechaNacimiento?.year}-${miembroActual!.fechaNacimiento?.month}-${miembroActual!.fechaNacimiento?.day}'),
                 leading: Icon(Icons.calendar_today),
               ),
               ListTile(
-                title: Text('Rol: ${loggedInPerson?.role ?? ''}'),
+                title: Text('Rol: ${miembroActual?.role ?? ''}'),
                 leading: Icon(Icons.work),
               ),
               ListTile(
-                title: Text('Correo: ${loggedInPerson?.correo ?? ''}'),
+                title: Text('Correo: ${miembroActual?.correo ?? ''}'),
                 leading: Icon(Icons.email),
               ),
               ListTile(
-                title: Text('Teléfono: ${loggedInPerson?.telefono ?? ''}'),
+                title: Text('Teléfono: ${miembroActual?.telefono ?? ''}'),
                 leading: Icon(Icons.phone),
               ),
               ListTile(
-                title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
+                title: Text('Carnet: ${miembroActual?.carnet ?? ''}'),
                 leading: Icon(Icons.credit_card),
               ),
               ListTile(
@@ -323,7 +305,7 @@ class CampaignPage extends StatelessWidget {
                   leading: Icon(Icons.logout),
                   title: Text('Cerrar Sesión'),
                   onTap: () async {
-                    miembroActual = loggedInPerson!;
+                    miembroActual = miembroActual!;
                     final prefs = await SharedPreferences.getInstance();
                     prefs.setInt('miembroLocal', 0);
                     chats.clear();
@@ -360,9 +342,9 @@ body: Column(
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  miembroActual.role == "Carnetizador" ||
-                      miembroActual.role == "Super Admin" ||
-                      miembroActual.role == "Admin"
+                  miembroActual!.role == "Carnetizador" ||
+                      miembroActual!.role == "Super Admin" ||
+                      miembroActual!.role == "Admin"
                       ? Column(
                           children: <Widget>[
                             Card(
@@ -382,7 +364,7 @@ body: Column(
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             ListMembersScreen(
-                                              userId: loggedInPerson!.id,
+                                              userId: miembroActual!.id,
                                             ),
                                       ),
                                     );
@@ -400,9 +382,9 @@ body: Column(
                           ],
                         )
                       : Container(),
-                  miembroActual.role == "Carnetizador" ||
-                      miembroActual.role == "Super Admin" ||
-                      miembroActual.role == "Admin"
+                  miembroActual!.role == "Carnetizador" ||
+                      miembroActual!.role == "Super Admin" ||
+                      miembroActual!.role == "Admin"
                       ? SizedBox(width: 20)
                       : Container(),
                   Column(
@@ -423,7 +405,7 @@ body: Column(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ListMascotas(
-                                          userId: loggedInPerson!.id,
+                                          userId: miembroActual!.id,
                                         )),
                               );
                             },
@@ -493,7 +475,7 @@ body: Column(
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              if (loggedInPerson!.role == "Carnetizador") {
+                              if (miembroActual!.role == "Carnetizador") {
                                 esCarnetizador = true;
                               }
                               Navigator.push(
@@ -501,8 +483,8 @@ body: Column(
                                 MaterialPageRoute(
                                     builder: (context) => RegisterUpdate(
                                           isUpdate: true,
-                                          userData: loggedInPerson,
-                                          carnetizadorMember: loggedInPerson,
+                                          userData: miembroActual,
+                                          carnetizadorMember: miembroActual,
                                         )),
                               );
                             },

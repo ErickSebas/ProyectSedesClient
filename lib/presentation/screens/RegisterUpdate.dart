@@ -287,11 +287,12 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, style: TextStyle(color: Colors.white)),
+        title: Text(title, style: TextStyle(color: Colors.black)),
+        backgroundColor: Color.fromARGB(255, 241, 245, 255),
         centerTitle: true,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.blue),
             onPressed: () {
               if (carnetizadorglobal?.role == "Carnetizador") {
                 print("volver carnetizador");
@@ -417,9 +418,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                       });
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF1A2946),
-                  ),
+                  
                 ),
                 _buildTextField(
                   initialData: email,
@@ -506,9 +505,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   },
                   child: Text(
                       widget.isUpdate ? 'Actualizar' : 'Registrar Usuario'),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF1A2946),
-                  ),
+                  
                 ),
               ],
             ),
@@ -565,9 +562,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   : label,
               style: TextStyle(color: Colors.white),
             ),
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFF1A2946),
-            ),
+            
           ),
         ),
         SizedBox(height: 15),

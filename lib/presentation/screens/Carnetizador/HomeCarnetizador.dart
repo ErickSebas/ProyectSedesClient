@@ -8,10 +8,10 @@ import 'package:fluttapp/presentation/screens/Login.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
-Member?
-    loggedInPerson; // Variable para almacenar los datos de la persona autenticada
+
 
 int estadoPerfil = 0;
 
@@ -29,17 +29,20 @@ class HomeCarnetizador1 extends StatelessWidget {
       future: getPersonById(userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Muestra un indicador de carga mientras se obtienen los datos
+          return SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    ); // Muestra un indicador de carga mientras se obtienen los datos
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData) {
           return Text('No se encontraron datos de la persona');
         } else {
-          loggedInPerson = snapshot.data;
+          miembroActual = snapshot.data;
           // Ahora puedes construir la interfaz con los datos de la persona
-          print('Datos obtenidossss: $loggedInPerson'); // Agrega esta línea
-          print('Nombres: ${loggedInPerson?.names}');
-          print('Rol: ${loggedInPerson?.role}');
+          print('Datos obtenidossss: $miembroActual'); // Agrega esta línea
+          print('Nombres: ${miembroActual?.names}');
+          print('Rol: ${miembroActual?.role}');
           return CampaignPage();
         }
       },
@@ -124,14 +127,14 @@ class CampaignPage extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        loggedInPerson?.names ?? '',
+                        miembroActual?.names ?? '',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 22,
                         ),
                       ),
                       Text(
-                        loggedInPerson?.role ?? '',
+                        miembroActual?.role ?? '',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 22,
@@ -142,32 +145,32 @@ class CampaignPage extends StatelessWidget {
                 ),
               ),
               ListTile(
-                title: Text('Nombres: ${loggedInPerson?.names ?? ''}'),
+                title: Text('Nombres: ${miembroActual?.names ?? ''}'),
                 leading: Icon(Icons.person),
               ),
               ListTile(
-                title: Text('Apellidos: ${loggedInPerson?.lastnames ?? ''}'),
+                title: Text('Apellidos: ${miembroActual?.lastnames ?? ''}'),
                 leading: Icon(Icons.person),
               ),
               ListTile(
                 title: Text(
-                    'Fecha de Nacimiento: ${loggedInPerson?.fechaNacimiento ?? ''}'),
+                    'Fecha de Nacimiento: ${miembroActual?.fechaNacimiento ?? ''}'),
                 leading: Icon(Icons.calendar_today),
               ),
               ListTile(
-                title: Text('Rol: ${loggedInPerson?.role ?? ''}'),
+                title: Text('Rol: ${miembroActual?.role ?? ''}'),
                 leading: Icon(Icons.work),
               ),
               ListTile(
-                title: Text('Correo: ${loggedInPerson?.correo ?? ''}'),
+                title: Text('Correo: ${miembroActual?.correo ?? ''}'),
                 leading: Icon(Icons.email),
               ),
               ListTile(
-                title: Text('Teléfono: ${loggedInPerson?.telefono ?? ''}'),
+                title: Text('Teléfono: ${miembroActual?.telefono ?? ''}'),
                 leading: Icon(Icons.phone),
               ),
               ListTile(
-                title: Text('Carnet: ${loggedInPerson?.carnet ?? ''}'),
+                title: Text('Carnet: ${miembroActual?.carnet ?? ''}'),
                 leading: Icon(Icons.credit_card),
               ),
               Align(
@@ -176,7 +179,7 @@ class CampaignPage extends StatelessWidget {
                   leading: Icon(Icons.logout),
                   title: Text('Cerrar Sesión'),
                   onTap: () {
-                    miembroActual = loggedInPerson!;
+                    miembroActual = miembroActual!;
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => LoginPage()),
@@ -220,7 +223,7 @@ class CampaignPage extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ListMembersScreen(
-                                      userId: loggedInPerson!
+                                      userId: miembroActual!
                                           .id), // Pasa el ID del usuario aquí
                                 ),
                               );
@@ -256,7 +259,7 @@ class CampaignPage extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ListMascotas(
-                                        userId: loggedInPerson!.id)),
+                                        userId: miembroActual!.id)),
                               );
                             },
                           ),
@@ -320,8 +323,8 @@ class CampaignPage extends StatelessWidget {
                               color: Color(0xFF5C8ECB),
                             ),
                             onPressed: () {
-                              //Navigator.of(context).pushNamed("/updateClient", arguments: loggedInPerson);
-                              if (loggedInPerson!.role == "Carnetizador") {
+                              //Navigator.of(context).pushNamed("/updateClient", arguments: miembroActual);
+                              if (miembroActual!.role == "Carnetizador") {
                                 esCarnetizador = true;
                               }
                               Navigator.push(
@@ -329,8 +332,8 @@ class CampaignPage extends StatelessWidget {
                                 MaterialPageRoute(
                                     builder: (context) => RegisterUpdate(
                                           isUpdate: true,
-                                          userData: loggedInPerson,
-                                          carnetizadorMember: loggedInPerson,
+                                          userData: miembroActual,
+                                          carnetizadorMember: miembroActual,
                                         )),
                               );
                             },

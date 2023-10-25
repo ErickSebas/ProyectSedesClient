@@ -282,3 +282,8 @@ Widget _buildMap(double lat, double lng) {
     ),
   );
 }
+/*
+SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    )*/

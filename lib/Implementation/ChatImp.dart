@@ -32,7 +32,7 @@ import 'package:http/http.dart' as http;
   Future<int> getIdPersonByEMail(String correo) async {
   final response = await http
       .get(Uri.parse('http://181.188.191.35:3000/getpersonbyemail/'+correo)); //192.168.14.112
-  if (response.statusCode == 200) {
+  if (response.statusCode == 200&&response.body!="[]") {
     List<dynamic> jsonResponse = json.decode(response.body);
     print(jsonResponse[0]['idPerson']);
     var res = jsonResponse[0]['idPerson'];

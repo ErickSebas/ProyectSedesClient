@@ -43,11 +43,11 @@ class _RegisterPetState extends State<RegisterPet> {
     super.initState();
     getPersonData();
     print("Estan llegando los datos del chico");
-    print(loggedInPerson?.names);
+    print(miembroActual!.names);
   }
 
   Future<void> getPersonData() async {
-    loggedInPerson = await getPersonById(idUsuario!);
+    miembroActual = await getPersonById(idUsuario!);
   }
 
   Future<void> Confirmacion_Eliminar_Imagen(int index) async {
@@ -333,6 +333,11 @@ Future<bool> uploadImages(List<File?> images) async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Colors.blue,
+            onPressed: () => Navigator.pop(context),
+          ),
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
         title: Text('Registro Mascota',
             style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65))),
@@ -575,7 +580,7 @@ Future<bool> uploadImages(List<File?> images) async {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          ViewClient(userId: loggedInPerson!.id),
+                          ViewClient(userId: miembroActual!.id),
                     ),
                   );
                 },

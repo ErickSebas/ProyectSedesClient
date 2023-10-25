@@ -441,7 +441,8 @@ class _UpdatePetState extends State<UpdatePet> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ElevatedButton(
-                    onPressed: () async {
+                    onPressed:isLoadingImages
+                    ? null: () async {
                       setState(() {
                         isLoading =
                             true; // Comienza la carga al presionar el botón
@@ -466,7 +467,7 @@ class _UpdatePetState extends State<UpdatePet> {
                         await mostrarFinalizar.Mostrar_Finalizados_Clientes(
                             context,
                             "Mascota actualizada con éxito",
-                            miembroActual.id);
+                            miembroActual!.id);
                         print("3.-" +
                             nombreController.text +
                             razaController.text +
@@ -510,7 +511,7 @@ class _UpdatePetState extends State<UpdatePet> {
                 onPressed: () async {
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => ViewClient(
-                      userId: miembroActual.id,
+                      userId: miembroActual!.id,
                     ),
                   ));
                 },

@@ -280,9 +280,7 @@ class _RegisterUpdateState extends State<Register> {
                       });
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF1A2946),
-                  ),
+                  
                 ),
                 Align(
                   alignment: Alignment.center,
@@ -355,9 +353,7 @@ class _RegisterUpdateState extends State<Register> {
                     }
                   },
                   child: Text('Registrar Usuario'),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF1A2946),
-                  ),
+                  
                 )
               ],
             ),
@@ -396,9 +392,7 @@ class _RegisterUpdateState extends State<Register> {
                   : label,
               style: TextStyle(color: Colors.white),
             ),
-            style: ElevatedButton.styleFrom(
-              primary: Color(0xFF1A2946),
-            ),
+            
           ),
         ),
         SizedBox(height: 15),

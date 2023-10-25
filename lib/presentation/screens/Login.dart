@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
           context,
           MaterialPageRoute(
             builder: (context) => ViewClient(
-              userId: miembroActual.id,
+              userId: miembroActual!.id,
             ),
           ),
         );
@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
         'Content-Type': 'application/json',
       },
       body: json.encode({
-        'idPerson': miembroActual.id,
+        'idPerson': miembroActual!.id,
         'token': token,
       }),
     );
@@ -338,7 +338,10 @@ class _LoginPageState extends State<LoginPage> {
                       return AlertDialog(
                         title: Text('Espere unos 3 segundos por favor...'),
                         content: Center(
-                          child: CircularProgressIndicator(),
+                          child: SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    ),
                         ),
                       );
                     },
@@ -392,7 +395,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isloading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    ))
           : Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -471,6 +477,67 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Validación de campos vacíos
+
+                        if (correoController.text.isEmpty ||
+                            contrasenaController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Por favor, complete todos los campos.')),
+                          );
+
+                          return; // Sale de la función si hay campos vacíos
+                        }
+
+                        // Validación de formato de correo electrónico
+
+                        if (!isValidEmail(correoController.text)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Ingrese un correo electrónico válido.')),
+                          );
+
+                          return; // Sale de la función si el correo es inválido
+                        }
+
+                        final loggedInMember = await authenticateHttp(
+                          correoController.text,
+                          md5
+                              .convert(utf8.encode(contrasenaController.text))
+                              .toString(),
+                        );
+
+                        if (loggedInMember != null) {
+                          if (loggedInMember.role == "Carnetizador" ||loggedInMember.role == "Super Admin" ||loggedInMember.role == "Admin" || loggedInMember.role == "Jefe de Brigada" ||//Jefe de Brigada
+                              loggedInMember.role == "Cliente") {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewClient(
+                                  userId: loggedInMember.id,
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Rol de usuario desconocido')),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('Usuario o Contraseña Incorrectos')),
+                          );
+                        }
+                      },
+                      child: Text('LOGIN'),
+                    )
                   ],
                 ),
               ),
@@ -560,7 +627,7 @@ class _LoginPageState extends State<LoginPage> {
                           if (res == 1) {
                             miembroActual =
                                 await getPersonByEMail(googleUser.correo);
-                            await saveMemberIdToCache(miembroActual.id);
+                            await saveMemberIdToCache(miembroActual!.id);
                             insertToken();
                           } else {
                             Mostrar_Error1(context, "Error al iniciar sesión");
@@ -739,7 +806,7 @@ class _LoginPageState extends State<LoginPage> {
 
         if (existingMember != null) {
           miembroActual = existingMember;
-          await saveMemberIdToCache(miembroActual.id);
+          await saveMemberIdToCache(miembroActual!.id);
           insertToken();
           Navigator.pushReplacement(
             context,
@@ -773,7 +840,7 @@ class _LoginPageState extends State<LoginPage> {
 
           if (registrationResult == 1) {
             miembroActual = (await checkemailexist(newMember.correo))!;
-            await saveMemberIdToCache(miembroActual.id);
+            await saveMemberIdToCache(miembroActual!.id);
             insertToken();
             // Registro exitoso, redirigir al usuario a la pantalla de menú
 

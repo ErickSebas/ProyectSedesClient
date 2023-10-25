@@ -9,6 +9,7 @@ import 'package:fluttapp/presentation/screens/ViewMascotaInfo.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
 int? idUsuario;
@@ -28,11 +29,11 @@ void initState() {
   initState();
   getPersonData();
   print("Estan llegando los datos del chico");
-  print(loggedInPerson?.names);
+  print(miembroActual?.names);
 }
 
 Future<void> getPersonData() async {
-  loggedInPerson = await getPersonById(idUsuario!);
+  miembroActual = await getPersonById(idUsuario!);
 }
 /*
 Future<List<Mascota>> fetchMembers() async {
@@ -94,7 +95,7 @@ class ListMascotas extends StatelessWidget {
   Widget build(BuildContext context) {
     getPersonData();
     print("Estan llegando los datos del chico");
-    print(loggedInPerson?.names);
+    print(miembroActual?.names);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<List<Mascota>>(
@@ -103,7 +104,10 @@ class ListMascotas extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
               body: Center(
-                child: CircularProgressIndicator(),
+                child: SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    ),
               ),
             );
           } else if (snapshot.hasError) {
@@ -115,10 +119,18 @@ class ListMascotas extends StatelessWidget {
           } else {
             List<Mascota> mascotas = snapshot.data!;
             return Scaffold(
+              appBar:mascotas.isEmpty?  AppBar(
+                  backgroundColor: Color.fromARGB(255, 241, 245, 255),
+                  title: Text(
+                    'Lista de Mascota',
+                    style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65)),
+                  ),
+                  centerTitle: true,
+                ):null,
                 body: mascotas.isEmpty? Center(child: Text("No tienes Mascotas"),): CampaignPage(mascotas: mascotas),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
-                    if (loggedInPerson?.latitud == 0.1) {
+                    if (miembroActual?.latitud == 0.1) {
                       print(
                           "NO PUEDES USAR ESTO HASTA QUE ACTUALICES TUS DATOS");
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -128,9 +140,9 @@ class ListMascotas extends StatelessWidget {
                       );
                     } else {
                       print("Usuario que se esta yendo a la otra pagina es");
-                      print(loggedInPerson?.id);
-                      print(loggedInPerson?.names);
-                      Navigator.pushReplacement(
+                      print(miembroActual?.id);
+                      print(miembroActual?.names);
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => RegisterPet(

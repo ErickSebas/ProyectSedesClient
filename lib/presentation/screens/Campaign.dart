@@ -2,6 +2,7 @@ import 'package:fluttapp/presentation/screens/Maps.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttapp/Models/CampaignModel.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 int estadoPerfil = 0;
 
@@ -79,7 +80,10 @@ class _CampaignStateState extends State<ListCampaignPage> {
           ),
         ),
       ),
-      body: isLoading?CircularProgressIndicator(): Container(
+      body: isLoading?SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    ): Container(
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/Splash.png'),
@@ -144,7 +148,10 @@ void showLoadingDialog(BuildContext context) {
         content: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
+            SpinKitCircle(
+                      color: Colors.blue,
+                      size: 50.0,
+                    ),
             SizedBox(width: 15),
             Text("Cargando..."),
           ],
