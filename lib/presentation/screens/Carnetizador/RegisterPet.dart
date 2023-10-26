@@ -27,7 +27,17 @@ class RegisterPet extends StatefulWidget {
   @override
   _RegisterPetState createState() => _RegisterPetState();
 }
-
+class LettersOnlyTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final String newText = newValue.text.replaceAll(RegExp(r'[^a-zA-Z\s]'), '');
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
+}
 class _RegisterPetState extends State<RegisterPet> {
   ValidadorCamposMascota validador = ValidadorCamposMascota();
   TextEditingController nombreController = TextEditingController();
@@ -156,94 +166,6 @@ class _RegisterPetState extends State<RegisterPet> {
     return data['ultimo_id'] as int;
   }
 
-/*
-comprimir
-
-Future<List<int>> compressImage(File imageFile) async {
-  // Leer la imagen
-  List<int> imageBytes = await imageFile.readAsBytes();
-
-  // Decodificar la imagen
-  img.Image image = img.decodeImage(Uint8List.fromList(imageBytes))!;
-
-  // Calcular la calidad de compresión necesaria para que el tamaño sea inferior a 200 KB
-  int quality = 100;
-  while (image.length > 200 * 1024 && quality > 0) {
-    quality -= 5;
-    List<int> compressedBytes = img.encodeJpg(image, quality: quality);
-    image = img.decodeImage(Uint8List.fromList(compressedBytes))!;
-  }
-
-  return img.encodeJpg(image, quality: quality);
-}
-
-Future<bool> uploadImages(List<File?> images) async {
-  try {
-    final firebase_storage.Reference storageRef =
-        firebase_storage.FirebaseStorage.instance.ref();
-
-    String carpeta = 'cliente/16';
-
-    for (var image in images) {
-      if (image != null) {
-        String imageName = DateTime.now().millisecondsSinceEpoch.toString();
-        firebase_storage.Reference imageRef =
-            storageRef.child('$carpeta/$imageName.jpg');
-
-        // Comprimir la imagen antes de subirla
-        List<int> compressedBytes = await compressImage(image);
-
-        await imageRef.putData(Uint8List.fromList(compressedBytes));
-      }
-    }
-
-    return true;
-  } catch (e) {
-    print('Error al subir imágenes: $e');
-    return false;
-  }
-}
-
-subir imagenes
-Future<bool> uploadImages(List<File?> images) async {
-    try {
-      final firebase_storage.Reference storageRef =
-          firebase_storage.FirebaseStorage.instance.ref();
-
-      // Obtener el último ID de mascota
-      //int ultimoId = await fetchLastPetId();
-      //print("Ultimo ID ======== $ultimoId");
-
-      // Crear el nombre de la carpeta
-      //String carpeta = 'cliente/$ultimoId';
-      String carpeta = 'cliente/16';
-      // Iterar sobre las imágenes y subirlas
-      for (var image in images) {
-        if (image != null) {
-          String imageName = DateTime.now().millisecondsSinceEpoch.toString();
-          // Usar el nombre de la carpeta en la ruta
-          firebase_storage.Reference imageRef =
-              storageRef.child('$carpeta/$imageName.jpg');
-
-          await imageRef.putFile(image);
-        }
-      }
-
-      return true;
-    } catch (e) {
-      print('Error al subir imágenes: $e');
-      return false;
-    }
-  }
-
-  Future<int> fetchLastPetId() async {
-    final response =
-        await http.get(Uri.parse('http://181.188.191.35:3000/lastidmascota'));
-
-    final dynamic data = json.decode(response.body);
-    return data['ultimo_id'] as int;
-  }
-*/
   Future<void> registerPet() async {
     final url = Uri.parse('http://181.188.191.35:3000/registerPet');
 
@@ -270,60 +192,6 @@ Future<bool> uploadImages(List<File?> images) async {
       );
     }
   }
-
-/*
-  Future<void> registerPet() async {
-    final url = Uri.parse('http://181.188.191.35:3000/registerPet2');
-
-    var request = http.MultipartRequest('POST', url);
-
-    // Agregar las imágenes a la petición
-    for (var image in _selectedImages) {
-      if (image != null) {
-        print('Nombre del archivo: ${image.path.split('/').last}');
-
-        var stream = http.ByteStream(Stream.castFrom(image.openRead()));
-        var length = await image.length();
-
-        var multipartFile = http.MultipartFile('Imagenes', stream, length,
-            filename: image.path.split('/').last);
-        print('MultipartFile: $multipartFile');
-        request.files.add(multipartFile);
-      }
-    }
-
-    // Agregar los otros datos
-    request.fields.addAll({
-      'Nombre': nombreController.text,
-      'Raza': razaController.text,
-      'Edad': edadController.text,
-      'Color': colorController.text,
-      'Descripcion': descripcionController.text,
-      'IdPersona': '9',
-      'Sexo': 'H',
-      'IdQr': '1',
-    });
-
-    try {
-      var response = await request.send();
-
-      if (response.statusCode == 200) {
-        // Registro exitoso
-        print('Mascota registrada con éxito');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al registrar la mascota')),
-        );
-      }
-    } catch (error) {
-      print('Error en la solicitud: $error');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al enviar la solicitud')),
-      );
-    }
-  }
-*/
-
   String valorSeleccionado = 'H'; // Valor por defecto seleccionado
 
   List<String> opciones = ['Hembra', 'Macho']; // Lista de opciones
@@ -359,19 +227,18 @@ Future<bool> uploadImages(List<File?> images) async {
                 "assets/Univallenavbar.png",
               ),
               SizedBox(height: 10),
-              TextField(
-                controller: nombreController,
-                decoration: InputDecoration(
-                  labelText: 'Nombre de la Mascota',
-                  errorText: validador.mensajeErrorNombreMascota,
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(
-                      30), // Limita a 30 caracteres
-                ],
-                maxLength:
-                    30, // Puedes usar esta propiedad también para indicar el límite máximo
-              ),
+TextField(
+  controller: nombreController,
+  decoration: InputDecoration(
+    labelText: 'Nombre de la Mascota',
+    errorText: validador.mensajeErrorNombreMascota,
+  ),
+  inputFormatters: [
+    LengthLimitingTextInputFormatter(14),
+    LettersOnlyTextFormatter(), // Aplica el formatter aquí
+  ],
+  maxLength: 14,
+),
               TextFormField(
                 controller: descripcionController,
                 decoration: InputDecoration(
@@ -393,19 +260,18 @@ Future<bool> uploadImages(List<File?> images) async {
                 ),
                 keyboardType: TextInputType.number,
               ),
-              TextField(
-                controller: razaController,
-                decoration: InputDecoration(
-                  labelText: 'Raza de la Mascota',
-                  errorText: validador.mensajeErrorRazaMascota,
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(
-                      30), // Limita a 30 caracteres
-                ],
-                maxLength:
-                    30, // Puedes usar esta propiedad también para indicar el límite máximo
-              ),
+TextField(
+  controller: razaController,
+  decoration: InputDecoration(
+    labelText: 'Raza de la Mascota',
+    errorText: validador.mensajeErrorRazaMascota,
+  ),
+  inputFormatters: [
+    LengthLimitingTextInputFormatter(14),
+    LettersOnlyTextFormatter(), // Aplica el formatter aquí
+  ],
+  maxLength: 14,
+),
               Row(
                 children: [
                   Expanded(
