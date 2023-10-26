@@ -1,4 +1,6 @@
 import 'package:fluttapp/presentation/screens/Maps.dart';
+import 'package:fluttapp/presentation/services/services_firebase.dart';
+import 'package:fluttapp/services/connectivity_service.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttapp/Models/CampaignModel.dart';
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Campañas',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: myColorMaterial,
       ),
       home: ListCampaignPage(),
     );
@@ -28,6 +30,7 @@ class ListCampaignPage extends StatefulWidget {
 
 class _CampaignStateState extends State<ListCampaignPage> {
   List<Campaign> filteredCampaigns = campaigns;
+  final ConnectivityService _connectivityService = ConnectivityService();
   
   bool isLoading=false;
 
@@ -41,47 +44,59 @@ class _CampaignStateState extends State<ListCampaignPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _connectivityService.initialize(context);
+  }
+
+  @override
+  void dispose() {
+    _connectivityService.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final searchField = Padding(
       padding: const EdgeInsets.all(12),
       child: TextFormField(
-        style: TextStyle(color: Colors.blueAccent),
+        style: TextStyle(color: Color(0xFF5C8ECB)),
         decoration: InputDecoration(
           hintText: 'Buscar',
-          hintStyle: TextStyle(color: Colors.blueAccent),
-          prefixIcon: Icon(Icons.search, color: Colors.blueAccent),
+          hintStyle: TextStyle(color: Color(0xFF5C8ECB)),
+          prefixIcon: Icon(Icons.search, color: Color(0xFF5C8ECB)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: Colors.blueAccent),
+            borderSide: BorderSide(color: Color(0xFF5C8ECB)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: Colors.blueAccent),
+            borderSide: BorderSide(color: Color(0xFF5C8ECB)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(color: Colors.blueAccent),
+            borderSide: BorderSide(color: Color(0xFF5C8ECB)),
           ),
         ),
         onChanged: searchCampaign,
       ),
     );
 
-    return Scaffold(
+    return  Scaffold(
       backgroundColor: Color.fromARGB(255, 241, 245, 255),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
-        title: Text('Campañas', style: TextStyle(color: Colors.blueAccent)),
+        title: Text('Campañas', style: TextStyle(color: Color(0xFF5C8ECB))),
         centerTitle: true,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.blueAccent),
+            icon: Icon(Icons.arrow_back, color: Color(0xFF5C8ECB)),
             onPressed: () => Navigator.pop(context),
           ),
         ),
       ),
-      body: isLoading?SpinKitCircle(
-                      color: Colors.blue,
+      body: isConnected.value? isLoading?SpinKitCircle(
+                      color: Color.fromARGB(255, 221, 236, 255),
                       size: 50.0,
                     ): Container(
         decoration: BoxDecoration(
@@ -107,12 +122,12 @@ class _CampaignStateState extends State<ListCampaignPage> {
                     title: Text(
                       filteredCampaigns[index].nombre,
                       style: TextStyle(
-                          color: Colors.blueAccent,
+                          color: Color(0xFF5C8ECB),
                           fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
                       filteredCampaigns[index].descripcion,
-                      style: TextStyle(color: Colors.blueAccent),
+                      style: TextStyle(color: Color(0xFF5C8ECB)),
                     ),
                    onTap: () async {
                       showLoadingDialog(context); 
@@ -134,7 +149,14 @@ class _CampaignStateState extends State<ListCampaignPage> {
             ),
           ),
         ],
-      ),) 
+      ),) : Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/Splash.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(child: Text('Error: Connection failed')))
     );
   }
 }
@@ -149,7 +171,7 @@ void showLoadingDialog(BuildContext context) {
           mainAxisSize: MainAxisSize.min,
           children: [
             SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     ),
             SizedBox(width: 15),

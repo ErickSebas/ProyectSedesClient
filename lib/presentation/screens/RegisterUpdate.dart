@@ -7,6 +7,7 @@ import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 import 'package:fluttapp/presentation/screens/SearchLocation.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
+import 'package:fluttapp/services/connectivity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -76,9 +77,12 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   int idJefe = 0;
   int idPerson = 0;
   Member? jefeDeCarnetizador;
+  final ConnectivityService _connectivityService = ConnectivityService();
 
+  @override
   void initState() {
     super.initState();
+    _connectivityService.initialize(context);
     if (widget.userData?.id != null) {
       Cargar_Datos_Persona();
     }
@@ -89,6 +93,12 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
       esCliente = false;
       print(widget.userData?.role);
     }
+  }
+
+  @override
+  void dispose() {
+    _connectivityService.dispose();
+    super.dispose();
   }
 
   void Cargar_Datos_Persona() async {
@@ -292,7 +302,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
         centerTitle: true,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.blue),
+            icon: Icon(Icons.arrow_back, color: Color(0xFF5C8ECB)),
             onPressed: () {
               if (carnetizadorglobal?.role == "Carnetizador") {
                 print("volver carnetizador");
@@ -321,7 +331,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
           ),
         ),
       ),
-      body: Stack(children: [
+      body: isConnected.value? Stack(children: [
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -511,7 +521,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
             ),
           ),
         )
-      ]),
+      ]): Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/Splash.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(child: Text('Error: Connection failed'))),
     );
   }
 

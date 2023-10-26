@@ -30,7 +30,7 @@ class HomeCarnetizador1 extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     ); // Muestra un indicador de carga mientras se obtienen los datos
         } else if (snapshot.hasError) {
@@ -269,7 +269,7 @@ class CampaignPage extends StatelessWidget {
                         'Ver Mascotas',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.blueAccent,
+                          color: Color(0xFF5C8ECB),
                         ),
                       ),
                     ],

@@ -8,6 +8,9 @@
 // Esta clase está restringida para su uso, sin la previa autorización de Sedes-Univalle.
 // </copyright>
 
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttapp/firebase_options.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
@@ -20,10 +23,12 @@ import 'package:fluttapp/presentation/screens/Register.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
 import 'package:fluttapp/presentation/screens/SplashScreen.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
+import 'package:fluttapp/services/NoInternetPage.dart';
 import 'package:fluttapp/services/global_notification.dart';
 import 'package:fluttapp/services/notification_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,8 +50,15 @@ Future<void> main() async {
   ));
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({Key? key}) : super(key: key);
+
+  @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +72,7 @@ class MainApp extends StatelessWidget {
       routes: {
         //Pantalla principal
         '/home': (context) => SplashScreen(),
+        "NoInternetPage": (context) => NoInternetPage(),
         '/login': (context) => LoginPage(),
         '/viewClient': (context) => ViewClient(userId: 0),
         //'/viewCarnetizador': (context) => HomeCarnetizador(userId: 0),
@@ -74,3 +87,4 @@ class MainApp extends StatelessWidget {
     );
   }
 }
+

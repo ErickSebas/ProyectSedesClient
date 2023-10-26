@@ -98,11 +98,11 @@ class ProfilePage extends StatelessWidget {
     print(carnetizadorMember?.correo);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Perfil de ${member!.names}" ,style: TextStyle(color: Colors.blue)),
+        title: Text("Perfil de ${member!.names}" ,style: TextStyle(color: Color(0xFF5C8ECB))),
         backgroundColor: Colors.white,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.blue),
+            icon: Icon(Icons.arrow_back, color: Color(0xFF5C8ECB)),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
@@ -175,7 +175,7 @@ class ProfilePage extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
+                        primary: Color(0xFF5C8ECB),
                         padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20.0),
@@ -246,7 +246,7 @@ class ProfilePage extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 13, horizontal: 20),
       child: RichText(
         text: TextSpan(
-          style: TextStyle(color: Colors.blue, fontSize: 20),
+          style: TextStyle(color: Color(0xFF5C8ECB), fontSize: 20),
           children: [
             TextSpan(
               text: "${parts[0]}: ", // Parte del título en negrita
@@ -284,6 +284,6 @@ Widget _buildMap(double lat, double lng) {
 }
 /*
 SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     )*/

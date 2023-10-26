@@ -50,7 +50,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
         ),
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.blue),
+            icon: Icon(Icons.arrow_back, color: Color(0xFF5C8ECB)),
             onPressed: () { 
               Navigator.pop(context);
             },

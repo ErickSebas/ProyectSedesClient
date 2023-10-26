@@ -113,7 +113,7 @@ class _LocationPickerState extends State<LocationPicker> {
             if (!mapCreated)
               Center(
                 child: SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     ),
               ),
@@ -124,7 +124,7 @@ class _LocationPickerState extends State<LocationPicker> {
                     child: ElevatedButton(
                       onPressed: _onSendCurrentLocation,
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.blueAccent,
+                        primary: Color(0xFF5C8ECB),
                       ),
                       child: Text("Enviar mi Ubicación Actual"),
                     ),

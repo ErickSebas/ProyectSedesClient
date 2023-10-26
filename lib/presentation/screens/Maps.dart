@@ -156,7 +156,7 @@ class _VerCamapanasState extends State<VerCamapanas> {
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.blueAccent),
+          icon: Icon(Icons.arrow_back, color: Color(0xFF5C8ECB)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Row(
@@ -544,7 +544,7 @@ class _VerCamapanasState extends State<VerCamapanas> {
                     },
                     child: Text('Cómo llegar'),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
+                      primary: Color(0xFF5C8ECB),
                       onPrimary: Colors.white,
                     ),
                   ),

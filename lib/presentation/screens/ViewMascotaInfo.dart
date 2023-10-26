@@ -42,7 +42,7 @@ class ViewMascotasInfo extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<Propietario> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     );
         } else if (snapshot.hasError) {
@@ -153,7 +153,7 @@ final ScreenshotController screenshotController = ScreenshotController();
           ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            color: Colors.blue,
+            color: Color(0xFF5C8ECB),
             onPressed: () => Navigator.pop(context),
           ),
           centerTitle: true,
@@ -179,7 +179,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                       AsyncSnapshot<List<String>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     );
                     } else if (snapshot.hasError) {

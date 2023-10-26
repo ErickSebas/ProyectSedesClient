@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Center(
                     child: SpinKitFadingCube(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     ),
                   ),
@@ -342,7 +342,7 @@ class _LoginPageState extends State<LoginPage> {
                         title: Text('Espere unos 3 segundos por favor...'),
                         content: Center(
                           child: SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     ),
                         ),
@@ -406,7 +406,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
             child: SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     )),) 
           : Container(
@@ -490,9 +490,6 @@ class _LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       onPressed: () async {
                         // Validación de campos vacíos
-                        setState(() {
-                          isloading = true;
-                        });
                         if (correoController.text.isEmpty ||
                             contrasenaController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -500,21 +497,22 @@ class _LoginPageState extends State<LoginPage> {
                                 content: Text(
                                     'Por favor, complete todos los campos.')),
                           );
-
                           return; // Sale de la función si hay campos vacíos
                         }
 
                         // Validación de formato de correo electrónico
-
                         if (!isValidEmail(correoController.text)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content: Text(
                                     'Ingrese un correo electrónico válido.')),
                           );
-
                           return; // Sale de la función si el correo es inválido
                         }
+
+                        setState(() {
+                          isloading = true;
+                        });
 
                         final loggedInMember = await authenticateHttp(
                           correoController.text,
@@ -523,15 +521,35 @@ class _LoginPageState extends State<LoginPage> {
                               .toString(),
                         );
 
+                        setState(() {
+                          isloading = false;
+                        });
+
                         if (loggedInMember != null) {
-                          if (loggedInMember.role == "Carnetizador" ||loggedInMember.role == "Super Admin" ||loggedInMember.role == "Admin" || loggedInMember.role == "Jefe de Brigada" ||//Jefe de Brigada
+                          // Mostrar la animación de carga durante 2 segundos
+                          setState(() {
+                            isloading = true;
+                          });
+                          await Future.delayed(Duration(seconds: 2));
+                          setState(() {
+                            isloading = false;
+                          });
+
+                          setState(() {
+                            _isAuthenticated = true;
+                          });
+
+                          if (loggedInMember.role == "Carnetizador" ||
+                              loggedInMember.role == "Super Admin" ||
+                              loggedInMember.role == "Admin" ||
+                              loggedInMember.role == "Jefe de Brigada" ||
                               loggedInMember.role == "Cliente") {
+                            // Redirige al usuario a la página deseada
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ViewClient(
-                                  userId: loggedInMember.id,
-                                ),
+                                builder: (context) =>
+                                    ViewClient(userId: loggedInMember.id),
                               ),
                             );
                           } else {
@@ -548,7 +566,13 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         }
                       },
-                      child: Text('LOGIN'),
+                      child: _isLoading
+                          ? CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                              strokeWidth: 4.0,
+                            ) // Muestra una animación de carga
+                          : Text('LOGIN'),
                     )
                   ],
                 ),

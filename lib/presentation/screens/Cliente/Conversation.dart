@@ -6,6 +6,7 @@ import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart
 import 'package:fluttapp/presentation/screens/Cliente/ChatPage.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
+import 'package:fluttapp/services/connectivity_service.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -18,7 +19,7 @@ class Conversations extends StatelessWidget {
     return MaterialApp(
       title: 'Chat Móvil',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: myColorMaterial,
       ),
       home: ChatScreenState(),
     );
@@ -35,11 +36,13 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
   final emailController = TextEditingController();
   bool isLoading = true;
   Member? resPersonDestino;
+  final ConnectivityService _connectivityService = ConnectivityService();
 
 
   @override
   void initState() {
     super.initState();
+    _connectivityService.initialize(context);
     _tabController = TabController(length: 2, vsync: this);
     _tabController?.addListener(_handleTabSelection);
 
@@ -101,6 +104,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
 
   @override
   void dispose() {
+    _connectivityService.dispose();
     super.dispose();
   }
 
@@ -208,7 +212,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
       ),
     ),
   ),
-  body: isLoading==false
+  body: isConnected.value? isLoading==false
       ? TabBarView(
           controller: _tabController,
           children: [
@@ -222,9 +226,12 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
                       color: Colors.white,
                       size: 50.0,
                     ),
-        ),
+        ): Container(
+        color: Color(0xFF5C8ECB),
+        
+        child: Center(child: Text('Error: Connection failed', style: TextStyle(color: Colors.white),))),
   floatingActionButton: _tabController?.index==0?  FloatingActionButton(
-     onPressed: () {
+     onPressed: isConnected.value? () {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -288,7 +295,7 @@ TextButton(
           );
         },
       );
-    },
+    }:null,
     child: Icon(Icons.chat), // Icono de chat
     backgroundColor: Color.fromARGB(255, 0, 204, 255),
     foregroundColor: Colors.white,

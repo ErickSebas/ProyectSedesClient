@@ -15,7 +15,7 @@ class ChatApp extends StatelessWidget {
     return MaterialApp(
       title: 'Chat Móvil',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: myColorMaterial,
       ),
       home: ChatPage(
         idChat: 0,
@@ -154,9 +154,9 @@ class _ChatPageState extends State<ChatPage> {
                         color: 
                         widget.idPersonDestino!=0?
                         (messages[index].idPerson != widget.idPersonDestino
-                            ? Colors.blue
+                            ? Color(0xFF5C8ECB)
                             : Colors.white):(messages[index].idPerson == miembroActual!.id
-                            ? Colors.blue
+                            ? Color(0xFF5C8ECB)
                             : Colors.white),
                         elevation: 5.0,
                         shape: RoundedRectangleBorder(
@@ -203,7 +203,7 @@ class _ChatPageState extends State<ChatPage> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue, width: 1.0),
+                        borderSide: BorderSide(color: Color(0xFF5C8ECB), width: 1.0),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
@@ -224,7 +224,7 @@ class _ChatPageState extends State<ChatPage> {
           )
         ],
       ):Center(child: SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     ),),
     );

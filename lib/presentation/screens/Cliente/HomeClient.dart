@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttapp/Implementation/ChatImp.dart';
 import 'package:fluttapp/Implementation/Conversation.dart';
@@ -25,11 +26,14 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
+import '../../../services/connectivity_service.dart';
+
 // Variable para almacenar los datos de la persona autenticada
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
 // ignore: must_be_immutable
 
 class ViewClient extends StatelessWidget {
+  
   final int userId;
 
   ViewClient({required this.userId}) {
@@ -80,8 +84,31 @@ Future<String?> getImageUrl(int idCliente) async {
   return null;
 }
 
+
 // ignore: must_be_immutable
-class CampaignPage extends StatelessWidget {
+class CampaignPage extends StatefulWidget {
+
+  @override
+  _CampaignPageState createState() => _CampaignPageState();
+
+}
+
+class _CampaignPageState extends State<CampaignPage> {
+
+  final ConnectivityService _connectivityService = ConnectivityService();
+
+  @override
+  void initState() {
+    super.initState();
+    _connectivityService.initialize(context);
+  }
+
+  @override
+  void dispose() {
+    _connectivityService.dispose();
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
      Widget mensajeCondicional() {
@@ -169,7 +196,7 @@ class CampaignPage extends StatelessWidget {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     );
                           } else if (snapshot.hasError) {
@@ -416,7 +443,7 @@ body: Column(
                         'Mis Mascotas',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.blueAccent,
+                          color: Color(0xFF5C8ECB),
                         ),
                       ),
                     ],

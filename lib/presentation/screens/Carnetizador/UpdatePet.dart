@@ -253,7 +253,7 @@ class _UpdatePetState extends State<UpdatePet> {
             style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65))),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Colors.blue,
+          color: Color(0xFF5C8ECB),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
@@ -363,7 +363,7 @@ class _UpdatePetState extends State<UpdatePet> {
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: isLoadingImages
+                onPressed: isLoadingImages || isLoading
                     ? null
                     : () async {
                         if (_selectedImages.length < 3) {
@@ -408,7 +408,7 @@ class _UpdatePetState extends State<UpdatePet> {
               SizedBox(height: 20),
               isLoadingImages
                   ? SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     )
                   : SingleChildScrollView(
@@ -441,8 +441,9 @@ class _UpdatePetState extends State<UpdatePet> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ElevatedButton(
-                    onPressed:isLoadingImages
+                    onPressed:isLoadingImages || isLoading
                     ? null: () async {
+                      print(miembroActual!.id);
                       setState(() {
                         isLoading =
                             true; // Comienza la carga al presionar el botón
@@ -508,7 +509,7 @@ class _UpdatePetState extends State<UpdatePet> {
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () async {
+                onPressed: isLoading?null: () async {
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => ViewClient(
                       userId: miembroActual!.id,

@@ -51,7 +51,7 @@ class InfoDialog {
                           },
                           child: Text(
                             'cmontanosa@univalle.edu',
-                            style: TextStyle(color: Colors.blue),
+                            style: TextStyle(color: Color(0xFF5C8ECB)),
                           ),
                         ),
                       ],
@@ -86,7 +86,7 @@ class InfoDialog {
                       TextSpan(
                         text: 'Icon by Vitaly Gorbachev\n',
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: Color(0xFF5C8ECB),
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
@@ -97,7 +97,7 @@ class InfoDialog {
                       TextSpan(
                         text: 'Icon by Smashicons\n',
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: Color(0xFF5C8ECB),
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
@@ -108,7 +108,7 @@ class InfoDialog {
                       TextSpan(
                         text: 'Imagen de starline en Freepik\n',
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: Color(0xFF5C8ECB),
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {

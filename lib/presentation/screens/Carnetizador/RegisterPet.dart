@@ -43,11 +43,11 @@ class _RegisterPetState extends State<RegisterPet> {
     super.initState();
     getPersonData();
     print("Estan llegando los datos del chico");
-    print(miembroActual!.names);
+    print(miembroMascota!.names);
   }
 
   Future<void> getPersonData() async {
-    miembroActual = await getPersonById(idUsuario!);
+    miembroMascota = await getPersonById(idUsuario!);
   }
 
   Future<void> Confirmacion_Eliminar_Imagen(int index) async {
@@ -335,7 +335,7 @@ Future<bool> uploadImages(List<File?> images) async {
       appBar: AppBar(
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            color: Colors.blue,
+            color: Color(0xFF5C8ECB),
             onPressed: () => Navigator.pop(context),
           ),
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
@@ -450,28 +450,43 @@ Future<bool> uploadImages(List<File?> images) async {
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () async {
-                  if (_selectedImages.length >= 3) {
+                onPressed: isLoading?null: () async {
+                  if (_selectedImages.length < 3) {
+                    final picker = ImagePicker();
+                    final List<XFile>? pickedFiles =
+                        await picker.pickMultiImage();
+
+                    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+                      int availableSlots = 3 - _selectedImages.length;
+                      List<File> newImages = pickedFiles
+                          .take(availableSlots)
+                          .map((file) => File(file.path))
+                          .toList();
+
+                      setState(() {
+                        _selectedImages.addAll(newImages);
+                      });
+
+                      if (pickedFiles.length > availableSlots) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Se ha alcanzado el límite de 3 imágenes.'),
+                          ),
+                        );
+                      }
+                    }
+                  } else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Se ha alcanzado el límite de 5 imágenes.'),
+                      content: Text(
+                          'Se ha alcanzado el límite de 3 imágenes.'),
                     ));
-                    return;
                   }
+                },style: ElevatedButton.styleFrom(
+                      primary:
+                          Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                    ),
 
-                  final picker = ImagePicker();
-                  final pickedFile =
-                      await picker.pickImage(source: ImageSource.gallery);
-
-                  if (pickedFile != null) {
-                    setState(() {
-                      _selectedImages.add(File(pickedFile.path));
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(
-                      255, 94, 99, 106), // Cambiar el color del botón aquí
-                ),
                 child: Text('Cargar Fotos de la Mascota'),
               ),
               SizedBox(height: 20),
@@ -505,7 +520,7 @@ Future<bool> uploadImages(List<File?> images) async {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ElevatedButton(
-                    onPressed: () async {
+                    onPressed: isLoading?null: () async {
                       setState(() {
                         isLoading =
                             true; // Comienza la carga al presionar el botón
@@ -538,7 +553,7 @@ Future<bool> uploadImages(List<File?> images) async {
                         await mostrarFinalizar.Mostrar_Finalizados_Clientes(
                             context,
                             "Registro de Mascota con éxito",
-                            miembroActual!.id);
+                            miembroMascota!.id);
                         print("3.-" +
                             nombreController.text +
                             razaController.text +
@@ -575,12 +590,12 @@ Future<bool> uploadImages(List<File?> images) async {
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () {
+                onPressed: isLoading?null: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          ViewClient(userId: miembroActual!.id),
+                          ViewClient(userId: miembroMascota!.id),
                     ),
                   );
                 },

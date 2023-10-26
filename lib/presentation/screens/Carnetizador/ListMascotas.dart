@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttapp/Models/Mascota.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/RegisterPet.dart';
@@ -11,8 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 int? idUsuario;
+Member? miembroMascota;
+Map<int, List<File?>> _selectedImages = {};
+
+bool isLoadingImages=true;
 
 Future<List<Mascota>> fetchMembers(int idPersona) async {
   final response = await http.get(
@@ -29,11 +36,11 @@ void initState() {
   initState();
   getPersonData();
   print("Estan llegando los datos del chico");
-  print(miembroActual?.names);
+  print(miembroMascota?.names);
 }
 
 Future<void> getPersonData() async {
-  miembroActual = await getPersonById(idUsuario!);
+  miembroMascota = await getPersonById(idUsuario!);
 }
 /*
 Future<List<Mascota>> fetchMembers() async {
@@ -95,7 +102,7 @@ class ListMascotas extends StatelessWidget {
   Widget build(BuildContext context) {
     getPersonData();
     print("Estan llegando los datos del chico");
-    print(miembroActual?.names);
+    print(miembroMascota?.names);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<List<Mascota>>(
@@ -105,7 +112,7 @@ class ListMascotas extends StatelessWidget {
             return Scaffold(
               body: Center(
                 child: SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     ),
               ),
@@ -130,7 +137,7 @@ class ListMascotas extends StatelessWidget {
                 body: mascotas.isEmpty? Center(child: Text("No tienes Mascotas"),): CampaignPage(mascotas: mascotas),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
-                    if (miembroActual?.latitud == 0.1) {
+                    if (miembroMascota?.latitud == 0.1) {
                       print(
                           "NO PUEDES USAR ESTO HASTA QUE ACTUALICES TUS DATOS");
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -140,8 +147,8 @@ class ListMascotas extends StatelessWidget {
                       );
                     } else {
                       print("Usuario que se esta yendo a la otra pagina es");
-                      print(miembroActual?.id);
-                      print(miembroActual?.names);
+                      print(miembroMascota?.id);
+                      print(miembroMascota?.names);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -177,6 +184,82 @@ class _CampaignPageState extends State<CampaignPage> {
     setState(() {
       widget.mascotas.removeAt(index);
     });
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    loadAllImages();
+  }
+
+  Future<void> loadAllImages() async {
+    for (var mascota in widget.mascotas) {
+      await addImageUrlsToSelectedImages('cliente', mascota.idPersona, mascota.idMascotas);
+    }
+    if(mounted){
+      setState(() {
+        isLoadingImages = false;
+      });
+    }
+    
+  }
+
+Future<void> addImageUrlsToSelectedImages(
+    String carpeta, int idCliente, int idMascota) async {
+  try {
+
+    List<String> imageUrls = await getImagesUrls(carpeta, idCliente, idMascota);
+    List<File?> tempImages = [];
+
+    for (String url in imageUrls) {
+      File tempImage = await _downloadImage(url);
+      tempImages.add(tempImage);
+    }
+
+    setState(() {
+      _selectedImages[idMascota] = tempImages;
+    });
+
+
+  } catch (e) {
+    print('Error al obtener y descargar las imágenes: $e');
+  }
+}
+
+
+    Future<List<String>> getImagesUrls(
+      String carpeta, int idCliente, int idMascota) async {
+    List<String> imageUrls = [];
+
+    try {
+      Reference storageRef =
+          FirebaseStorage.instance.ref('$carpeta/$idCliente/$idMascota');
+      ListResult result = await storageRef.list();
+
+      for (var item in result.items) {
+        String downloadURL = await item.getDownloadURL();
+        imageUrls.add(downloadURL);
+      }
+    } catch (e) {
+      print('Error al obtener URLs de imágenes: $e');
+    }
+
+    return imageUrls;
+  }
+
+    Future<File> _downloadImage(String imageUrl) async {
+    final response = await http.get(Uri.parse(imageUrl));
+
+    if (response.statusCode == 200) {
+      final bytes = response.bodyBytes;
+      final tempDir = await getTemporaryDirectory();
+      final tempImageFile =
+          File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
+      await tempImageFile.writeAsBytes(bytes);
+      return tempImageFile;
+    } else {
+      throw Exception('Error al descargar imagen');
+    }
   }
 
   @override
@@ -219,6 +302,7 @@ class _CampaignPageState extends State<CampaignPage> {
               child: ListView.builder(
                 itemCount: widget.mascotas.length,
                 itemBuilder: (context, index) {
+                  
                   final mascota = widget.mascotas[index];
                   if (filtro.isNotEmpty &&
                       !(mascota.nombre.toLowerCase().contains(filtro) ||
@@ -299,10 +383,28 @@ class _CampaignPageState extends State<CampaignPage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: AssetImage('assets/Perro.png'),
-                          radius: 30,
-                        ),
+                        leading: Stack(
+  alignment: Alignment.center,
+  children: [
+    CircleAvatar(
+      backgroundImage: (_selectedImages[widget.mascotas[index].idMascotas] != null && _selectedImages[widget.mascotas[index].idMascotas]!.isNotEmpty)
+          ? FileImage(_selectedImages[widget.mascotas[index].idMascotas]![0]!)
+          : null,
+      radius: 30,
+    ),
+    if (_selectedImages.isEmpty || (_selectedImages[widget.mascotas[index].idMascotas]?.isEmpty ?? true))
+      SizedBox(
+        width: 60, 
+        height: 60, 
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      ),
+  ],
+),
+
+
+
                         title: Text(
                           mascota.nombre,
                           style: TextStyle(

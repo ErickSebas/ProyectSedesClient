@@ -179,7 +179,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                 labelText: 'Buscar por nombre o carnet',
                 labelStyle: TextStyle(color: Colors.black),
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
+                  borderSide: BorderSide(color: Color(0xFF5C8ECB)),
                 ),
               ),
             ),
@@ -190,7 +190,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: SpinKitCircle(
-                      color: Colors.blue,
+                      color: Color(0xFF5C8ECB),
                       size: 50.0,
                     ));
                 } else if (snapshot.hasError) {
