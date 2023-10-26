@@ -145,12 +145,12 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF4D6596),
-        title: Text('Cuentas', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color.fromARGB(255, 241, 245, 255),
+        title: Text('Cuentas', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back) ,color: Colors.black,
             onPressed: () {
               Navigator.pushReplacement(
                 context,
@@ -164,7 +164,14 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
           ),
         ),
       ),
-      body: Column(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/Splash.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -206,12 +213,16 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                       return Container(
                         margin: EdgeInsets.all(16),
                         decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                          border: Border.all(
+                            width: 2,
+                            color: Color(0xFF5C8ECB),
+                          ),
                           gradient: LinearGradient(
-                            colors: [Color(0xFF86ABF9), Color(0xFF4D6596)],
+                            colors: [Colors.white, Colors.white],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -225,12 +236,12 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                                   Text(
                                     member.names,
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: Colors.black,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     "${member.fechaCreacion?.day}/${member.fechaCreacion?.month}/${member.fechaCreacion?.year}",
-                                    style: TextStyle(color: Colors.white),
+                                    style: TextStyle(color: Colors.black),
                                   ),
                                 ],
                               ),
@@ -238,21 +249,21 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                               Text(
                                 "Carnet: ${member.carnet}",
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: Colors.black,
                                     fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 8),
                               Text(
                                 "Telefono: ${member.telefono}",
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: Colors.black,
                                     fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 8),
                               Text(
                                 "Fecha Nacimiento: ${member.fechaNacimiento?.day}/${member.fechaNacimiento?.month}/${member.fechaNacimiento?.year}",
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: Colors.black,
                                     fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 16),
@@ -301,6 +312,12 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                                         );
                                       },
                                       child: Text("Eliminar"),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15.0),
+                                        ),
+                                        primary: Colors.red
+                                      ),
                                     ),
                                     SizedBox(width: 10),
                                     ElevatedButton(
@@ -309,13 +326,18 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => ProfilePage(
-                                                member: member,
-                                                carnetizadorMember:
-                                                    miembroActual),
+                                              member: member,
+                                              carnetizadorMember: miembroActual,
+                                            ),
                                           ),
                                         );
                                       },
                                       child: Text("Ver Perfil"),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15.0),
+                                        ),
+                                      ),
                                     ),
                                     SizedBox(width: 10),
                                     ElevatedButton(
@@ -329,6 +351,11 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                                         );
                                       },
                                       child: Text("Ver Mascotas"),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15.0),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -345,9 +372,10 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
           ),
         ],
       ),
+      ) ,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => RegisterUpdate(

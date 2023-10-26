@@ -387,6 +387,11 @@ class _LoginPageState extends State<LoginPage> {
                 }
               },
               child: Text('Recuperar Contraseña'),
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+              ),
             ),
           ],
         );
@@ -573,6 +578,11 @@ class _LoginPageState extends State<LoginPage> {
                               strokeWidth: 4.0,
                             ) // Muestra una animación de carga
                           : Text('LOGIN'),
+                          style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -597,10 +607,18 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       icon: Icon(Icons.facebook),
                       label: Text('Facebook'),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                      ),
                     ),
                     SizedBox(width: 16),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
                         primary: Colors.white,
                         onPrimary: Colors.black,
                       ),

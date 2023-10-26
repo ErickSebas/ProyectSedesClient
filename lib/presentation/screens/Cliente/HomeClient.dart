@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -25,7 +26,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
+import 'package:path_provider/path_provider.dart';
 import '../../../services/connectivity_service.dart';
 
 // Variable para almacenar los datos de la persona autenticada
@@ -68,6 +69,7 @@ Future<void> Mostrar_Informacion(BuildContext context) async {
 
 Future<String?> getImageUrl(int idCliente) async {
   try {
+    if(image==null){
     Reference storageRef = FirebaseStorage.instance.ref('cliente/$idCliente');
     ListResult result = await storageRef.list();
 
@@ -76,6 +78,7 @@ Future<String?> getImageUrl(int idCliente) async {
         String downloadURL = await item.getDownloadURL();
         return downloadURL;
       }
+    }
     }
   } catch (e) {
     print('Error al obtener URL de la imagen: $e');
@@ -96,11 +99,13 @@ class CampaignPage extends StatefulWidget {
 class _CampaignPageState extends State<CampaignPage> {
 
   final ConnectivityService _connectivityService = ConnectivityService();
+  bool isloadingProfile = true;
 
   @override
   void initState() {
     super.initState();
     _connectivityService.initialize(context);
+    addImageToSelectedImages(miembroActual!.id);
   }
 
   @override
@@ -108,6 +113,48 @@ class _CampaignPageState extends State<CampaignPage> {
     _connectivityService.dispose();
     super.dispose();
   }
+
+    Future<File?> addImageToSelectedImages(int idPerson) async {
+  try {
+    isloadingProfile=true;
+    String imageUrl = await getImageUrl(idPerson);
+    File tempImage = await _downloadImage(imageUrl);
+    
+    setState(() {
+      image = tempImage;
+      isloadingProfile=false;
+    });
+    return image;
+  } catch (e) {
+    print('Error al obtener y descargar la imagen: $e');
+  }
+  isloadingProfile=false;
+  return null;
+}
+
+Future<String> getImageUrl(int idPerson) async {
+  try {
+    Reference storageRef = FirebaseStorage.instance.ref('cliente/$idPerson/imagenUsuario.jpg');
+    return await storageRef.getDownloadURL();
+  } catch (e) {
+    print('Error al obtener URL de la imagen: $e');
+    throw e;
+  }
+}
+
+Future<File> _downloadImage(String imageUrl) async {
+  final response = await http.get(Uri.parse(imageUrl));
+
+  if (response.statusCode == 200) {
+    final bytes = response.bodyBytes;
+    final tempDir = await getTemporaryDirectory();
+    final tempImageFile = File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
+    await tempImageFile.writeAsBytes(bytes);
+    return tempImageFile;
+  } else {
+    throw Exception('Error al descargar imagen');
+  }
+}
   
   @override
   Widget build(BuildContext context) {
@@ -183,63 +230,108 @@ class _CampaignPageState extends State<CampaignPage> {
             children: <Widget>[
               DrawerHeader(
                 decoration: BoxDecoration(
-                  color: Color(0xFF5C8ECB),
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF5C8ECB),
+                      Colors.blue[800]!,
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      FutureBuilder<String?>(
-                        future: getImageUrl(miembroActual?.id ?? 0),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<String?> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return SpinKitCircle(
-                      color: Color(0xFF5C8ECB),
-                      size: 50.0,
-                    );
-                          } else if (snapshot.hasError) {
-                            return Text(
-                                'Error al cargar la imagen: ${snapshot.error}');
-                          } else {
-                            final imageUrl = snapshot.data;
-                            print('URL de la imagen: $imageUrl');
-                            print(
-                                'ID enviado a getImageUrl: ${miembroActual?.id}');
-                            return imageUrl != null
-                                ? Image.network(
-                                    imageUrl,
-                                    width: 50,
-                                    height: 50,
-                                  )
-                                : Image.asset(
-                                    'assets/univalle.png',
-                                    width: 50,
-                                    height: 50,
-                                  );
-                          }
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          double avatarRadius = constraints.maxWidth * 0.15;
+                          
+                          return image != null
+                            ? InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => RegisterUpdate(
+                                      isUpdate: true,
+                                      userData: miembroActual,
+                                      carnetizadorMember: miembroActual,
+                                    )),
+                                );
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage: isloadingProfile?null: FileImage(image!),
+                                    radius: avatarRadius,
+                                  ),
+                                  if (isloadingProfile)
+                                    SizedBox(
+                                      width: 60, 
+                                      height: 60, 
+                                      child: SpinKitCircle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            )
+                            : InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => RegisterUpdate(
+                                      isUpdate: true,
+                                      userData: miembroActual,
+                                      carnetizadorMember: miembroActual,
+                                    )),
+                                );
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                   CircleAvatar(
+                                    backgroundImage: isloadingProfile?null: AssetImage('assets/univalle.png'),
+                                    radius: avatarRadius,
+                                  ),
+                                  if (isloadingProfile)
+                                    SizedBox(
+                                      width: 60, 
+                                      height: 60, 
+                                      child: SpinKitCircle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
                         },
                       ),
+
                       SizedBox(height: 10),
                       Text(
                         miembroActual?.names ?? '',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 22,
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         miembroActual?.role ?? '',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 22,
+                          color: Colors.white70,
+                          fontSize: 16,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
+
               ListTile(
                 title: Text('Nombres: ${miembroActual?.names ?? ''}'),
                 leading: Icon(Icons.person),
@@ -272,7 +364,7 @@ class _CampaignPageState extends State<CampaignPage> {
               ListTile(
                 leading: Icon(Icons.message),
                 title: Text('Mensaje'),
-                onTap: () async {
+                onTap:  () async {
                   if (miembroActual!.role == 'Cliente') {
                     print(miembroActual!.role);
                     Chat chatCliente = Chat(
@@ -331,12 +423,14 @@ class _CampaignPageState extends State<CampaignPage> {
                 child: ListTile(
                   leading: Icon(Icons.logout),
                   title: Text('Cerrar Sesión'),
-                  onTap: () async {
+                  onTap:() async {
+
                     miembroActual = miembroActual!;
                     final prefs = await SharedPreferences.getInstance();
                     prefs.setInt('miembroLocal', 0);
                     chats.clear();
                     namesChats.clear();
+                    image = null;
                     tokenClean();
                     Navigator.pushReplacement(
                       context,
@@ -403,6 +497,7 @@ body: Column(
                               'Buscar Cliente',
                               style: TextStyle(
                                 fontSize: 16,
+                                fontWeight: FontWeight.bold,
                                 color: const Color(0xFF5C8ECB),
                               ),
                             ),
@@ -443,6 +538,7 @@ body: Column(
                         'Mis Mascotas',
                         style: TextStyle(
                           fontSize: 16,
+                          fontWeight: FontWeight.bold,
                           color: Color(0xFF5C8ECB),
                         ),
                       ),
@@ -482,6 +578,7 @@ body: Column(
                         'Ver Campañas',
                         style: TextStyle(
                           fontSize: 16,
+                          fontWeight: FontWeight.bold,
                           color: Color(0xFF5C8ECB),
                         ),
                       ),
@@ -522,6 +619,7 @@ body: Column(
                         'Editar Perfil',
                         style: TextStyle(
                           fontSize: 16,
+                          fontWeight: FontWeight.bold,
                           color: Color(0xFF5C8ECB),
                         ),
                       ),

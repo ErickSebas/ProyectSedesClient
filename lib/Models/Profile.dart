@@ -175,12 +175,20 @@ Future<Member> getCardByUser(int id) async {
     print(miembro.toString());
     final url = Uri.parse('http://181.188.191.35:3000/register');
     var idRol=0;
-    if (miembro.role == 'Carnetizador') {
+        if (miembro.role == 'Carnetizador') {
       idRol = 3;
     } else if (miembro.role == 'Cliente') {
       idRol = 4;
-    }else if(miembro.role==null){
+    }else if(miembro.role=='Super Admin'){
+      idRol = 5;
+    }
+    else if(miembro.role=='Jefe de Brigada'){
+      idRol = 2;
+    }
+    else if(miembro.role==null){
       idRol = 4;
+    }else {
+      idRol = 1;
     }
     String? md5Password = null;
     if(miembro.contrasena!=null)

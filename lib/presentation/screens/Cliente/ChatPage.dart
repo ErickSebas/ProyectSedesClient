@@ -154,9 +154,9 @@ class _ChatPageState extends State<ChatPage> {
                         color: 
                         widget.idPersonDestino!=0?
                         (messages[index].idPerson != widget.idPersonDestino
-                            ? Color(0xFF5C8ECB)
+                            ? Colors.green
                             : Colors.white):(messages[index].idPerson == miembroActual!.id
-                            ? Color(0xFF5C8ECB)
+                            ? Colors.green
                             : Colors.white),
                         elevation: 5.0,
                         shape: RoundedRectangleBorder(
@@ -224,7 +224,7 @@ class _ChatPageState extends State<ChatPage> {
           )
         ],
       ):Center(child: SpinKitCircle(
-                      color: Color(0xFF5C8ECB),
+                      color: Colors.white,
                       size: 50.0,
                     ),),
     );

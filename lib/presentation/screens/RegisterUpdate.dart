@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/HomeCarnetizador.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
@@ -8,6 +9,7 @@ import 'package:fluttapp/presentation/screens/SearchLocation.dart';
 import 'package:fluttapp/presentation/services/alert.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:fluttapp/services/connectivity_service.dart';
+import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +19,7 @@ import 'package:crypto/crypto.dart';
 import 'package:image_picker/image_picker.dart'; // Importa la librería crypto
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
 
 void main() => runApp(MyApp());
 MostrarFinalizar mostrarFinalizar = MostrarFinalizar();
@@ -41,6 +44,7 @@ class RegisterUpdate extends StatefulWidget {
   final Member? userData;
   late final bool isUpdate;
   Member? carnetizadorMember;
+  
 
   RegisterUpdate(
       {required this.isUpdate,
@@ -78,13 +82,17 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   int idPerson = 0;
   Member? jefeDeCarnetizador;
   final ConnectivityService _connectivityService = ConnectivityService();
+  GoogleMapController? _controller;
+
 
   @override
   void initState() {
     super.initState();
     _connectivityService.initialize(context);
+    
     if (widget.userData?.id != null) {
       Cargar_Datos_Persona();
+      addImageToSelectedImages(widget.userData!.id);
     }
     if (widget.userData?.role == "Cliente") {
       esCliente = true;
@@ -92,8 +100,48 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     } else if (widget.userData?.role == "Carnetizador") {
       esCliente = false;
       print(widget.userData?.role);
+    }else{
+      esCliente = false;
     }
   }
+
+  Future<void> addImageToSelectedImages(int idPerson) async {
+  try {
+    String imageUrl = await getImageUrl(idPerson);
+    File tempImage = await _downloadImage(imageUrl);
+    
+    setState(() {
+      image = tempImage;
+    });
+  } catch (e) {
+    print('Error al obtener y descargar la imagen: $e');
+  }
+}
+
+Future<String> getImageUrl(int idPerson) async {
+  try {
+    Reference storageRef = FirebaseStorage.instance.ref('cliente/$idPerson/imagenUsuario.jpg');
+    return await storageRef.getDownloadURL();
+  } catch (e) {
+    print('Error al obtener URL de la imagen: $e');
+    throw e;
+  }
+}
+
+Future<File> _downloadImage(String imageUrl) async {
+  final response = await http.get(Uri.parse(imageUrl));
+
+  if (response.statusCode == 200) {
+    final bytes = response.bodyBytes;
+    final tempDir = await getTemporaryDirectory();
+    final tempImageFile = File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
+    await tempImageFile.writeAsBytes(bytes);
+    return tempImageFile;
+  } else {
+    throw Exception('Error al descargar imagen');
+  }
+}
+
 
   @override
   void dispose() {
@@ -125,6 +173,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
       idRolSeleccionada = 4;
+    }else if(selectedRole=='Super Admin'){
+      idRolSeleccionada = 5;
+    }
+    else if(selectedRole=='Jefe de Brigada'){
+      idRolSeleccionada = 2;
+    }
+    else {
+      idRolSeleccionada = 1;
     }
     String md5Password = md5.convert(utf8.encode(password)).toString();
     final response = await http.post(
@@ -162,6 +218,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
       idRolSeleccionada = 3;
     } else if (selectedRole == 'Cliente') {
       idRolSeleccionada = 4;
+    }else if(selectedRole=='Super Admin'){
+      idRolSeleccionada = 5;
+    }
+    else if(selectedRole=='Jefe de Brigada'){
+      idRolSeleccionada = 2;
+    }
+    else {
+      idRolSeleccionada = 1;
     }
     // Calcula el hash MD5 de la contraseña
     final response = await http.put(
@@ -221,15 +285,13 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     }
   }
 
-  File? _image;
-
   Future<void> _getImageFromGallery() async {
     final pickedImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedImage != null) {
-        _image = File(pickedImage.path);
+        image = File(pickedImage.path);
       }
     });
   }
@@ -249,11 +311,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
 
   Future<bool> uploadImage(File? image, int userId) async {
     try {
-      int idPerson = await getNextIdPerson();
+      if(widget.isUpdate==false){
+        userId = await getNextIdPerson();
+      }
+      
       final firebase_storage.Reference storageRef =
           firebase_storage.FirebaseStorage.instance.ref();
       print("Ultimo ID =======" + "---" + idPerson.toString());
-      String carpeta = 'cliente/$idPerson';
+      String carpeta = 'cliente/$userId';
 
       if (image != null) {
         firebase_storage.Reference imageRef =
@@ -302,31 +367,9 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
         centerTitle: true,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.arrow_back, color: Color(0xFF5C8ECB)),
+            icon: Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
-              if (carnetizadorglobal?.role == "Carnetizador") {
-                print("volver carnetizador");
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ViewClient(
-                      userId: miembroActual!.id,
-                    ),
-                  ),
-                );
-              } else if (carnetizadorglobal?.role != "Carnetizador") {
-                print("volver cliente");
-                print(widget.userData!.id);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ViewClient(
-                      userId: widget.userData!
-                          .id, //El cliente entrara con la misma variable carnetizadorglobal.role pero en este caso se controla que sea diferente el Rol
-                    ),
-                  ),
-                );
-              }
+              Navigator.pop(context);
             },
           ),
         ),
@@ -350,12 +393,24 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      ElevatedButton(
-                        onPressed: _getImageFromGallery,
-                        child: _image == null
-                            ? Text('Seleccionar Imagen')
-                            : Image.file(_image!,
-                                height: 100, width: 100, fit: BoxFit.cover),
+                      image != null ?InkWell(
+                        onTap: () {
+                          _getImageFromGallery();
+                        },
+                        child: CircleAvatar(
+                          backgroundImage: FileImage(image!),
+                          radius: 100,
+                          child: null,
+                        ),
+                      ): InkWell(
+                        onTap: () {
+                          _getImageFromGallery();
+                        },
+                        child: CircleAvatar(
+                          backgroundImage: null,
+                          radius: 100,
+                          child: Icon(Icons.camera_alt, size: 50.0),
+                        ),
                       ),
                       SizedBox(height: 20),
                       selectedImage != null
@@ -412,6 +467,12 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                 Text("Dirección:", style: TextStyle(color: Colors.black)),
                 _buildMap(latitude, longitude),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    primary: Color(0xFF5C8ECB),
+                  ),
                   child: Text("Selecciona una ubicación"),
                   onPressed: () async {
                     await Permisos();
@@ -422,10 +483,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                       ),
                     );
                     if (result != null) {
+                      
                       setState(() {
                         latitude = result.latitude;
                         longitude = result.longitude;
                       });
+                      _controller!.animateCamera(
+                          CameraUpdate.newLatLng(LatLng(latitude, longitude))
+                      );
                     }
                   },
                   
@@ -461,16 +526,20 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           datebirthday != null) {
                         if (widget.isUpdate) {
                           await updateUser();
-                          deleteImage(idPerson);
-                          uploadImage(_image, idPerson);
+                          //deleteImage(idPerson);
+                          uploadImage(image, idPerson);
                           mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                               context,
                               "Actualización con éxito de Carnetizador",
                               miembroActual!.id);
-                        } else if (password != "") {
-                          // ... Resto del código
+                        //////////////////////////////////RegistrarCarajo
+                        } else{
+                          await registerUser();
+                          await uploadImage(image, idPerson);
+                          mostrarMensaje.Mostrar_Finalizados_Carnetizadores(context, 'Registro Exitoso',miembroActual!.id);
+                        }
+                      }else if (password != "") {
 
-                          // Verificar si el número de teléfono empieza con 7 u 8
                           RegExp regex = RegExp(r'^[7-8]');
                           if (!regex.hasMatch(telefono)) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -481,7 +550,10 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                             );
                             return;
                           }
-                        }
+                        }else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Ingrese todos los campos')),
+                        );
                       }
                     } else if (esCliente == true) {
                       if (_formKey.currentState!.validate() &&
@@ -490,8 +562,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                           datebirthday != null) {
                         if (widget.isUpdate) {
                           await updateUser();
-                          deleteImage(idPerson);
-                          uploadImage(_image, idPerson);
+                          //deleteImage(idPerson);
+                          await uploadImage(image, idPerson);
                           if (carnetizadorglobal?.role == 'Carnetizador') {
                             mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                                 context,
@@ -505,7 +577,9 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                                 widget.userData!.id);
                             print(miembroActual!.role);
                           }
-                        }
+                        } else{
+                          
+                        }//////////////////////////////////RegistrarCarajo
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Ingrese todos los campos')),
@@ -513,6 +587,12 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                       }
                     }
                   },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    primary: Colors.green,
+                  ),
                   child: Text(
                       widget.isUpdate ? 'Actualizar' : 'Registrar Usuario'),
                   
@@ -537,6 +617,9 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
       height: 150,
       width: double.infinity,
       child: GoogleMap(
+        onMapCreated: (GoogleMapController controller) {
+          _controller = controller;
+        },
         initialCameraPosition: CameraPosition(
           target: LatLng(lat, lng),
           zoom: 15,
@@ -573,6 +656,12 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
                 setState(() {});
               }
             },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              primary: Color(0xFF5C8ECB),
+            ),
             child: Text(
               datebirthday != null
                   ? "${datebirthday.day}/${datebirthday.month}/${datebirthday.year}"

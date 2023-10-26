@@ -116,6 +116,7 @@ class _CampaignStateState extends State<ListCampaignPage> {
                   elevation: 4.0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15.0),
+                    side: const BorderSide(width: 2, color: Color(0xFF5C8ECB))
                   ),
                   margin: const EdgeInsets.all(10.0),
                   child: ListTile(

@@ -248,6 +248,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         : null,
                     child: Text('Guardar'),
                     style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                       primary: Color(0xFF1A2946),
                     ),
                   ),
@@ -272,6 +275,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     },
                     child: Text('Cancelar'),
                     style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                       primary: Colors.red,
                     ),
                   ),
@@ -279,6 +285,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     onPressed: _isValidCode ? null : _validate,
                     child: Text('Validar Código'),
                     style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                       primary: Color(0xFF5C8ECB),
                     ),
                   ),

@@ -135,7 +135,7 @@ class ListMascotas extends StatelessWidget {
                   centerTitle: true,
                 ):null,
                 body: mascotas.isEmpty? Center(child: Text("No tienes Mascotas"),): CampaignPage(mascotas: mascotas),
-                floatingActionButton: FloatingActionButton(
+                floatingActionButton: miembroActual!.role=="Cliente"?null: FloatingActionButton(
                   onPressed: () {
                     if (miembroMascota?.latitud == 0.1) {
                       print(
@@ -313,8 +313,8 @@ Future<void> addImageUrlsToSelectedImages(
                     return Container();
                   }
 
-                  return Slidable(
-                    endActionPane: ActionPane(
+                  return  Slidable(
+                    endActionPane: miembroActual!.role=="Cliente"?null: ActionPane(
                       motion: StretchMotion(),
                       children: [
                         SlidableAction(
@@ -411,7 +411,7 @@ Future<void> addImageUrlsToSelectedImages(
                             color: Colors.white,
                           ),
                         ),
-                        trailing: Icon(
+                        trailing: miembroActual!.role=="Cliente"?null: Icon(
                           Icons.arrow_back_ios,
                           color: Colors.white.withOpacity(0.6),
                           size: 18.0,

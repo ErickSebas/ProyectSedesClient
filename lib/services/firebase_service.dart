@@ -10,6 +10,7 @@
 // <author>Pedro Conde</author>
 
 import "dart:convert";
+import "dart:io";
 import "package:fluttapp/Models/ChatModel.dart";
 import "package:fluttapp/Models/Conversation.dart";
 import "package:fluttapp/Models/Profile.dart";
@@ -34,6 +35,7 @@ late IO.Socket socket;
 String? token;
 List<dynamic> namesChats=[];
 List<Chat> chats = [];
+File? image;
 // Obtener el archivo de Firebase Storage
 Future<List> Obtener_Archivo(int id) async {
   List lstUbicaciones = [];

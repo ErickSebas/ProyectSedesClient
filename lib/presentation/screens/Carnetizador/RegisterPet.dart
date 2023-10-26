@@ -203,7 +203,7 @@ class _RegisterPetState extends State<RegisterPet> {
       appBar: AppBar(
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            color: Color(0xFF5C8ECB),
+            color: Colors.black,
             onPressed: () => Navigator.pop(context),
           ),
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
@@ -316,8 +316,8 @@ TextField(
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: isLoading?null: () async {
-                  if (_selectedImages.length < 3) {
+                  onPressed: isLoading ? null : () async {
+                    if (_selectedImages.length < 3) {
                     final picker = ImagePicker();
                     final List<XFile>? pickedFiles =
                         await picker.pickMultiImage();
@@ -348,14 +348,16 @@ TextField(
                           'Se ha alcanzado el límite de 3 imágenes.'),
                     ));
                   }
-                },style: ElevatedButton.styleFrom(
-                      primary:
-                          Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
                     ),
-
-                child: Text('Cargar Fotos de la Mascota'),
-              ),
-              SizedBox(height: 20),
+                    primary: Color(0xFF5C8ECB),
+                  ),
+                  child: Text('Cargar Fotos de la Mascota'),
+                ),
+              SizedBox(height: 10),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -380,14 +382,14 @@ TextField(
                   }).toList(),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ElevatedButton(
-                    onPressed: isLoading?null: () async {
-                      setState(() {
+                   ElevatedButton(
+                      onPressed: isLoading ? null : () async {
+                        setState(() {
                         isLoading =
                             true; // Comienza la carga al presionar el botón
                       });
@@ -432,14 +434,16 @@ TextField(
                               false; // Detén la carga después de completar la operación
                         });
                       }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary:
-                          Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        primary: Colors.green,
+                      ),
+                      child: Text('Registrar Mascota'),
                     ),
-                    child: Text('Registrar Mascota'),
-                  ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 10),
                   Visibility(
                     visible: isLoading,
                     child: Center(
@@ -456,20 +460,17 @@ TextField(
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: isLoading?null: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          ViewClient(userId: miembroMascota!.id),
+                  onPressed: isLoading?null: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                    primary: Colors.red,
+                  ),
+                  child: Text('Cancelar'),
                 ),
-                child: Text('Cancelar'),
-              ),
             ],
           ),
         ),

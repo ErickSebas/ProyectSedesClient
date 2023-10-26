@@ -253,7 +253,7 @@ class _UpdatePetState extends State<UpdatePet> {
             style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65))),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Color(0xFF5C8ECB),
+          color: Colors.black,
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
@@ -399,11 +399,15 @@ class _UpdatePetState extends State<UpdatePet> {
                         }
                       },
                 style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
                   primary: isLoadingImages
                       ? Color.fromARGB(255, 130, 141, 153)
                       : Color(0xFF5C8ECB),
                 ),
                 child: Text('Cargar Fotos de la Mascota'),
+                
               ),
               SizedBox(height: 20),
               isLoadingImages
@@ -483,8 +487,11 @@ class _UpdatePetState extends State<UpdatePet> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                       primary:
-                          Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                          Colors.green, // Cambiar el color del botón aquí
                     ),
                     child: Text('Actualizar Mascota'),
                   ),
@@ -510,14 +517,13 @@ class _UpdatePetState extends State<UpdatePet> {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: isLoading?null: () async {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => ViewClient(
-                      userId: miembroActual!.id,
-                    ),
-                  ));
+                  Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF5C8ECB), // Cambiar el color del botón aquí
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),    
+                  primary: Colors.red, // Cambiar el color del botón aquí
                 ),
                 child: Text('Cancelar'),
               ),
