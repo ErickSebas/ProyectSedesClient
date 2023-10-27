@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttapp/Implementation/ChatImp.dart';
 import 'package:fluttapp/Implementation/ConversationImpl.dart';
 import 'package:fluttapp/Models/Conversation.dart';
@@ -10,6 +13,8 @@ import 'package:fluttapp/services/connectivity_service.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 void main() => runApp(Conversations());
 
@@ -26,6 +31,8 @@ class Conversations extends StatelessWidget {
   }
 }
 
+  bool isloadingProfile = true;
+
 class ChatScreenState extends StatefulWidget {
   @override
   _ChatScreenStateState createState() => _ChatScreenStateState();
@@ -37,6 +44,8 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
   bool isLoading = true;
   Member? resPersonDestino;
   final ConnectivityService _connectivityService = ConnectivityService();
+  Map<int, File?> _selectedImages = {};
+
 
 
   @override
@@ -45,6 +54,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
     _connectivityService.initialize(context);
     _tabController = TabController(length: 2, vsync: this);
     _tabController?.addListener(_handleTabSelection);
+    //loadAllImages();
 
     if(isConnected.value){
       if(namesChats.isEmpty){
@@ -63,7 +73,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
             })
           },
           isLoading = false,
-          
+          loadAllImages()
         })
         
       });
@@ -71,6 +81,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
     }else{
       isLoading=false;
     }
+    
 
     
     
@@ -79,7 +90,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
       if (!mounted) return; 
       List<dynamic> namesChatsNew = await fetchNamesPersonDestino(miembroActual!.id);
       fetchChats().then((value) {
-        if (mounted) { // Asegúrate de comprobar aquí también
+        if (mounted) { 
           setState(() {
             chats = value;
           });
@@ -97,6 +108,72 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
 
   
     }
+
+  Future<void> loadAllImages() async {
+    int idP=0;
+    
+    for (var chat in chats) {
+      if(miembroActual!.id==chat.idPerson){
+        idP=chat.idPersonDestino;
+      }else if(chat.idPerson!=null){
+        idP= chat.idPerson!;
+      }else{
+        idP=chat.idPersonDestino;
+      }
+      await addImageToSelectedImages( chat.idChats, idP );
+    }
+    if(mounted){
+      setState(() {
+        isloadingProfile = false;
+      });
+    }
+    
+  }
+
+  Future<void> addImageToSelectedImages(int idChat,int idPerson) async {
+    try {
+
+      String imageUrls = await getImageUrl( idPerson);
+
+      File tempImage = await _downloadImage(imageUrls);
+
+
+      setState(() {
+        _selectedImages[idChat] = tempImage;
+      });
+
+
+    } catch (e) {
+      print('Error al obtener y descargar las imágenes: $e');
+    }
+    isloadingProfile=false;
+    return null;
+  }
+
+Future<String> getImageUrl(int idPerson) async {
+  try {
+    Reference storageRef = FirebaseStorage.instance.ref('cliente/$idPerson/imagenUsuario.jpg');
+    return await storageRef.getDownloadURL();
+  } catch (e) {
+    print('Error al obtener URL de la imagen: $e');
+    throw e;
+  }
+}
+
+Future<File> _downloadImage(String imageUrl) async {
+  final response = await http.get(Uri.parse(imageUrl));
+
+  if (response.statusCode == 200) {
+    final bytes = response.bodyBytes;
+    final tempDir = await getTemporaryDirectory();
+    final tempImageFile = File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
+    await tempImageFile.writeAsBytes(bytes);
+    return tempImageFile;
+  } else {
+    throw Exception('Error al descargar imagen');
+  }
+}
+
 
   void _handleTabSelection() {
     if (mounted) {
@@ -220,8 +297,8 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
       ? TabBarView(
           controller: _tabController,
           children: [
-            ChatList(eliminarChatFunction: eliminarChat,),
-            EstadoList(eliminarChatFunction: eliminarChat,)
+            ChatList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages),
+            EstadoList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages,)
             ,
           ],
         )
@@ -312,15 +389,16 @@ TextButton(
 
 class ChatList extends StatelessWidget {
   final Function eliminarChatFunction;
+  Map<int, File?> selectedImages = {};
 
-  ChatList({required this.eliminarChatFunction});
-
+  ChatList({required this.eliminarChatFunction, required this.selectedImages});
+  
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: chats.length,
       itemBuilder: (context, index) {
-        return chats[index].idPerson!=null? Card(
+        return chats[index].idPerson!=null&&(namesChats[index]["mensaje"]!=""||chats[index].idPerson==miembroActual!.id)? Card(
           margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           elevation: 5,
           child: InkWell(
@@ -360,9 +438,45 @@ class ChatList extends StatelessWidget {
             child: ListTile(
               title: Text(namesChats[index]["Nombres"]),
               subtitle: Text(namesChats[index]["mensaje"]),
-              leading: CircleAvatar(
-                child: Text('0'),
-                backgroundColor: Color(0xFF5C8ECB),
+              leading:   Stack(
+                alignment: Alignment.center,
+                children: [
+                  selectedImages[chats[index].idChats] != null
+                            ?Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage: isloadingProfile?null: FileImage(selectedImages[chats[index].idChats]!),
+                                  ),
+                                  if (isloadingProfile)
+                                    SizedBox(
+                                      width: 60, 
+                                      height: 60, 
+                                      child: SpinKitCircle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                ],
+                              )
+                            
+                            :  Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                   CircleAvatar(
+                                    backgroundImage: isloadingProfile?null: AssetImage('assets/usuario.png'),
+                                  ),
+                                  if (isloadingProfile)
+                                    SizedBox(
+                                      width: 60, 
+                                      height: 60, 
+                                      child: SpinKitCircle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            
+                ],
               ),
             ),
           ),
@@ -374,14 +488,16 @@ class ChatList extends StatelessWidget {
 
 class EstadoList extends StatelessWidget {
   final Function eliminarChatFunction;
+    Map<int, File?> selectedImages = {};
+  
 
-  EstadoList({required this.eliminarChatFunction});
+  EstadoList({required this.eliminarChatFunction, required this.selectedImages});
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: chats.length,
       itemBuilder: (context, index) {
-        return chats[index].idPerson==null? Card(
+        return chats[index].idPerson==null&&namesChats[index]["mensaje"]!=""? Card(
           margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           elevation: 5,
           child: InkWell(
@@ -419,12 +535,54 @@ class EstadoList extends StatelessWidget {
               );
             },
             
-            child:  ListTile(
+            child: ListTile(
               title: Text(namesChats[index]["Nombres"]),
               subtitle: Text(namesChats[index]["mensaje"]),
-              leading: CircleAvatar(
-                child: Text('0'),
-                backgroundColor: Color(0xFF5C8ECB),
+              leading: Stack(
+                alignment: Alignment.center,
+                children: [
+                  selectedImages[chats[index].idChats] != null
+                            ? InkWell(
+                              onTap: () {
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage: isloadingProfile?null: FileImage(selectedImages[chats[index].idChats]!),
+                                  ),
+                                  if (isloadingProfile)
+                                    SizedBox(
+                                      width: 60, 
+                                      height: 60, 
+                                      child: SpinKitCircle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            )
+                            : InkWell(
+                              onTap: () {
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                   CircleAvatar(
+                                    backgroundImage: isloadingProfile?null: AssetImage('assets/usuario.png'),
+                                  ),
+                                  if (isloadingProfile)
+                                    SizedBox(
+                                      width: 60, 
+                                      height: 60, 
+                                      child: SpinKitCircle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            )
+                ],
               ),
             ),
           ),

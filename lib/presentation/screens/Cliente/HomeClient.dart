@@ -109,7 +109,7 @@ class _CampaignPageState extends State<CampaignPage> {
   }
 
   @override
-  void dispose() {
+  void disposeg() {
     _connectivityService.dispose();
     super.dispose();
   }
@@ -294,7 +294,7 @@ Future<File> _downloadImage(String imageUrl) async {
                                 alignment: Alignment.center,
                                 children: [
                                    CircleAvatar(
-                                    backgroundImage: isloadingProfile?null: AssetImage('assets/univalle.png'),
+                                    backgroundImage: isloadingProfile?null: AssetImage('assets/usuario.png'),
                                     radius: avatarRadius,
                                   ),
                                   if (isloadingProfile)

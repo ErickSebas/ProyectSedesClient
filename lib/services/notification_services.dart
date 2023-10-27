@@ -30,7 +30,7 @@ class PushNotificationService {
           title: message.notification?.title,
           body: message.notification?.body,
         );
-        localNotificationService.showNotification(customNotification);
+        localNotificationService.showNotification(customNotification, idPerson);
       }
     }catch(err){
       throw Exception(err);
@@ -53,7 +53,7 @@ class PushNotificationService {
           title: message.notification?.title,
           body: message.notification?.body,
         );
-        localNotificationService.showNotification(customNotification);
+        localNotificationService.showNotification(customNotification, idPerson);
       }
     }catch(err){
       throw Exception(err);
@@ -79,7 +79,7 @@ class PushNotificationService {
           title: message.notification?.title,
           body: message.notification?.body,
         );
-        localNotificationService.showNotification(customNotification);
+        localNotificationService.showNotification(customNotification, idPerson);
       }
     }catch(err){
       throw Exception(err);

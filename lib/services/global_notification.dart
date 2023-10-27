@@ -1,4 +1,5 @@
 
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
@@ -26,15 +27,19 @@ class LocalNotificationService{
   _initializeNotifications() async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    await localNotificationsPlugin.initialize(
-      const InitializationSettings(
-        android:  android,
-      ),
-      //_onSelectNotification
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: android,
+      
     );
+
+  await localNotificationsPlugin.initialize(
+    initializationSettings,
+  );
+
+
   }
 
-  showNotification(CustomNotification notification){
+  showNotification(CustomNotification notification, dynamic idChat){
     androidDetails = const AndroidNotificationDetails(
       'channel id',
       'channel name',
@@ -56,4 +61,29 @@ class LocalNotificationService{
       //_onSelectNotification
     }
   }
+/*
+  Future<void> _onSelectNotification(String? payload) async {
+  if (payload != null) {
+    int? idChat = int.tryParse(payload);
+    if (idChat != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ChatScreenState()),
+      );
+
+      // Navega al chat específico
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatPage(
+            idChat: idChat,
+            nombreChat: 'Soporte',
+            idPersonDestino: 0,
+          ),
+        ),
+      );
+    }
+  }
+}*/
+
 }

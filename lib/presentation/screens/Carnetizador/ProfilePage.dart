@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttapp/Models/Profile.dart';
 import 'package:fluttapp/presentation/screens/Carnetizador/SearchClientNew.dart';
 import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:fluttapp/presentation/screens/ChangePassword.dart';
+import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
@@ -10,12 +14,23 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
-// ignore: must_be_immutable
-class ProfilePage extends StatelessWidget {
-  Member? member; //Variable que agarra el dato del perfil y hace el recorrido de cambiar de contrasena
-  Member?
-      carnetizadorMember; //Variable que toma el dato que entra desde search cliente , este dato , va al Update, y tambien se usa para volver al search
+
+class ProfilePage extends StatefulWidget {
+  Member? member;
+  Member? carnetizadorMember;
+  
+
+  ProfilePage({required this.member, required this.carnetizadorMember});
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  bool isloadingProfile = true;
+  File? imageProfile;
 
   Future<Member?> recoverPassword(String email) async {
     final url = Uri.parse('http://181.188.191.35:3000/checkemail/$email');
@@ -24,9 +39,9 @@ class ProfilePage extends StatelessWidget {
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
 
-      member = Member.fromJson(data);
+      widget.member = Member.fromJson(data);
 
-      return member;
+      return widget.member;
     } else if (response.statusCode == 404) {
       return null; // Correo no encontrado en la base de datos
     } else {
@@ -40,7 +55,7 @@ class ProfilePage extends StatelessWidget {
     final smtpServer = gmail('bdcbba96@gmail.com', 'ehbh ugsw srnj jxsf');
     final message = Message()
       ..from = Address('bdcbba96@gmail.com', 'Admin')
-      ..recipients.add(member!.correo)
+      ..recipients.add(widget.member!.correo)
       ..subject = 'Cambiar Contraseña MaYpiVaC'
       ..text = 'Código de recuperación de contraseña: $code';
     try {
@@ -77,7 +92,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   Future<bool> checkCodeExists(int userId) async {
-    var userId = member?.id;
+    var userId = widget.member?.id;
     final response = await http.get(
       Uri.parse(
           'http://181.188.191.35:3000/checkCodeExists/$userId'), // Reemplaza con la URL correcta de tu API
@@ -91,27 +106,74 @@ class ProfilePage extends StatelessWidget {
     }
   }
 
-  ProfilePage({this.member, required this.carnetizadorMember});
+  
+
+    Future<File?> addImageToSelectedImages(int idPerson) async {
+  try {
+    isloadingProfile=true;
+    String imageUrl = await getImageUrl(idPerson);
+    File tempImage = await _downloadImage(imageUrl);
+    
+    setState(() {
+      imageProfile = tempImage;
+      isloadingProfile=false;
+    });
+    return imageProfile;
+  } catch (e) {
+    print('Error al obtener y descargar la imagen: $e');
+  }
+  isloadingProfile=false;
+  return null;
+}
+
+Future<String> getImageUrl(int idPerson) async {
+  try {
+    Reference storageRef = FirebaseStorage.instance.ref('cliente/$idPerson/imagenUsuario.jpg');
+    return await storageRef.getDownloadURL();
+  } catch (e) {
+    print('Error al obtener URL de la imagen: $e');
+    throw e;
+  }
+}
+
+Future<File> _downloadImage(String imageUrl) async {
+  final response = await http.get(Uri.parse(imageUrl));
+
+  if (response.statusCode == 200) {
+    final bytes = response.bodyBytes;
+    final tempDir = await getTemporaryDirectory();
+    final tempImageFile = File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
+    await tempImageFile.writeAsBytes(bytes);
+    return tempImageFile;
+  } else {
+    throw Exception('Error al descargar imagen');
+  }
+}
+
+  @override
+  void initState() {
+    super.initState();
+    addImageToSelectedImages(widget.member!.id);
+  }
+
+  @override
+  void disposeg() {
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    print(carnetizadorMember?.correo);
+    print(widget.carnetizadorMember?.correo);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Perfil de ${member!.names}" ,style: TextStyle(color: Color(0xFF5C8ECB))),
+        title: Text("Perfil de ${widget.member!.names}" ,style: TextStyle(color: Color(0xFF5C8ECB))),
         backgroundColor: Colors.white,
         leading: Builder(
           builder: (context) => IconButton(
             icon: Icon(Icons.arrow_back, color: Color(0xFF5C8ECB)),
             onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ListMembersScreen(
-                    userId: miembroActual!.id, 
-                  ), 
-                ),
-              );
+              Navigator.pop(context);
             },
           ),
         ),
@@ -146,13 +208,24 @@ class ProfilePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildInfoItem("Correo: ${member!.correo}"),
-                        _buildInfoItem("Carnet: ${member!.carnet}"),
-                        _buildInfoItem("Teléfono: ${member!.telefono}"),
+                        Center(
+                          child: imageProfile != null
+                              ? CircleAvatar(
+                                  backgroundImage: FileImage(imageProfile!),
+                                  radius: 100,
+                                )
+                              : CircleAvatar(
+                                  backgroundImage: AssetImage('assets/usuario.png'),
+                                  radius: 100,
+                                ),
+                        ),
+                        _buildInfoItem("Correo: ${widget.member!.correo}"),
+                        _buildInfoItem("Carnet: ${widget.member!.carnet}"),
+                        _buildInfoItem("Teléfono: ${widget.member!.telefono}"),
                         _buildInfoItem(
-                            "Fecha de Nacimiento: ${member!.fechaNacimiento?.year}-${member!.fechaNacimiento?.month}-${member!.fechaNacimiento?.day}"),
+                            "Fecha de Nacimiento: ${widget.member!.fechaNacimiento?.year}-${widget.member!.fechaNacimiento?.month}-${widget.member!.fechaNacimiento?.day}"),
                         SizedBox(height: 10),
-                        _buildMap(member!.latitud, member!.longitud),
+                        _buildMap(widget.member!.latitud, widget.member!.longitud),
                       ],
                     ),
                   ),
@@ -160,7 +233,7 @@ class ProfilePage extends StatelessWidget {
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        if (member!.role == "Carnetizador") {
+                        if (widget.member!.role == "Carnetizador") {
                           esCarnetizador = true;
                         }
                         Navigator.push(
@@ -168,8 +241,8 @@ class ProfilePage extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => RegisterUpdate(
                               isUpdate: true,
-                              userData: member,
-                              carnetizadorMember: carnetizadorMember,
+                              userData: widget.member,
+                              carnetizadorMember: widget.carnetizadorMember,
                             ),
                           ),
                         );
@@ -211,7 +284,7 @@ class ProfilePage extends StatelessWidget {
       ),
       onPressed: () async {
         // Envía el correo y actualiza la base de datos
-        final success = await sendEmailAndUpdateCode(member!.id);
+        final success = await sendEmailAndUpdateCode(widget.member!.id);
 
         if (success) {
           await Mostrar_Mensaje(
@@ -220,7 +293,7 @@ class ProfilePage extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => ChangePasswordPage(
-                member: member,
+                member: widget.member,
               ),
             ),
           );
