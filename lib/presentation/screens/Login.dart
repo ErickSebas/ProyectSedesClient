@@ -872,7 +872,7 @@ class _LoginPageState extends State<LoginPage> {
           // El usuario de Facebook no está registrado, regístralo
 
           final newMember =
-              Member(names: "", id: 0, correo: "", latitud: 0.1, longitud: 0.1);
+              Member(names: "", lastnames: "",id: 0, correo: "", latitud: 0.1, longitud: 0.1);
 
           newMember.correo = email;
 

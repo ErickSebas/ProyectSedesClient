@@ -25,7 +25,24 @@ class InfoDialog {
               children: [
                 SizedBox(height: 10),
                 Image.asset("assets/LogoUnivalle.png", height: 150, width: 150),
-                SizedBox(height: 10),
+                SizedBox(height: 10),  // Add your clickable privacy policy link here
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Políticas de Privacidad',
+                        style: TextStyle(
+                          color: Colors.blue, // Change the color as needed
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            launch('https://sedescbba.com/app/terminosmaypivac.html');
+                          },
+                      ),
+                    ],
+                  ),
+                ),
                 Text(
                   'Responsables de desarrollo',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
