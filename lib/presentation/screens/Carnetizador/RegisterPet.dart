@@ -309,10 +309,11 @@ TextField(
                 ),
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(
-                      30), // Limita a 30 caracteres
+                      12),
+                          LettersOnlyTextFormatter(), // Aplica el formatter aquí // Limita a 30 caracteres
                 ],
                 maxLength:
-                    30, // Puedes usar esta propiedad también para indicar el límite máximo
+                    12, // Puedes usar esta propiedad también para indicar el límite máximo
               ),
               SizedBox(height: 10),
               ElevatedButton(
