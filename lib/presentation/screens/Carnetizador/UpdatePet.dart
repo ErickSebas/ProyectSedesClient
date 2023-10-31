@@ -24,7 +24,17 @@ class UpdatePet extends StatefulWidget {
   @override
   _UpdatePetState createState() => _UpdatePetState();
 }
-
+class LettersOnlyTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final String newText = newValue.text.replaceAll(RegExp(r'[^a-zA-Z\s]'), '');
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
+}
 class _UpdatePetState extends State<UpdatePet> {
   ValidadorCamposMascota validador = ValidadorCamposMascota();
   TextEditingController nombreController = TextEditingController();
@@ -283,6 +293,7 @@ class _UpdatePetState extends State<UpdatePet> {
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(
                       30), // Limita a 30 caracteres
+                          LettersOnlyTextFormatter(), // Aplica el formatter aquí
                 ],
                 maxLength:
                     30, // Puedes usar esta propiedad también para indicar el límite máximo
@@ -317,6 +328,7 @@ class _UpdatePetState extends State<UpdatePet> {
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(
                       30), // Limita a 30 caracteres
+                          LettersOnlyTextFormatter(), // Aplica el formatter aquí
                 ],
                 maxLength:
                     30, // Puedes usar esta propiedad también para indicar el límite máximo
@@ -358,6 +370,7 @@ class _UpdatePetState extends State<UpdatePet> {
                 ),
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(30),
+                      LettersOnlyTextFormatter(), // Aplica el formatter aquí
                 ],
                 maxLength: 30,
               ),
