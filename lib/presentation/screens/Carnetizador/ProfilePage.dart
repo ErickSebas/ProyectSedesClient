@@ -8,6 +8,7 @@ import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:fluttapp/presentation/screens/ChangePassword.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'dart:convert';
@@ -230,40 +231,45 @@ Future<File> _downloadImage(String imageUrl) async {
                     ),
                   ),
                   SizedBox(height: 30),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (widget.member!.role == "Carnetizador") {
-                          esCarnetizador = true;
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RegisterUpdate(
-                              isUpdate: true,
-                              userData: widget.member,
-                              carnetizadorMember: widget.carnetizadorMember,
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (widget.member!.role == "Carnetizador") {
+                            esCarnetizador = true;
+                          }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegisterUpdate(
+                                isUpdate: true,
+                                userData: widget.member,
+                                carnetizadorMember: widget.carnetizadorMember,
+                              ),
                             ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.white, // Fondo blanco
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 45, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            side: BorderSide(
+                                color: Color.fromARGB(255, 92, 142, 203),
+                                width: 3.0), // Bordes del color deseado
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Color(0xFF5C8ECB),
-                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
                         ),
-                      ),
-                      child: Text(
-                        "Editar Perfil",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                        child: Text(
+                          "Editar Perfil",
+                          style: TextStyle(
+                            color: Color(0xFF4D6596),
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  
                 ],
               ),
             ),
@@ -277,35 +283,78 @@ Future<File> _downloadImage(String imageUrl) async {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         primary: Color(0xFF4D6596),
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
       ),
       onPressed: () async {
-        // Envía el correo y actualiza la base de datos
-        final success = await sendEmailAndUpdateCode(widget.member!.id);
-
-        if (success) {
-          await Mostrar_Mensaje(
-              context, "Se ha enviado un código a tu correo electrónico.");
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChangePasswordPage(
-                member: widget.member,
-              ),
-            ),
-          );
-          isLogin = 0;
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content:
-                  Text('Ocurrió un error al enviar el código de recuperación.'),
-            ),
-          );
-        }
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return FutureBuilder(
+              future: sendEmailAndUpdateCode(widget.member!.id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return AlertDialog(
+                    title: Text('Espere unos momentos....'),
+                    content: SingleChildScrollView(
+                      child: ListBody(
+                        children: [
+                          Center(
+                            child: SpinKitFadingCube(
+                              color: Colors.blue,
+                              size: 50.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return AlertDialog(
+                    title: Text('Error'),
+                    content: Text(
+                        'Ocurrió un error al enviar el código de recuperación.'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Cerrar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                } else {
+                  // El proceso se completó con éxito
+                  return AlertDialog(
+                    title: Text('Éxito'),
+                    content: Text(
+                        'Se ha enviado un código a tu correo electrónico.'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Cerrar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChangePasswordPage(
+                                member: widget.member,
+                              ),
+                            ),
+                          );
+                          isLogin = 0;
+                        },
+                      ),
+                    ],
+                  );
+                }
+              },
+            );
+          },
+        );
       },
       child: Text("Cambiar Contraseña"),
     );

@@ -11,6 +11,7 @@ import 'package:fluttapp/presentation/services/services_firebase.dart';
 import 'package:fluttapp/services/connectivity_service.dart';
 import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -83,6 +84,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   Member? jefeDeCarnetizador;
   final ConnectivityService _connectivityService = ConnectivityService();
   GoogleMapController? _controller;
+  bool isLoadingImage=true;
 
 
   @override
@@ -117,9 +119,13 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     
     setState(() {
       image = tempImage;
+      isLoadingImage=false;
     });
   } catch (e) {
     print('Error al obtener y descargar la imagen: $e');
+    setState(() {
+      isLoadingImage=false;
+    });
   }
 }
 
@@ -411,11 +417,30 @@ Future<File> _downloadImage(String imageUrl) async {
                         onTap: () {
                           _getImageFromGallery();
                         },
-                        child: CircleAvatar(
-                          backgroundImage: null,
-                          radius: 100,
-                          child: Icon(Icons.camera_alt, size: 50.0),
-                        ),
+                        child: Stack(
+                          children: [
+                            CircleAvatar(
+                              backgroundImage: null,
+                              radius: 100,
+                              child: isLoadingImage ? null : Icon(Icons.camera_alt, size: 50.0),
+                            ),
+                            if (isLoadingImage)
+                              Positioned.fill(
+                                child: Container(
+                                  width: 200,
+                                  height: 200,
+                                  alignment: Alignment.center,
+                                  child: SizedBox(
+                                    width: 60, 
+                                    height: 60, 
+                                    child: SpinKitCircle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        )
                       ),
                       SizedBox(height: 20),
                       selectedImage != null
@@ -435,6 +460,7 @@ Future<File> _downloadImage(String imageUrl) async {
                   validator: (value) =>
                       value!.isEmpty ? 'El nombre no puede estar vacío.' : null,
                   maxLength: 100,
+                  icon: Icons.person,
                 ),
                 _buildTextField(
                   initialData: apellido,
@@ -443,10 +469,22 @@ Future<File> _downloadImage(String imageUrl) async {
                   validator: (value) =>
                       value!.isEmpty ? 'El nombre no puede estar vacío.' : null,
                   maxLength: 45,
+                  icon: Icons.person,
                 ),
                 SizedBox(height: 10),
-                Text("Fecha Nacimiento:",
-                    style: TextStyle(color: Colors.black)),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.date_range, // Cambia esto al icono que prefieras
+                      color: Color.fromARGB(255, 92, 142, 203),
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      "Fecha Nacimiento",
+                      style: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                    ),
+                  ],
+                ),
                 _buildDateOfBirthField(
                   label: 'Fecha Nacimiento',
                   onChanged: (value) => datebirthday = value,
@@ -458,6 +496,7 @@ Future<File> _downloadImage(String imageUrl) async {
                   validator: (value) =>
                       value!.isEmpty ? 'El carnet no puede estar vacío.' : null,
                   maxLength: 45,
+                  icon: Icons.badge
                 ),
                 _buildTextField(
                   initialData: telefono,
@@ -468,15 +507,40 @@ Future<File> _downloadImage(String imageUrl) async {
                       : null,
                   keyboardType: TextInputType.number,
                   maxLength: 8,
+                  icon: Icons.call,
                 ),
-                Text("Dirección:", style: TextStyle(color: Colors.black)),
+                Row(
+                children: [
+                  Icon(
+                    Icons.location_on, // Cambia esto al icono que prefieras
+                    color: Color.fromARGB(255, 92, 142, 203),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    "Dirección",
+                    style: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                  ),
+                ],
+              ),
                 _buildMap(latitude, longitude),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
+                  style: ButtonStyle(
+                    minimumSize: MaterialStateProperty.all(
+                        Size(double.infinity, 55)), // Adjust the height as needed
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.white), // Fondo blanco
+                    elevation: MaterialStateProperty.all(0), // Sin sombra
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(10), // Borde redondeado
+                        side: BorderSide(
+                          color: Color.fromARGB(
+                              255, 92, 142, 203), // Color del borde
+                          width: 2.0, // Ancho del borde
+                        ),
+                      ),
                     ),
-                    primary: Color(0xFF5C8ECB),
                   ),
                   child: Text("Selecciona una ubicación"),
                   onPressed: () async {
@@ -647,6 +711,14 @@ Future<File> _downloadImage(String imageUrl) async {
       children: [
         Container(
           width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white, // Fondo blanco
+            borderRadius: BorderRadius.circular(10), // Borde redondeado
+            border: Border.all(
+              color: Color.fromARGB(255, 92, 142, 203), // Color del borde
+              width: 2.0, // Ancho del borde
+            ),
+          ),
           child: ElevatedButton(
             onPressed: () async {
               datebirthday = await showDatePicker(
@@ -661,19 +733,18 @@ Future<File> _downloadImage(String imageUrl) async {
                 setState(() {});
               }
             },
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              primary: Color(0xFF5C8ECB),
-            ),
             child: Text(
               datebirthday != null
                   ? "${datebirthday.day}/${datebirthday.month}/${datebirthday.year}"
                   : label,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Color.fromARGB(255, 92, 142, 203),
+              ),
             ),
-            
+            style: ElevatedButton.styleFrom(
+              primary: Colors.transparent, // Fondo transparente
+              elevation: 0, // Sin sombra
+            ),
           ),
         ),
         SizedBox(height: 15),
@@ -681,29 +752,48 @@ Future<File> _downloadImage(String imageUrl) async {
     );
   }
 
-  Widget _buildTextField({
+   Widget _buildTextField({
     required String initialData,
     required String label,
     required Function(String) onChanged,
     String? Function(String?)? validator,
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
+    IconData? icon, 
     required int maxLength,
   }) {
     return Column(
       children: [
-        TextFormField(
-          initialValue: initialData,
-          style: TextStyle(color: Colors.black),
-          decoration: InputDecoration(
-            labelText: label,
-            labelStyle: TextStyle(color: Colors.black),
-          ),
-          onChanged: onChanged,
-          validator: validator,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
-          maxLength: maxLength,
+        Row(
+          children: [
+            if (icon != null)
+              // Verifica si se proporcionó un icono
+              Padding(
+                padding: const EdgeInsets.all(
+                    0), // Ajusta el espacio según sea necesario
+                child: Icon(
+                  icon,
+                  color: Color.fromARGB(255, 92, 142,
+                      203), // Establece el color del icono como blanco
+                ),
+              ),
+            Expanded(
+              child: TextFormField(
+                initialValue: initialData,
+                style: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                decoration: InputDecoration(
+                  labelText: label,
+                  labelStyle:
+                      TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                ),
+                onChanged: onChanged,
+                validator: validator,
+                keyboardType: keyboardType,
+                obscureText: obscureText,
+                maxLength: maxLength,
+              ),
+            ),
+          ],
         ),
         SizedBox(height: 15),
       ],

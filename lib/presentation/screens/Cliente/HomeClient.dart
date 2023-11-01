@@ -105,11 +105,12 @@ class _CampaignPageState extends State<CampaignPage> {
   void initState() {
     super.initState();
     _connectivityService.initialize(context);
+    if(image==null)
     addImageToSelectedImages(miembroActual!.id);
   }
 
   @override
-  void disposeg() {
+  void dispose() {
     _connectivityService.dispose();
     super.dispose();
   }
@@ -127,8 +128,11 @@ class _CampaignPageState extends State<CampaignPage> {
     return image;
   } catch (e) {
     print('Error al obtener y descargar la imagen: $e');
+    setState(() {
+      isloadingProfile=false;
+    });
   }
-  isloadingProfile=false;
+  
   return null;
 }
 

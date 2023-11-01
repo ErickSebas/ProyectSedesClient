@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:fluttapp/Implementation/ChatImp.dart';
 import 'package:fluttapp/Models/ChatModel.dart';
 import 'package:fluttapp/presentation/services/services_firebase.dart';
@@ -30,7 +32,8 @@ class ChatPage extends StatefulWidget {
   final int idChat;
   final String nombreChat;
   final int idPersonDestino;
-  ChatPage({required this.idChat, required this.nombreChat, required this.idPersonDestino});
+  final File? imageChat;
+  ChatPage({required this.idChat, required this.nombreChat, required this.idPersonDestino, this.imageChat});
   @override
   _ChatPageState createState() => _ChatPageState();
 }
@@ -108,7 +111,13 @@ class _ChatPageState extends State<ChatPage> {
       backgroundColor: Color(0xFF5C8ECB),
       appBar: AppBar(
         backgroundColor: Color(0xFF5C8ECB),
-        title: Text(widget.nombreChat, style: TextStyle(color: Colors.white)),
+        title: Row(children: [
+          CircleAvatar(
+            backgroundImage: FileImage(widget.imageChat!),
+          ),
+          SizedBox(width: 20,),
+          Text(widget.nombreChat, style: TextStyle(color: Colors.white)),
+        ],) ,
         centerTitle: true,
         leading: Builder(
           builder: (context) => IconButton(
