@@ -89,9 +89,14 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   void initState() {
     super.initState();
     _connectivityService.initialize(context);
+
+    if(miembroActual!.id!=widget.userData?.id){
+      image=null;
+    }
     
     if (widget.userData?.id != null) {
       Cargar_Datos_Persona();
+      if(image==null)
       addImageToSelectedImages(widget.userData!.id);
     }
     if (widget.userData?.role == "Cliente") {
@@ -441,7 +446,7 @@ Future<File> _downloadImage(String imageUrl) async {
                 ),
                 SizedBox(height: 10),
                 Text("Fecha Nacimiento:",
-                    style: TextStyle(color: Colors.white)),
+                    style: TextStyle(color: Colors.black)),
                 _buildDateOfBirthField(
                   label: 'Fecha Nacimiento',
                   onChanged: (value) => datebirthday = value,

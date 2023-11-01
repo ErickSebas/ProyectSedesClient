@@ -52,7 +52,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
   void initState() {
     super.initState();
     _connectivityService.initialize(context);
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: miembroActual!.role=="Super Admin"? 1:2, vsync: this);
     _tabController?.addListener(_handleTabSelection);
     //loadAllImages();
 
@@ -80,6 +80,7 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
       
     }else{
       isLoading=false;
+      loadAllImages();
     }
     
 
@@ -93,13 +94,14 @@ class _ChatScreenStateState extends State<ChatScreenState> with SingleTickerProv
         if (mounted) { 
           setState(() {
             chats = value;
+            namesChats = namesChatsNew;
           });
         }
       });
 
       if (mounted) {
         setState(() {
-          namesChats = namesChatsNew;
+          
         });
       }
     });
@@ -298,6 +300,7 @@ Future<File> _downloadImage(String imageUrl) async {
           controller: _tabController,
           children: [
             ChatList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages),
+            if(miembroActual!.role!="Super Admin")
             EstadoList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages,)
             ,
           ],
