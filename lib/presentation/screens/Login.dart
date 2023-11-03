@@ -415,12 +415,13 @@ class _LoginPageState extends State<LoginPage> {
                       size: 50.0,
                     )),) 
           : Container(
-              decoration: BoxDecoration(
+            color: Colors.white,
+              /*decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/Splash.png'),
                   fit: BoxFit.cover,
                 ),
-              ),
+              ),*/
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(

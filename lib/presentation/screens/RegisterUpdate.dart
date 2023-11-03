@@ -85,21 +85,26 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   final ConnectivityService _connectivityService = ConnectivityService();
   GoogleMapController? _controller;
   bool isLoadingImage=true;
+  File? imageLocal;
 
 
   @override
   void initState() {
     super.initState();
     _connectivityService.initialize(context);
-
+/*
     if(miembroActual!.id!=widget.userData?.id){
       image=null;
-    }
+    }*/
     
     if (widget.userData?.id != null) {
       Cargar_Datos_Persona();
-      if(image==null)
-      addImageToSelectedImages(widget.userData!.id);
+      if(image==null||miembroActual!.id!=widget.userData?.id){
+        addImageToSelectedImages(widget.userData!.id);
+      }else{
+        imageLocal = image;
+        isLoadingImage=false;
+      }
     }
     if (widget.userData?.role == "Cliente") {
       esCliente = true;
@@ -118,7 +123,7 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
     File tempImage = await _downloadImage(imageUrl);
     
     setState(() {
-      image = tempImage;
+      imageLocal = tempImage;
       isLoadingImage=false;
     });
   } catch (e) {
@@ -157,6 +162,7 @@ Future<File> _downloadImage(String imageUrl) async {
   @override
   void dispose() {
     _connectivityService.dispose();
+    imageLocal = null;
     super.dispose();
   }
 
@@ -302,7 +308,7 @@ Future<File> _downloadImage(String imageUrl) async {
 
     setState(() {
       if (pickedImage != null) {
-        image = File(pickedImage.path);
+        imageLocal = File(pickedImage.path);
       }
     });
   }
@@ -405,12 +411,12 @@ Future<File> _downloadImage(String imageUrl) async {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      image != null ?InkWell(
+                      imageLocal != null ?InkWell(
                         onTap: () {
                           _getImageFromGallery();
                         },
                         child: CircleAvatar(
-                          backgroundImage: FileImage(image!),
+                          backgroundImage: FileImage(imageLocal!),
                           radius: 100,
                           child: null,
                         ),
@@ -600,6 +606,7 @@ Future<File> _downloadImage(String imageUrl) async {
                         if (widget.isUpdate) {
                           await updateUser();
                           //deleteImage(idPerson);
+                          image = imageLocal;
                           uploadImage(image, idPerson);
                           mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                               context,
@@ -608,6 +615,7 @@ Future<File> _downloadImage(String imageUrl) async {
                         //////////////////////////////////RegistrarCarajo
                         } else{
                           await registerUser();
+                          image = imageLocal;
                           await uploadImage(image, idPerson);
                           mostrarMensaje.Mostrar_Finalizados_Carnetizadores(context, 'Registro Exitoso',miembroActual!.id);
                         }
@@ -636,6 +644,7 @@ Future<File> _downloadImage(String imageUrl) async {
                         if (widget.isUpdate) {
                           await updateUser();
                           //deleteImage(idPerson);
+                          image = imageLocal;
                           await uploadImage(image, idPerson);
                           if (carnetizadorglobal?.role == 'Carnetizador') {
                             mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
