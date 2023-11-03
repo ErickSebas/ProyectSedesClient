@@ -105,8 +105,11 @@ class _CampaignPageState extends State<CampaignPage> {
   void initState() {
     super.initState();
     _connectivityService.initialize(context);
-    if(image==null)
-    addImageToSelectedImages(miembroActual!.id);
+    if(image==null){
+      addImageToSelectedImages(miembroActual!.id);
+    }else{
+      isloadingProfile=false;
+    }
   }
 
   @override
@@ -196,6 +199,7 @@ Future<File> _downloadImage(String imageUrl) async {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
         centerTitle: true,
         title: Row(
@@ -223,12 +227,8 @@ Future<File> _downloadImage(String imageUrl) async {
       ),
       drawer: Drawer(
         child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/Splash.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
+          color: Colors.white,
+
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
@@ -325,7 +325,7 @@ Future<File> _downloadImage(String imageUrl) async {
                         ),
                       ),
                       Text(
-                        miembroActual?.role ?? '',
+                        miembroActual?.correo ?? '',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
@@ -352,10 +352,6 @@ Future<File> _downloadImage(String imageUrl) async {
               ListTile(
                 title: Text('Rol: ${miembroActual?.role ?? ''}'),
                 leading: Icon(Icons.work),
-              ),
-              ListTile(
-                title: Text('Correo: ${miembroActual?.correo ?? ''}'),
-                leading: Icon(Icons.email),
               ),
               ListTile(
                 title: Text('Teléfono: ${miembroActual?.telefono ?? ''}'),
@@ -454,12 +450,13 @@ body: Column(
     mensajeCondicional(),
     Expanded(
       child: Container(
-        decoration: BoxDecoration(
+        color: Colors.white,
+        /*decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/Splash.png'),
             fit: BoxFit.cover,
           ),
-        ),
+        ),*/
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -473,10 +470,14 @@ body: Column(
                       ? Column(
                           children: <Widget>[
                             Card(
-                              color: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                                side: const BorderSide(width: 2, color: Color(0xFF5C8ECB))
+                              ),  
+                              color: Color.fromARGB(255, 241, 245, 255),
                               child: Container(
-                                width: 120,
-                                height: 120,
+                                width: 150,
+                                height: 150,
                                 child: IconButton(
                                   icon: Icon(
                                     Icons.add,
@@ -516,10 +517,14 @@ body: Column(
                   Column(
                     children: <Widget>[
                       Card(
-                        color: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          side: const BorderSide(width: 2, color: Color(0xFF5C8ECB))
+                        ), 
+                        color: Color.fromARGB(255, 241, 245, 255),
                         child: Container(
-                          width: 120,
-                          height: 120,
+                          width: 150,
+                          height: 150,
                           child: IconButton(
                             icon: Icon(
                               Icons.pets,
@@ -557,10 +562,14 @@ body: Column(
                   Column(
                     children: <Widget>[
                       Card(
-                        color: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          side: const BorderSide(width: 2, color: Color(0xFF5C8ECB))
+                        ), 
+                        color: Color.fromARGB(255, 241, 245, 255),
                         child: Container(
-                          width: 120,
-                          height: 120,
+                          width: 150,
+                          height: 150,
                           child: IconButton(
                             icon: Icon(
                               Icons.flag,
@@ -592,10 +601,14 @@ body: Column(
                   Column(
                     children: <Widget>[
                       Card(
-                        color: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          side: const BorderSide(width: 2, color: Color(0xFF5C8ECB))
+                        ), 
+                        color: Color.fromARGB(255, 241, 245, 255),
                         child: Container(
-                          width: 120,
-                          height: 120,
+                          width: 150,
+                          height: 150,
                           child: IconButton(
                             icon: Icon(
                               Icons.edit,

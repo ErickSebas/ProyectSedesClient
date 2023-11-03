@@ -165,12 +165,13 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        color: Colors.white,
+        /*decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/Splash.png'),
             fit: BoxFit.cover,
           ),
-        ),
+        ),*/
         child: Column(
         children: [
           Padding(

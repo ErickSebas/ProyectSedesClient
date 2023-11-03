@@ -130,7 +130,7 @@ class ListMascotas extends StatelessWidget {
                   backgroundColor: Color.fromARGB(255, 241, 245, 255),
                   title: Text(
                     'Lista de Mascota',
-                    style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65)),
+                    style: TextStyle(color: Colors.black),
                   ),
                   centerTitle: true,
                 ):null,
@@ -269,17 +269,18 @@ Future<void> addImageUrlsToSelectedImages(
           backgroundColor: Color.fromARGB(255, 241, 245, 255),
           title: Text(
             'Lista de Mascota',
-            style: TextStyle(color: const Color.fromARGB(255, 70, 65, 65)),
+            style: TextStyle(color: Colors.black),
           ),
           centerTitle: true,
         ),
       body:  Container(
-      decoration: BoxDecoration(
+        color: Colors.white,
+      /*decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/Splash.png'),
           fit: BoxFit.cover,
         ),
-      ),
+      ),*/
       child: Column(
         children: <Widget>[
           Card(

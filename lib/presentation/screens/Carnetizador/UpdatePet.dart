@@ -269,12 +269,13 @@ class _UpdatePetState extends State<UpdatePet> {
         centerTitle: true,
       ),
       body: Container(
-        decoration: BoxDecoration(
+        color: Colors.white,
+        /*decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/Splash.png'),
             fit: BoxFit.cover,
           ),
-        ),
+        ),*/
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: Column(
@@ -285,95 +286,105 @@ class _UpdatePetState extends State<UpdatePet> {
               ),
               SizedBox(height: 10),
               TextField(
-                controller: nombreController,
-                decoration: InputDecoration(
-                  labelText: 'Nombre de la Mascota',
-                  errorText: validador.mensajeErrorNombreMascota,
+              style: TextStyle(color: Colors.black), 
+              decoration: InputDecoration(
+                icon: Icon(Icons.pets, color: Color.fromARGB(255, 92, 142, 203)),
+                labelText: 'Nombre de la Mascota',
+                errorText: validador.mensajeErrorNombreMascota,
+                labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+              ),
+              controller: nombreController,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(30),
+                LettersOnlyTextFormatter(),
+              ],
+              maxLength: 30,
+            ),
+            TextFormField(
+              style: TextStyle(color: Colors.black),
+              controller: descripcionController,
+              decoration: InputDecoration(
+                icon: Icon(Icons.description, color: Color.fromARGB(255, 92, 142, 203)),
+                labelText: 'Descripción de la Mascota',
+                errorText: validador.mensajeErrorDescripcionMascota,
+                labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                counterText: '',
+              ),
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              maxLength: 200,
+              maxLengthEnforcement: MaxLengthEnforcement.enforced,
+            ),
+            TextField(
+              style: TextStyle(color: Colors.black),
+              controller: edadController,
+              maxLength: 2,
+              decoration: InputDecoration(
+                icon: Icon(Icons.cake, color: Color.fromARGB(255, 92, 142, 203)),
+                labelText: 'Edad de la Mascota',
+                errorText: validador.mensajeErrorEdadMascota,
+                labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              style: TextStyle(color: Colors.black),
+              controller: razaController,
+              decoration: InputDecoration(
+                icon: Icon(Icons.pets, color: Color.fromARGB(255, 92, 142, 203),),
+                labelText: 'Raza de la Mascota',
+                errorText: validador.mensajeErrorRazaMascota,
+                labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+              ),
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(30),
+                LettersOnlyTextFormatter(),
+              ],
+              maxLength: 30,
+            ),
+            Row(
+              children: [
+                Icon(Icons.people, color: Color.fromARGB(255, 92, 142, 203)),
+                SizedBox(width: 10), 
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Sexo', style: TextStyle(color: Color.fromARGB(255, 92, 142, 203))),
+                    DropdownButton<String>(
+                      value: valorSeleccionado,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          valorSeleccionado = newValue!;
+                        });
+                      },
+                      items: opciones
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value == 'Hembra' ? 'H' : 'M',
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(
-                      30), // Limita a 30 caracteres
-                          LettersOnlyTextFormatter(), // Aplica el formatter aquí
-                ],
-                maxLength:
-                    30, // Puedes usar esta propiedad también para indicar el límite máximo
+              ],
+            ),
+            TextField(
+              style: TextStyle(color: Colors.black),
+              controller: colorController,
+              decoration: InputDecoration(
+                icon: Icon(Icons.color_lens, color: Color.fromARGB(255, 92, 142, 203)),
+                labelText: 'Color del Animal',
+                errorText: validador.mensajeErrorColorMascota,
+                labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
               ),
-              TextFormField(
-                controller: descripcionController,
-                decoration: InputDecoration(
-                  labelText: 'Descripción de la Mascota',
-                  errorText: validador.mensajeErrorDescripcionMascota,
-                  counterText: '',
-                ),
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                maxLength: 200,
-                maxLengthEnforcement: MaxLengthEnforcement.enforced,
-              ),
-              TextField(
-                controller: edadController,
-                maxLength: 2, // Establece el máximo de caracteres a 2
-                decoration: InputDecoration(
-                  labelText: 'Edad de la Mascota',
-                  errorText: validador.mensajeErrorEdadMascota,
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: razaController,
-                decoration: InputDecoration(
-                  labelText: 'Raza de la Mascota',
-                  errorText: validador.mensajeErrorRazaMascota,
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(
-                      30), // Limita a 30 caracteres
-                          LettersOnlyTextFormatter(), // Aplica el formatter aquí
-                ],
-                maxLength:
-                    30, // Puedes usar esta propiedad también para indicar el límite máximo
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text("Sexo de la mascota"),
-                  ),
-                  SizedBox(width: 10), // Espacio entre el TextField y el Text
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Sexo'),
-                      DropdownButton<String>(
-                        value: valorSeleccionado,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            valorSeleccionado = newValue!;
-                          });
-                        },
-                        items: opciones
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value == 'Hembra' ? 'H' : 'M',
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              TextField(
-                controller: colorController,
-                decoration: InputDecoration(
-                  labelText: 'Color del Animal',
-                  errorText: validador.mensajeErrorColorMascota,
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(30),
-                      LettersOnlyTextFormatter(), // Aplica el formatter aquí
-                ],
-                maxLength: 30,
-              ),
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(30),
+                LettersOnlyTextFormatter(),
+              ],
+              maxLength: 30,
+            ),
+
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: isLoadingImages || isLoading

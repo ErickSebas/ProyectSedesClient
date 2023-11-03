@@ -5,6 +5,7 @@ import 'package:fluttapp/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttapp/Models/CampaignModel.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 
 int estadoPerfil = 0;
 
@@ -33,6 +34,8 @@ class _CampaignStateState extends State<ListCampaignPage> {
   final ConnectivityService _connectivityService = ConnectivityService();
   
   bool isLoading=false;
+  final now = DateTime.now();
+  int cont = 0;
 
   void searchCampaign(String query) {
     setState(() {
@@ -53,6 +56,17 @@ class _CampaignStateState extends State<ListCampaignPage> {
   void dispose() {
     _connectivityService.dispose();
     super.dispose();
+  }
+
+    Color getStatusColor(DateTime start, DateTime end) {
+
+    if (now.isAfter(end)) {
+      return Colors.red; 
+    } else if (now.isBefore(start)) {
+      return Colors.blue; 
+    } else {
+      return Colors.green; 
+    }
   }
 
   @override
@@ -99,12 +113,13 @@ class _CampaignStateState extends State<ListCampaignPage> {
                       color: Color.fromARGB(255, 221, 236, 255),
                       size: 50.0,
                     ): Container(
-        decoration: BoxDecoration(
+                      color: Colors.white,
+        /*decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/Splash.png'),
             fit: BoxFit.cover,
           ),
-        ),
+        ),*/
         child: Column(
         children: [
           searchField,
@@ -112,6 +127,7 @@ class _CampaignStateState extends State<ListCampaignPage> {
             child: ListView.builder(
               itemCount: filteredCampaigns.length,
               itemBuilder: (context, index) {
+
                 return Card(
                   elevation: 4.0,
                   shape: RoundedRectangleBorder(
@@ -120,15 +136,56 @@ class _CampaignStateState extends State<ListCampaignPage> {
                   ),
                   margin: const EdgeInsets.all(10.0),
                   child: ListTile(
-                    title: Text(
-                      filteredCampaigns[index].nombre,
-                      style: TextStyle(
-                          color: Color(0xFF5C8ECB),
-                          fontWeight: FontWeight.bold),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            filteredCampaigns[index].nombre,
+                            style: TextStyle(
+                              color: Color(0xFF4D6596),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          decoration: BoxDecoration(
+                            color: getStatusColor(
+                              filteredCampaigns[index].dateStart,
+                              filteredCampaigns[index].dateEnd,
+                            ),
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          child: Text(
+                            now.isAfter(filteredCampaigns[index].dateEnd)
+                                ? 'Finalizado'
+                                : now.isBefore(filteredCampaigns[index].dateStart)
+                                    ? 'En espera'
+                                    : 'En curso',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    subtitle: Text(
-                      filteredCampaigns[index].descripcion,
-                      style: TextStyle(color: Color(0xFF5C8ECB)),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          filteredCampaigns[index].descripcion,
+                          style: TextStyle(color: Color(0xFF4D6596)),
+                        ),
+                        Text(
+                          "${DateFormat('dd/MM/yy').format(filteredCampaigns[index].dateStart)} - ${DateFormat('dd/MM/yy').format(filteredCampaigns[index].dateEnd)}",
+                          style: TextStyle(
+                            color: Color(0xFF4D6596),
+                            fontSize: 12.0,
+                          ),
+                        ),
+                      ],
                     ),
                    onTap: () async {
                       showLoadingDialog(context); 

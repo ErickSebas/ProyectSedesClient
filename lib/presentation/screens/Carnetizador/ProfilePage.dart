@@ -158,7 +158,7 @@ Future<File> _downloadImage(String imageUrl) async {
   }
 
   @override
-  void disposeg() {
+  void dispose() {
     super.dispose();
   }
 
@@ -181,14 +181,15 @@ Future<File> _downloadImage(String imageUrl) async {
       ),
       body: Stack(
         children: [
-          Image.asset(
+          /*Image.asset(
             'assets/Splash.png',
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
-          ),
+          ),*/
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+            color: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,11 +201,12 @@ Future<File> _downloadImage(String imageUrl) async {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          Colors.grey.withOpacity(0.5),
-                          Colors.grey.withOpacity(0.3),
+                          Colors.white,
+                          Colors.white,
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(width: 3, color: Color(0xFF5C8ECB)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,7 +232,7 @@ Future<File> _downloadImage(String imageUrl) async {
                       ],
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
@@ -377,7 +379,7 @@ Future<File> _downloadImage(String imageUrl) async {
               ),
             ),
             TextSpan(
-              text: parts[1], // Parte del contenido
+              text: parts[1], style: TextStyle(color: Colors.black) // Parte del contenido
             ),
           ],
         ),

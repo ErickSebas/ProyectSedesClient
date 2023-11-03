@@ -387,12 +387,13 @@ Future<File> _downloadImage(String imageUrl) async {
       ),
       body: isConnected.value? Stack(children: [
         Container(
-          decoration: BoxDecoration(
+          color: Colors.white,
+          /*decoration: BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/Splash.png'),
               fit: BoxFit.cover,
             ),
-          ),
+          ),*/
         ),
         Padding(
           padding: const EdgeInsets.all(20.0),
@@ -523,6 +524,7 @@ Future<File> _downloadImage(String imageUrl) async {
                 ],
               ),
                 _buildMap(latitude, longitude),
+                SizedBox(height: 10),
                 ElevatedButton(
                   style: ButtonStyle(
                     minimumSize: MaterialStateProperty.all(
@@ -542,7 +544,7 @@ Future<File> _downloadImage(String imageUrl) async {
                       ),
                     ),
                   ),
-                  child: Text("Selecciona una ubicación"),
+                  child: Text("Selecciona una ubicación", style: TextStyle(color: Colors.black),),
                   onPressed: () async {
                     await Permisos();
                     final result = await Navigator.push(
@@ -572,6 +574,7 @@ Future<File> _downloadImage(String imageUrl) async {
                       value!.isEmpty ? 'El email no puede estar vacío.' : null,
                   keyboardType: TextInputType.emailAddress,
                   maxLength: 45,
+                  icon: Icons.mail,
                 ),
                 widget.isUpdate
                     ? Container()
@@ -581,6 +584,7 @@ Future<File> _downloadImage(String imageUrl) async {
                         onChanged: (value) => password = value,
                         obscureText: true,
                         maxLength: 10,
+                        icon: Icons.password
                       ),
                 SizedBox(height: 20),
                 ElevatedButton(
@@ -738,7 +742,7 @@ Future<File> _downloadImage(String imageUrl) async {
                   ? "${datebirthday.day}/${datebirthday.month}/${datebirthday.year}"
                   : label,
               style: TextStyle(
-                color: Color.fromARGB(255, 92, 142, 203),
+                color: Colors.black,
               ),
             ),
             style: ElevatedButton.styleFrom(
@@ -780,7 +784,7 @@ Future<File> _downloadImage(String imageUrl) async {
             Expanded(
               child: TextFormField(
                 initialValue: initialData,
-                style: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                style: TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   labelText: label,
                   labelStyle:
