@@ -58,21 +58,25 @@ android {
         versionName flutterVersionName
     }
 
-       signingConfigs {
+    signingConfigs {
         release {
+            keyAlias 'sedes'
+            keyPassword 'android'
             storeFile file('release.keystore')
-            storePassword 'Univalle2023'
-            keyAlias 'my-key-alias'
-            keyPassword 'Univalle2023'
+            storePassword 'android'
         }
-   }
-   buildTypes {
+    }
+
+    buildTypes {
        release {
            signingConfig signingConfigs.release
        }
-   }
+    }
 
 }
+   
+
+
 
 flutter {
     source '../..'
