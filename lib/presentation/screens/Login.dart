@@ -405,14 +405,15 @@ class _LoginPageState extends State<LoginPage> {
       body: isloading
           ? Center(child: Container(
             decoration: BoxDecoration(
-            image: DecorationImage(
+              color: Colors.white,
+            /*image: DecorationImage(
               image: AssetImage('assets/Splash.png'),
               fit: BoxFit.cover,
-            ),
+            ),*/
           ),
-            child: SpinKitCircle(
+            child: CircularProgressIndicator(
                       color: Color(0xFF5C8ECB),
-                      size: 50.0,
+                      
                     )),) 
           : Container(
             color: Colors.white,
@@ -578,7 +579,7 @@ class _LoginPageState extends State<LoginPage> {
                                   AlwaysStoppedAnimation<Color>(Colors.white),
                               strokeWidth: 4.0,
                             ) // Muestra una animación de carga
-                          : Text('LOGIN'),
+                          : Text('Iniciar sesión'),
                           style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15.0),
@@ -625,14 +626,16 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       onPressed: () async {
                         try {
-                          UserCredential userCredential =
-                              await authGoogle.signInWithGoogle();
-
+                          final GoogleSignInAccount? account = await GoogleSignIn().signIn();
+                          final GoogleSignInAuthentication googleAuth = await account!.authentication;
+                          final credential= GoogleAuthProvider.credential(
+                            accessToken: googleAuth.accessToken,
+                            idToken: googleAuth.idToken
+                          );
+                          UserCredential user = await FirebaseAuth.instance.signInWithCredential(credential);
                           setState(() {
                             isloading = true;
                           });
-
-                          User? user = userCredential.user;
 
                           Member googleUser = Member(
                               names: "",
@@ -641,33 +644,22 @@ class _LoginPageState extends State<LoginPage> {
                               latitud: 0.1,
                               longitud: 0.1);
 
-                          if (user != null) {
-                            googleUser.correo = userCredential.user!.email!;
-
-                            googleUser.telefono =
-                                userCredential.user!.phoneNumber as int?;
-
-                            googleUser.fechaCreacion = DateTime.now();
-
-                            googleUser.status = 1;
-
-                            googleUser.role = null;
-
-                            googleUser.names =
-                                userCredential.user!.displayName!;
-                          }
-
-                          AdditionalUserInfo? additionalUserInfo =
-                              userCredential.additionalUserInfo;
-
+                          googleUser.correo = user.user!.email!;
+                          googleUser.telefono =
+                              user.user!.phoneNumber as int?;
+                          googleUser.fechaCreacion = DateTime.now();
+                          googleUser.status = 1;
+                          googleUser.role = null;
+                          googleUser.names =
+                              user.user!.displayName!;
+                                                  AdditionalUserInfo? additionalUserInfo =
+                              user.additionalUserInfo;
                           if (additionalUserInfo != null) {
-                            googleUser.names = userCredential
+                            googleUser.names = user
                                 .additionalUserInfo!.profile?["given_name"];
-
-                            googleUser.lastnames = userCredential
+                            googleUser.lastnames = user
                                 .additionalUserInfo!.profile?["family_name"];
                           }
-
                           try {
                             await GoogleSignIn().disconnect();
 
@@ -676,7 +668,6 @@ class _LoginPageState extends State<LoginPage> {
                             print(
                                 "Error al desconectar o cerrar sesión con Google: $error");
                           }
-
                           var res = await registerUser2(googleUser);
 
                           if (res == 1) {

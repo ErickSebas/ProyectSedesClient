@@ -113,8 +113,11 @@ class _ChatPageState extends State<ChatPage> {
         backgroundColor: Color(0xFF5C8ECB),
         title: Row(children: [
           CircleAvatar(
-            backgroundImage: FileImage(widget.imageChat!),
+            backgroundImage: widget.imageChat != null ? 
+              FileImage(widget.imageChat!) : 
+              AssetImage('assets/usuario.png') as ImageProvider,
           ),
+
           SizedBox(width: 20,),
           Text(widget.nombreChat, style: TextStyle(color: Colors.white)),
         ],) ,

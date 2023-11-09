@@ -35,8 +35,6 @@ Future<List<Mascota>> fetchMembers(int idPersona) async {
 void initState() {
   initState();
   getPersonData();
-  print("Estan llegando los datos del chico");
-  print(miembroMascota?.names);
 }
 
 Future<void> getPersonData() async {
@@ -56,7 +54,6 @@ Future<List<Mascota>> fetchMembers() async {
 
 Future<void> disablePet(int idMascota) async {
   final url = Uri.parse('http://181.188.191.35:3000/disablemascota/$idMascota');
-  print("Deshabilitando mascota con ID: $idMascota");
   final response = await http.put(
     url,
     body: jsonEncode({'id': idMascota, 'Status': 0}),
@@ -87,26 +84,27 @@ Future<bool> deletePetFolder(int userId, int petId) async {
 
     return true;
   } catch (e) {
-    print('Error al eliminar carpeta de mascota: $e');
     return false;
   }
 }
 
-class ListMascotas extends StatelessWidget {
+class ListMascotas extends StatefulWidget {
   late final int userId;
   ListMascotas({required this.userId}) {
     idUsuario = this.userId;
-    print('ID de usuario en Lista mascotas: $idUsuario');
   }
+  @override
+  _ListMascotasState createState() => _ListMascotasState();
+}
+
+class _ListMascotasState extends State<ListMascotas> {
+  
+
   @override
   Widget build(BuildContext context) {
     getPersonData();
-    print("Estan llegando los datos del chico");
-    print(miembroMascota?.names);
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: FutureBuilder<List<Mascota>>(
-        future: fetchMembers(userId),
+    return FutureBuilder<List<Mascota>>(
+        future: fetchMembers(widget.userId),
         builder: (BuildContext context, AsyncSnapshot<List<Mascota>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
@@ -127,6 +125,14 @@ class ListMascotas extends StatelessWidget {
             List<Mascota> mascotas = snapshot.data!;
             return Scaffold(
               appBar:mascotas.isEmpty?  AppBar(
+                  leading: Builder(
+                    builder: (context) => IconButton(
+                      icon: Icon(Icons.arrow_back) ,color: Colors.black,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
                   backgroundColor: Color.fromARGB(255, 241, 245, 255),
                   title: Text(
                     'Lista de Mascota',
@@ -136,26 +142,27 @@ class ListMascotas extends StatelessWidget {
                 ):null,
                 body: mascotas.isEmpty? Center(child: Text("No tienes Mascotas"),): CampaignPage(mascotas: mascotas),
                 floatingActionButton: miembroActual!.role=="Cliente"?null: FloatingActionButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (miembroMascota?.latitud == 0.1) {
-                      print(
-                          "NO PUEDES USAR ESTO HASTA QUE ACTUALICES TUS DATOS");
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content:
                                 Text('Actualiza tus datos para poder usar esta opcion')),
                       );
                     } else {
-                      print("Usuario que se esta yendo a la otra pagina es");
-                      print(miembroMascota?.id);
-                      print(miembroMascota?.names);
-                      Navigator.push(
+                      final res = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => RegisterPet(
                               userId: idUsuario!,
                             ), // Pasa el ID del usuario aquí
                           ));
+
+                      if(res!=null){
+                        setState(() {
+                          
+                        });
+                      }
                     }
                   },
                   child: Icon(Icons.add_box),
@@ -163,7 +170,6 @@ class ListMascotas extends StatelessWidget {
                 ));
           }
         },
-      ),
     );
   }
 }
@@ -222,7 +228,6 @@ Future<void> addImageUrlsToSelectedImages(
 
 
   } catch (e) {
-    print('Error al obtener y descargar las imágenes: $e');
   }
 }
 
@@ -241,7 +246,6 @@ Future<void> addImageUrlsToSelectedImages(
         imageUrls.add(downloadURL);
       }
     } catch (e) {
-      print('Error al obtener URLs de imágenes: $e');
     }
 
     return imageUrls;
@@ -266,6 +270,14 @@ Future<void> addImageUrlsToSelectedImages(
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.arrow_back) ,color: Colors.black,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
           backgroundColor: Color.fromARGB(255, 241, 245, 255),
           title: Text(
             'Lista de Mascota',
@@ -337,19 +349,19 @@ Future<void> addImageUrlsToSelectedImages(
                                     ),
                                     TextButton(
                                       child: Text("Eliminar"),
-                                      onPressed: () {
-                                        // Aquí se ejecuta la función deleteUser si el usuario confirma
-                                        disablePet(mascota.idMascotas);
-                                        deletePetFolder(mascota.idPersona,
-                                            mascota.idMascotas);
-                                        eliminarMascota(index);
-                                        print("id" +
-                                            mascota.idMascotas.toString());
+                                      onPressed: () async {
+                                        await showLoadingDialog(context, () async {
+                                          disablePet(mascota.idMascotas);
+                                          deletePetFolder(mascota.idPersona,
+                                              mascota.idMascotas);
+                                          eliminarMascota(index);
+                                        });
+                                        showSnackbar(context, "Eliminado con éxito");
                                         Navigator.of(context)
-                                            .pop(); // Cierra el cuadro de diálogo
-                                        mostrarFinalizar.Mostrar_Finalizados(
+                                            .pop(); 
+                                        /*mostrarFinalizar.Mostrar_Finalizados(
                                             context,
-                                            "Registro Eliminado con éxito");
+                                            "Registro Eliminado con éxito");*/
                                         //refreshMembersList();
                                       },
                                     ),
@@ -363,13 +375,18 @@ Future<void> addImageUrlsToSelectedImages(
                           icon: Icons.delete,
                         ),
                         SlidableAction(
-                          onPressed: ((context) {
-                            Navigator.push(
+                          onPressed: ((context) async {
+                            final res = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => UpdatePet(mascota),
                               ),
                             );
+                            if(res!=null){
+                              setState(() {
+                                
+                              });
+                            }
                           }),
                           borderRadius: BorderRadius.circular(20),
                           backgroundColor: Color(0xFF5C8ECB),

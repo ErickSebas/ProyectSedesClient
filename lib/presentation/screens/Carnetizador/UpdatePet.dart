@@ -471,20 +471,15 @@ class _UpdatePetState extends State<UpdatePet> {
                   ElevatedButton(
                     onPressed:isLoadingImages || isLoading
                     ? null: () async {
-                      print(miembroActual!.id);
-                      setState(() {
+
+                      /*setState(() {
                         isLoading =
                             true; // Comienza la carga al presionar el botón
-                      });
+                      });*/
 
                       bool camposValidos = validarCampos();
                       if (camposValidos) {
-                        print("1.-" +
-                            nombreController.text +
-                            razaController.text +
-                            edadController.text +
-                            colorController.text +
-                            descripcionController.text);
+                        await showLoadingDialog(context, () async{
                         deletePetFolder(widget.mascota.idPersona,
                             widget.mascota.idMascotas);
                         await uploadImages(
@@ -493,22 +488,21 @@ class _UpdatePetState extends State<UpdatePet> {
                             widget.mascota.idMascotas);
                         await updatePet();
 
-                        await mostrarFinalizar.Mostrar_Finalizados_Clientes(
+                        /*await mostrarFinalizar.Mostrar_Finalizados_Clientes(
                             context,
                             "Mascota actualizada con éxito",
-                            miembroActual!.id);
-                        print("3.-" +
-                            nombreController.text +
-                            razaController.text +
-                            edadController.text +
-                            colorController.text +
-                            descripcionController.text);
+                            miembroActual!.id);*/
+                        });
+                        showSnackbar(context, "Mascota actualizada con éxito");
+                        Navigator.pop(context, 1);
+
+  
                       }
 
-                      setState(() {
+                      /*setState(() {
                         isLoading =
                             false; // Detén la carga después de completar la operación
-                      });
+                      });*/
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(

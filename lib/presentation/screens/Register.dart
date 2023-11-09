@@ -122,16 +122,27 @@ class _RegisterUpdateState extends State<Register> {
 
   File? _image;
 
-  Future<void> _getImageFromGallery() async {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+Future<void> _getImageFromGallery() async {
+  final picker = ImagePicker();
+  final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedImage != null) {
+    File imageFile = File(pickedImage.path);
+
+    img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
+
+    if (image != null) {
+      image = img.bakeOrientation(image);
+      await imageFile.writeAsBytes(img.encodeJpg(image));
+    }
 
     setState(() {
-      if (pickedImage != null) {
+      if (image != null) {
         _image = File(pickedImage.path);
       }
     });
   }
+}
 
   Future<List<int>> compressImage(File imageFile) async {
     // Leer la imagen
@@ -201,7 +212,13 @@ class _RegisterUpdateState extends State<Register> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       ElevatedButton(
-                        onPressed: _getImageFromGallery,
+                        onPressed: (){
+                          showPicker(context, (File file) {
+                            setState(() {
+                              _image = file;
+                            });
+                          });
+                        },
                         child: _image == null
                             ? Text('Seleccionar Imagen')
                             : Image.file(_image!,
@@ -324,12 +341,19 @@ class _RegisterUpdateState extends State<Register> {
                             ),
                           );
                         } else {
-                          await registerUser();
-                          idPerson = await getNextIdPerson();
-                          print("ultimo id ======" + idPerson.toString());
-                          uploadImage(_image, idPerson);
-                          mostrarFinalizar.Mostrar_FinalizadosLogin(
-                              context, "Registro con éxito!");
+                          await showLoadingDialog(context, () async {
+                             await registerUser();
+                            idPerson = await getNextIdPerson();
+                            print("ultimo id ======" + idPerson.toString());
+                            uploadImage(_image, idPerson);   
+                          });
+
+                          showSnackbar(context, "Registro con éxito!");
+                          Navigator.pop(context);
+
+
+                          /*mostrarFinalizar.Mostrar_FinalizadosLogin(
+                              context, "Registro con éxito!");*/
                         }
                       }
 

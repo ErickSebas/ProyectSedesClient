@@ -271,8 +271,8 @@ Future<File> _downloadImage(String imageUrl) async {
     bottom: TabBar(
       controller: _tabController,
       tabs: [
-        Tab(text: 'Administración'),
         Tab(text: 'Soporte'),
+        Tab(text: 'Administración'),
       ],
     ),
     leading: Builder(
@@ -299,10 +299,11 @@ Future<File> _downloadImage(String imageUrl) async {
       ? TabBarView(
           controller: _tabController,
           children: [
-            ChatList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages),
             if(miembroActual!.role!="Super Admin")
             EstadoList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages,)
             ,
+            ChatList(eliminarChatFunction: eliminarChat, selectedImages: _selectedImages),
+            
           ],
         )
       : Center(
@@ -314,7 +315,7 @@ Future<File> _downloadImage(String imageUrl) async {
         color: Color(0xFF5C8ECB),
         
         child: Center(child: Text('Error: Connection failed', style: TextStyle(color: Colors.white),))),
-  floatingActionButton: _tabController?.index==0?  FloatingActionButton(
+  floatingActionButton: _tabController?.index==1?  FloatingActionButton(
      onPressed: isConnected.value? () {
       showDialog(
         context: context,

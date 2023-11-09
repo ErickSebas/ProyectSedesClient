@@ -403,51 +403,44 @@ class _RegisterPetState extends State<RegisterPet> {
                 children: [
                    ElevatedButton(
                       onPressed: isLoading ? null : () async {
-                        setState(() {
-                        isLoading =
-                            true; // Comienza la carga al presionar el botón
-                      });
+                        /*setState(() {
+                          isLoading =
+                              true; // Comienza la carga al presionar el botón
+                        });*/
 
                       bool camposValidos = validarCampos();
 
                       if (_selectedImages.length < 1) {
-                        setState(() {
+                        /*setState(() {
                           isLoading = false; // Detén la carga si hay un error
-                        });
+                        });*/
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text('Debe cargar al menos 1 imagen.'),
                         ));
-                        return; // Sale de la función si no hay suficientes imágenes.
+                        return; 
                       }
 
                       if (camposValidos) {
-                        print("1.-" +
-                            nombreController.text +
-                            razaController.text +
-                            edadController.text +
-                            colorController.text +
-                            descripcionController.text);
-                        await registerPet();
+                        await showLoadingDialog(context, () async{
+                          await registerPet();
 
-                        // Aquí se ejecuta el método uploadImages
-                        await uploadImages(_selectedImages);
+                          // Aquí se ejecuta el método uploadImages
+                          await uploadImages(_selectedImages);
+                        });
+                        showSnackbar(context, "Registro de Mascota con éxito");
+                        Navigator.pop(context, 1);
 
-                        await mostrarFinalizar.Mostrar_Finalizados_Clientes(
+
+                        /*await mostrarFinalizar.Mostrar_Finalizados_Clientes(
                             context,
                             "Registro de Mascota con éxito",
-                            miembroMascota!.id);
-                        print("3.-" +
-                            nombreController.text +
-                            razaController.text +
-                            edadController.text +
-                            colorController.text +
-                            descripcionController.text);
+                            miembroMascota!.id);*/
 
-                        setState(() {
-                          isLoading =
-                              false; // Detén la carga después de completar la operación
-                        });
-                      }
+                          /*setState(() {
+                            isLoading =
+                            false; // Detén la carga después de completar la operación
+                          });*/
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

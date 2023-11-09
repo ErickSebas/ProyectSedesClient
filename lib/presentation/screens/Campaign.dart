@@ -127,7 +127,9 @@ class _CampaignStateState extends State<ListCampaignPage> {
             child: ListView.builder(
               itemCount: filteredCampaigns.length,
               itemBuilder: (context, index) {
-
+                if (now.isAfter(filteredCampaigns[index].dateEnd)) {
+                  return SizedBox.shrink(); 
+                }
                 return Card(
                   elevation: 4.0,
                   shape: RoundedRectangleBorder(
@@ -135,7 +137,7 @@ class _CampaignStateState extends State<ListCampaignPage> {
                     side: const BorderSide(width: 2, color: Color(0xFF5C8ECB))
                   ),
                   margin: const EdgeInsets.all(10.0),
-                  child: ListTile(
+                  child:  ListTile(
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

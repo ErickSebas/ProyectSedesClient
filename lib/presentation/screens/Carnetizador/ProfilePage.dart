@@ -235,11 +235,11 @@ Future<File> _downloadImage(String imageUrl) async {
                   SizedBox(height: 20),
                     Center(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (widget.member!.role == "Carnetizador") {
                             esCarnetizador = true;
                           }
-                          Navigator.push(
+                          final res = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => RegisterUpdate(
@@ -249,6 +249,11 @@ Future<File> _downloadImage(String imageUrl) async {
                               ),
                             ),
                           );
+                          if(res!=null){
+                            setState(() {
+                              addImageToSelectedImages(widget.member!.id);
+                            });
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.white, // Fondo blanco

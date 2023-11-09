@@ -16,6 +16,7 @@ import 'package:qr/qr.dart';
 import 'package:image/image.dart' as img;
 import 'package:screenshot/screenshot.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; 
 
 
 class ViewMascotasInfo extends StatelessWidget {
@@ -489,6 +490,31 @@ final ScreenshotController screenshotController = ScreenshotController();
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
+                              ),
+                              Spacer(),
+                              InkWell(
+                                onTap: () {
+                                  launchWhatsApp(propietario.telefono.toString());
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(8), 
+                                  decoration: BoxDecoration(
+                                    color: Colors.green[700], 
+                                    borderRadius: BorderRadius.circular(20), 
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2), 
+                                        spreadRadius: 1,
+                                        blurRadius: 3,
+                                        offset: Offset(0, 1), 
+                                      ),
+                                    ],
+                                  ),
+                                  child: FaIcon(
+                                    FontAwesomeIcons.whatsapp,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ],
                           ),

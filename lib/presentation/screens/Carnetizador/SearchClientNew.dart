@@ -152,14 +152,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
           builder: (context) => IconButton(
             icon: Icon(Icons.arrow_back) ,color: Colors.black,
             onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ViewClient(
-                    userId: miembroActual!.id,
-                  ),
-                ),
-              );
+              Navigator.pop(context);
             },
           ),
         ),
@@ -292,18 +285,22 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
                                                 ),
                                                 TextButton(
                                                   child: Text("Eliminar"),
-                                                  onPressed: () {
+                                                  onPressed: () async {
                                                     // Aquí se ejecuta la función deleteUser si el usuario confirma
-                                                    deleteUser(
+                                                    await showLoadingDialog(context, () async{
+                                                      deleteUser(
                                                         member.id.toString());
-                                                    deleteImageAndFolder(
-                                                        member.id);
+                                                      deleteImageAndFolder(
+                                                          member.id);
+                                                    });
+                                                    showSnackbar(context, member.names+" Eliminado con éxito");
                                                     Navigator.of(context)
                                                         .pop(); // Cierra el cuadro de diálogo
-                                                    mostrarFinalizar
+
+                                                    /*mostrarFinalizar
                                                         .Mostrar_Finalizados(
                                                             context,
-                                                            "Registro Eliminado con éxito");
+                                                            "Registro Eliminado con éxito");*/
                                                     refreshMembersList();
                                                   },
                                                 ),

@@ -36,7 +36,7 @@ class Propietario {
       apellidos: json['Apellidos'],
       fechaNacimiento: DateTime.parse(json['FechaNacimiento']),
       correo: json['Correo'],
-      password: json['Password'],
+      password: json['Password'] ?? '',
       carnet: json['Carnet'],
       telefono: json['Telefono'],
       fechaCreacion: DateTime.parse(json['FechaCreacion']),

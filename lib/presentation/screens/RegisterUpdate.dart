@@ -86,6 +86,8 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
   GoogleMapController? _controller;
   bool isLoadingImage=true;
   File? imageLocal;
+  String address="";
+    String locationName = '';
 
 
   @override
@@ -302,16 +304,27 @@ Future<File> _downloadImage(String imageUrl) async {
     }
   }
 
-  Future<void> _getImageFromGallery() async {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+Future<void> _getImageFromGallery() async {
+  final picker = ImagePicker();
+  final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedImage != null) {
+    File imageFile = File(pickedImage.path);
+
+    img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
+
+    if (image != null) {
+      image = img.bakeOrientation(image);
+      await imageFile.writeAsBytes(img.encodeJpg(image));
+    }
 
     setState(() {
-      if (pickedImage != null) {
+      if (image != null) {
         imageLocal = File(pickedImage.path);
       }
     });
   }
+}
 
   Future<List<int>> compressImage(File imageFile) async {
     // Leer la imagen
@@ -413,7 +426,11 @@ Future<File> _downloadImage(String imageUrl) async {
                     children: <Widget>[
                       imageLocal != null ?InkWell(
                         onTap: () {
-                          _getImageFromGallery();
+                          showPicker(context, (File file) {
+                            setState(() {
+                              imageLocal = file;
+                            });
+                          });
                         },
                         child: CircleAvatar(
                           backgroundImage: FileImage(imageLocal!),
@@ -422,7 +439,11 @@ Future<File> _downloadImage(String imageUrl) async {
                         ),
                       ): InkWell(
                         onTap: () {
-                          _getImageFromGallery();
+                          showPicker(context, (File file) {
+                            setState(() {
+                              imageLocal = file;
+                            });
+                          });
                         },
                         child: Stack(
                           children: [
@@ -561,16 +582,29 @@ Future<File> _downloadImage(String imageUrl) async {
                     );
                     if (result != null) {
                       
-                      setState(() {
-                        latitude = result.latitude;
-                        longitude = result.longitude;
-                      });
+                    address = await getAddressFromLatLng(
+                      result.latitude,
+                      result.longitude,
+                      'AIzaSyBaqF8pGcAaGUm7oE3KbHWsjUfBdCEBujM',
+                    );
+                    setState(() {
+                      latitude = result.latitude;
+                      longitude = result.longitude;
+                      locationName = address;
+                    });
                       _controller!.animateCamera(
                           CameraUpdate.newLatLng(LatLng(latitude, longitude))
                       );
                     }
                   },
                   
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    locationName,
+                    style: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                  ),
                 ),
                 _buildTextField(
                   initialData: email,
@@ -604,20 +638,30 @@ Future<File> _downloadImage(String imageUrl) async {
                           selectedRole != '' &&
                           datebirthday != null) {
                         if (widget.isUpdate) {
-                          await updateUser();
-                          //deleteImage(idPerson);
-                          image = imageLocal;
-                          uploadImage(image, idPerson);
-                          mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
+                          await showLoadingDialog(context, () async {
+                            await updateUser();
+                            //deleteImage(idPerson);
+                            if(miembroActual!.id==idPerson){image = imageLocal;}
+                            uploadImage(image, idPerson);
+                          });
+
+                          showSnackbar(context, "Actualización con éxito");
+                          Navigator.pop(context);
+                          
+                          /*mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                               context,
                               "Actualización con éxito de Carnetizador",
-                              miembroActual!.id);
-                        //////////////////////////////////RegistrarCarajo
+                              miembroActual!.id);*/
                         } else{
-                          await registerUser();
-                          image = imageLocal;
-                          await uploadImage(image, idPerson);
-                          mostrarMensaje.Mostrar_Finalizados_Carnetizadores(context, 'Registro Exitoso',miembroActual!.id);
+                          await showLoadingDialog(context, () async {
+                            await registerUser();
+                            if(miembroActual!.id==idPerson){image = imageLocal;}
+                            await uploadImage(image, idPerson);
+                          });
+                          showSnackbar(context, "Registro Exitoso");
+                          Navigator.pop(context, 1);
+
+                          //mostrarMensaje.Mostrar_Finalizados_Carnetizadores(context, 'Registro Exitoso',miembroActual!.id);
                         }
                       }else if (password != "") {
 
@@ -642,26 +686,30 @@ Future<File> _downloadImage(String imageUrl) async {
                           selectedRole != '' &&
                           datebirthday != null) {
                         if (widget.isUpdate) {
-                          await updateUser();
-                          //deleteImage(idPerson);
-                          image = imageLocal;
-                          await uploadImage(image, idPerson);
+                          await showLoadingDialog(context, () async {
+                            await updateUser();
+                            //deleteImage(idPerson);
+                            if(miembroActual!.id==idPerson){image = imageLocal;}
+                            await uploadImage(imageLocal, idPerson);
+                          });
+
                           if (carnetizadorglobal?.role == 'Carnetizador') {
-                            mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
+                            showSnackbar(context, "Actualización con éxito de Cliente con Carnetizador");
+                            /*mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                                 context,
                                 "Actualización con éxito de Cliente con Carnetizador",
-                                miembroActual!.id);
-                            print(miembroActual!.role);
+                                miembroActual!.id);*/
                           } else {
-                            mostrarMensaje.Mostrar_Finalizados_Clientes(
+                            showSnackbar(context, "Actualización con éxito de Cliente");
+                            /*mostrarMensaje.Mostrar_Finalizados_Clientes(
                                 context,
                                 "Actualización con éxito de Cliente",
-                                widget.userData!.id);
-                            print(miembroActual!.role);
+                                widget.userData!.id);*/
                           }
+                          Navigator.pop(context, 1);
                         } else{
                           
-                        }//////////////////////////////////RegistrarCarajo
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Ingrese todos los campos')),
