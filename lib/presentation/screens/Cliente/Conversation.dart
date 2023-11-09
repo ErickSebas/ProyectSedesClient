@@ -410,7 +410,8 @@ class ChatList extends StatelessWidget {
               currentChatId =  chats[index].idChats;
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ChatPage(idChat: chats[index].idChats, nombreChat: namesChats[index]["Nombres"], idPersonDestino: 0,imageChat: selectedImages[chats[index].idChats],)),
+                MaterialPageRoute(builder: (context) => ChatPage(idChat: chats[index].idChats, nombreChat: namesChats[index]["Nombres"], idPersonDestino: 0,imageChat: 
+                selectedImages[chats[index].idChats]==null?File('assets/usuario.png'):selectedImages[chats[index].idChats])),//////////////
               );
             },
             onLongPress: () async {
@@ -509,7 +510,8 @@ class EstadoList extends StatelessWidget {
               print('idPersonDestino:'+chats[index].idPersonDestino.toString());
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ChatPage(idChat: chats[index].idChats, nombreChat: namesChats[index]["Nombres"],idPersonDestino: chats[index].idPersonDestino,imageChat: selectedImages[chats[index].idChats],)),
+                MaterialPageRoute(builder: (context) => ChatPage(idChat: chats[index].idChats, nombreChat: namesChats[index]["Nombres"],idPersonDestino: chats[index].idPersonDestino,imageChat: 
+                selectedImages[chats[index].idChats]==null?File('assets/usuario.png'):selectedImages[chats[index].idChats])),//////////////
               );
             },
             onLongPress: () async {

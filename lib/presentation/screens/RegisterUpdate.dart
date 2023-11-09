@@ -277,9 +277,17 @@ Future<File> _downloadImage(String imageUrl) async {
     print(miembroActual!.id);
     if (miembroActual!.id == idPerson) {
       if (selectedRole == 'Carnetizador') {
-        idRolSeleccionada = 3;
+      idRolSeleccionada = 3;
       } else if (selectedRole == 'Cliente') {
         idRolSeleccionada = 4;
+      }else if(selectedRole=='Super Admin'){
+        idRolSeleccionada = 5;
+      }
+      else if(selectedRole=='Jefe de Brigada'){
+        idRolSeleccionada = 2;
+      }
+      else {
+        idRolSeleccionada = 1;
       }
       miembroActual!.names = nombre;
       miembroActual!.lastnames = apellido;
