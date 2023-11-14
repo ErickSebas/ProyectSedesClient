@@ -41,7 +41,7 @@ class LettersOnlyTextFormatter extends TextInputFormatter {
 }
 
 enum Castrado { si, no }
-enum Especie { Perro, Gato }
+enum Especie { P, G }
 enum Sexo { M, H }
 class _RegisterPetState extends State<RegisterPet> {
   ValidadorCamposMascota validador = ValidadorCamposMascota();
@@ -55,8 +55,9 @@ class _RegisterPetState extends State<RegisterPet> {
   String? mensajeError;
   List<File?> _selectedImages = [];
   Mostrar_Finalizados_Update mostrarFinalizar = Mostrar_Finalizados_Update();
-  Castrado? _castrado = Castrado.si;
-  Especie? _especie = Especie.Perro;
+  Castrado? _castrado = Castrado.no;
+  Castrado? _vacunado = Castrado.no;
+  Especie? _especie = Especie.P;
   Sexo? _sexo = Sexo.M;
   DateTime fechaSeleccionada=DateTime.now();
   @override
@@ -154,7 +155,6 @@ class _RegisterPetState extends State<RegisterPet> {
       final firebase_storage.Reference storageRef =
           firebase_storage.FirebaseStorage.instance.ref();
       int ultimoId = await fetchLastPetId();
-      print("Ultimo ID ======== $ultimoId" + "---" + widget.userId.toString());
       String carpeta = 'cliente/${widget.userId}/$ultimoId';
 
       await registerQr(ultimoId);
@@ -184,6 +184,32 @@ class _RegisterPetState extends State<RegisterPet> {
     }
   }
 
+  Future<bool> uploadLastDateVaccine(File? image) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+      int ultimoId = await fetchLastPetId();
+      String carpeta = 'cliente/${widget.userId}/$ultimoId';
+
+      //await registerQr(ultimoId);
+      if (image != null) {
+        String imageName = 'lastdate';
+
+        firebase_storage.Reference imageRef =
+            storageRef.child('$carpeta/$imageName.jpg');
+
+        List<int> compressedBytes = await compressImage(image);
+
+        await imageRef.putData(Uint8List.fromList(compressedBytes));
+      }
+
+      return true;
+    } catch (e) {
+      print('Error al subir imágenes: $e');
+      return false;
+    }
+  }
+
   Future<int> fetchLastPetId() async {
     final response =
         await http.get(Uri.parse('http://181.188.191.35:3000/lastidmascota'));
@@ -193,6 +219,18 @@ class _RegisterPetState extends State<RegisterPet> {
   }
 
   Future<void> registerPet() async {
+    int isCastrado=0;
+    String especie = 'P';
+    String sexo = 'H';
+    if(_sexo==Sexo.M){
+      sexo='M';
+    }
+    if(_especie==Especie.G){
+      especie='G';
+    }
+    if(_castrado==Castrado.si){
+      isCastrado = 1;
+    }
     final url = Uri.parse('http://181.188.191.35:3000/registerPet');
 
     final response = await http.post(
@@ -204,10 +242,10 @@ class _RegisterPetState extends State<RegisterPet> {
         'Color': colorController.text,
         'Descripcion': descripcionController.text,
         'IdPersona': '${widget.userId}',
-        'Sexo': _sexo,
-        //Especie
-        //Castrado
-        //Fecha Ultima Vacuna
+        'Sexo': sexo,
+        'Especie': especie,
+        'Castrado':isCastrado,
+        'FechaUltimaVacuna': fechaUltimaVacunaController.text==''?null: fechaUltimaVacunaController.text,
         //Foto Carnet Vacunacion
         'IdQr': '1'
       }),
@@ -319,7 +357,7 @@ class _RegisterPetState extends State<RegisterPet> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Radio<Especie>(
-                    value: Especie.Perro,
+                    value: Especie.P,
                     groupValue: _especie,
                     onChanged: (Especie? value) {
                       setState(() { _especie = value; });
@@ -327,7 +365,7 @@ class _RegisterPetState extends State<RegisterPet> {
                   ),
                   Text('Perro'),
                   Radio<Especie>(
-                    value: Especie.Gato,
+                    value: Especie.G,
                     groupValue: _especie,
                     onChanged: (Especie? value) {
                       setState(() { _especie = value; });
@@ -450,6 +488,33 @@ class _RegisterPetState extends State<RegisterPet> {
                 ],
               ),
             ),
+                        ListTile(
+              leading: Icon(Icons.vaccines, color: Color.fromARGB(255, 92, 142, 203)),
+              title: const Text('Con Vacuna'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Radio<Castrado>(
+                    value: Castrado.si,
+                    groupValue: _vacunado,
+                    onChanged: (Castrado? value) {
+                      setState(() { _vacunado = value; });
+                    },
+                  ),
+                  Text('Sí'),
+                  Radio<Castrado>(
+                    value: Castrado.no,
+                    groupValue: _vacunado,
+                    onChanged: (Castrado? value) {
+                      setState(() { _vacunado = value; });
+                    },
+                  ),
+                  Text('No'),
+                ],
+              ),
+            ),
+            
+            if(_vacunado==Castrado.si)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: GestureDetector(
@@ -599,12 +664,20 @@ class _RegisterPetState extends State<RegisterPet> {
                         return; 
                       }
 
+                      if(_vacunado==Castrado.si&&fechaUltimaVacunaController.text==''){
+                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Debe Seleccionar la última fecha de vacuna'),
+                        ));
+                        return; 
+                      }
+
                       if (camposValidos) {
                         await showLoadingDialog(context, () async{
                           await registerPet();
 
                           // Aquí se ejecuta el método uploadImages
                           await uploadImages(_selectedImages);
+                          await uploadLastDateVaccine(_fotoCarnetVacunacion);
                         });
                         showSnackbar(context, "Registro de Mascota con éxito");
                         Navigator.pop(context, 1);

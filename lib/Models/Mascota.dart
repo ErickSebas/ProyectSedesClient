@@ -8,7 +8,10 @@ class Mascota {
   int idPersona;
   String sexo;
   int idQr;
-  String carnetPropietario; // Nuevo campo añadido
+  String carnetPropietario; 
+  String especie;
+  int castrado;
+  DateTime? fechaUltimaVacuna;
 
   Mascota({
     required this.idMascotas,
@@ -20,7 +23,11 @@ class Mascota {
     required this.idPersona,
     required this.sexo,
     required this.idQr,
-    required this.carnetPropietario, // Nuevo campo
+    required this.carnetPropietario, 
+    required this.especie,
+    required this.castrado,
+    required this.fechaUltimaVacuna, 
+    
   });
 
   factory Mascota.fromJson(Map<String, dynamic> json) {
@@ -34,7 +41,10 @@ class Mascota {
       idPersona: json['IdPersona'],
       sexo: json['Sexo'],
       idQr: json['IdQr'],
-      carnetPropietario: json['CarnetPropietario']??'', // Nuevo campo
+      carnetPropietario: json['CarnetPropietario']??'', 
+      especie: json['Especie'],
+      castrado: json['Castrado'],
+      fechaUltimaVacuna: json['FechaUltimaVacuna']!=null? DateTime.parse(json['FechaUltimaVacuna']):null, 
     );
   }
 }

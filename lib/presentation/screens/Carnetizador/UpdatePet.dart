@@ -38,7 +38,7 @@ class LettersOnlyTextFormatter extends TextInputFormatter {
 }
 
 enum Castrado { si, no }
-enum Especie { Perro, Gato }
+enum Especie { P, G }
 enum Sexo { M, H }
 class _UpdatePetState extends State<UpdatePet> {
   ValidadorCamposMascota validador = ValidadorCamposMascota();
@@ -54,10 +54,12 @@ class _UpdatePetState extends State<UpdatePet> {
   Mostrar_Finalizados_Update mostrarFinalizar = Mostrar_Finalizados_Update();
   List<String> _imageUrls = [];
   bool isLoadingImages = true;
-  Castrado? _castrado = Castrado.si;
-  Especie? _especie = Especie.Perro;
+  Castrado? _castrado = Castrado.no;
+  Castrado? _vacunado = Castrado.no;
+  Especie? _especie = Especie.P;
   Sexo? _sexo = Sexo.M;
   DateTime fechaSeleccionada=DateTime.now();
+  bool loadCarnet = true;
 
   @override
   void initState() {
@@ -71,13 +73,68 @@ class _UpdatePetState extends State<UpdatePet> {
     });
     addImageUrlsToSelectedImages(
         'cliente', widget.mascota.idPersona, widget.mascota.idMascotas);
+    getCarnetImage(widget.mascota.idPersona, widget.mascota.idMascotas);
     // Asignar los valores de la Mascota a los controladores
     nombreController.text = widget.mascota.nombre;
     edadController.text = widget.mascota.edad.toString();
     descripcionController.text = widget.mascota.descripcion;
     razaController.text = widget.mascota.raza;
     colorController.text = widget.mascota.color;
+    if(widget.mascota.especie=='G'){
+      _especie = Especie.G;
+    }
+    if(widget.mascota.sexo=='H'){
+      _sexo = Sexo.H;
+    }
+    if(widget.mascota.fechaUltimaVacuna!=null){
+      _vacunado=Castrado.si;
+      fechaUltimaVacunaController.text = DateFormat('yyyy-MM-dd').format(widget.mascota.fechaUltimaVacuna!); 
+    }
   }
+
+Future<File?> getCarnetImage(int idPerson, int idMascota) async {
+  try {
+    String imageUrl = await getImageUrl(idPerson, idMascota);
+    File tempImage = await _downloadImageLast(imageUrl);
+    
+    setState(() {
+      _fotoCarnetVacunacion = tempImage;
+      loadCarnet = false;
+    });
+    return _fotoCarnetVacunacion;
+  } catch (e) {
+    print('Error al obtener y descargar la imagen: $e');
+    setState(() {
+      loadCarnet = false;
+    });
+  }
+  
+  return null;
+}
+
+Future<String> getImageUrl(int idPerson, int idMascota) async {
+  try {
+    Reference storageRef = FirebaseStorage.instance.ref('cliente/$idPerson/$idMascota/lastdate.jpg');
+    return await storageRef.getDownloadURL();
+  } catch (e) {
+    print('Error al obtener URL de la imagen: $e');
+    throw e;
+  }
+}
+
+Future<File> _downloadImageLast(String imageUrl) async {
+  final response = await http.get(Uri.parse(imageUrl));
+
+  if (response.statusCode == 200) {
+    final bytes = response.bodyBytes;
+    final tempDir = await getTemporaryDirectory();
+    final tempImageFile = File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
+    await tempImageFile.writeAsBytes(bytes);
+    return tempImageFile;
+  } else {
+    throw Exception('Error al descargar imagen');
+  }
+}
 
 Future<void> _selectDate(BuildContext context) async {
   final DateTime? picked = await showDatePicker(
@@ -121,6 +178,32 @@ Future<void> _selectDate(BuildContext context) async {
         );
       },
     );
+  }
+
+  Future<bool> uploadLastDateVaccine(File? image, int userId, int petId) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
+      String carpeta = 'cliente/${userId}/$petId';
+
+      //await registerQr(ultimoId);
+
+      if (image != null) {
+        String imageName = 'lastdate';
+
+        firebase_storage.Reference imageRef =
+            storageRef.child('$carpeta/$imageName.jpg');
+
+        List<int> compressedBytes = await compressImage(image);
+
+        await imageRef.putData(Uint8List.fromList(compressedBytes));
+      }
+
+      return true;
+    } catch (e) {
+      print('Error al subir imágenes: $e');
+      return false;
+    }
   }
 
   Future<List<String>> getImagesUrls(
@@ -246,6 +329,18 @@ Future<void> _selectDate(BuildContext context) async {
   }
 
   Future<void> updatePet() async {
+    int isCastrado=0;
+    String especie = 'P';
+    String sexo = 'H';
+    if(_sexo==Sexo.M){
+      sexo='M';
+    }
+    if(_especie==Especie.G){
+      especie='G';
+    }
+    if(_castrado==Castrado.si){
+      isCastrado = 1;
+    }
     final url = Uri.parse('http://181.188.191.35:3000/updatemascota/' +
         widget.mascota.idMascotas.toString());
 
@@ -260,10 +355,10 @@ Future<void> _selectDate(BuildContext context) async {
         'Descripcion': descripcionController.text,
         'IdPersona': widget
             .mascota.idPersona, 
-        'Sexo': _sexo,
-        //Especie
-        //Castrado
-        //Fecha Ultima Vacuna
+        'Sexo': sexo,
+        'Especie': especie,
+        'Castrado':isCastrado,
+        'FechaUltimaVacuna': fechaUltimaVacunaController.text==''?null: fechaUltimaVacunaController.text,
         //Foto Carnet Vacunacion
         'IdQr': widget.mascota.idQr, 
       }),
@@ -374,7 +469,7 @@ Future<void> _selectDate(BuildContext context) async {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Radio<Especie>(
-                    value: Especie.Perro,
+                    value: Especie.P,
                     groupValue: _especie,
                     onChanged: (Especie? value) {
                       setState(() { _especie = value; });
@@ -382,7 +477,7 @@ Future<void> _selectDate(BuildContext context) async {
                   ),
                   Text('Perro'),
                   Radio<Especie>(
-                    value: Especie.Gato,
+                    value: Especie.G,
                     groupValue: _especie,
                     onChanged: (Especie? value) {
                       setState(() { _especie = value; });
@@ -505,12 +600,38 @@ Future<void> _selectDate(BuildContext context) async {
                 ],
               ),
             ),
-
+            ListTile(
+              leading: Icon(Icons.vaccines, color: Color.fromARGB(255, 92, 142, 203)),
+              title: const Text('Con Vacuna'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Radio<Castrado>(
+                    value: Castrado.si,
+                    groupValue: _vacunado,
+                    onChanged: (Castrado? value) {
+                      setState(() { _vacunado = value; });
+                    },
+                  ),
+                  Text('Sí'),
+                  Radio<Castrado>(
+                    value: Castrado.no,
+                    groupValue: _vacunado,
+                    onChanged: (Castrado? value) {
+                      setState(() { _vacunado = value; });
+                    },
+                  ),
+                  Text('No'),
+                ],
+              ),
+            ),
+            
+            if(_vacunado==Castrado.si)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: GestureDetector(
                 onTap: () => _selectDate(context), 
-                child: AbsorbPointer( 
+                child:  AbsorbPointer( 
                   child: TextField(
                     controller: fechaUltimaVacunaController,
                     decoration: InputDecoration(
@@ -548,6 +669,11 @@ Future<void> _selectDate(BuildContext context) async {
                 ],
               ),
             ),
+            if(loadCarnet)
+            SpinKitCircle(
+                      color: Color(0xFF5C8ECB),
+                      size: 50.0,
+                    ),
                         _fotoCarnetVacunacion != null
                   ? Container(
                       child: Image.file(
@@ -665,6 +791,7 @@ Future<void> _selectDate(BuildContext context) async {
                             widget.mascota.idPersona,
                             widget.mascota.idMascotas);
                         await updatePet();
+                        await uploadLastDateVaccine(_fotoCarnetVacunacion, widget.mascota.idPersona, widget.mascota.idMascotas);
 
                         /*await mostrarFinalizar.Mostrar_Finalizados_Clientes(
                             context,

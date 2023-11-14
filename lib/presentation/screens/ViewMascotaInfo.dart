@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:fluttapp/Models/Mascota.dart';
@@ -17,6 +18,8 @@ import 'package:image/image.dart' as img;
 import 'package:screenshot/screenshot.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart'; 
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 
 
 class ViewMascotasInfo extends StatelessWidget {
@@ -58,11 +61,30 @@ class ViewMascotasInfo extends StatelessWidget {
 }
 
 // ignore: must_be_immutable
-class InfoMascotas extends StatelessWidget {
-  final Mascota mascota;
-  final Propietario propietario;
+class InfoMascotas extends StatefulWidget {
+    final Mascota mascota;
+    final Propietario propietario;
+    InfoMascotas({required this.mascota, required this.propietario});
+  @override
+  _InfoMascotasState createState() => _InfoMascotasState();
+}
 
-  InfoMascotas({required this.mascota, required this.propietario});
+class _InfoMascotasState extends State<InfoMascotas> {
+  File? _fotoCarnetVacunacion;
+  bool loadCarnet = true;
+
+  @override
+  void initState(){
+    super.initState();
+    getCarnetImage(widget.mascota.idPersona, widget.mascota.idMascotas).then((file) {
+      setState(() {
+        _fotoCarnetVacunacion = file;
+      });
+      
+    });
+  }
+
+
 /*
   List<String> imagenes = [
     'assets/Perro.png',
@@ -92,6 +114,50 @@ class InfoMascotas extends StatelessWidget {
 
     return imageUrls;
   }
+
+  Future<File?> getCarnetImage(int idPerson, int idMascota) async {
+  try {
+    String imageUrl = await getImageUrl(idPerson, idMascota);
+    File tempImage = await _downloadImageLast(imageUrl);
+    
+    setState(() {
+      _fotoCarnetVacunacion = tempImage;
+      loadCarnet = false;
+    });
+    return _fotoCarnetVacunacion;
+  } catch (e) {
+    print('Error al obtener y descargar la imagen: $e');
+    setState(() {
+      loadCarnet = false;
+    });
+  }
+  
+  return null;
+}
+
+Future<String> getImageUrl(int idPerson, int idMascota) async {
+  try {
+    Reference storageRef = FirebaseStorage.instance.ref('cliente/$idPerson/$idMascota/lastdate.jpg');
+    return await storageRef.getDownloadURL();
+  } catch (e) {
+    print('Error al obtener URL de la imagen: $e');
+    throw e;
+  }
+}
+
+Future<File> _downloadImageLast(String imageUrl) async {
+  final response = await http.get(Uri.parse(imageUrl));
+
+  if (response.statusCode == 200) {
+    final bytes = response.bodyBytes;
+    final tempDir = await getTemporaryDirectory();
+    final tempImageFile = File('${tempDir.path}/${DateTime.now().toIso8601String()}.jpg');
+    await tempImageFile.writeAsBytes(bytes);
+    return tempImageFile;
+  } else {
+    throw Exception('Error al descargar imagen');
+  }
+}
 
   final GlobalKey _qrKey = GlobalKey();
 
@@ -175,7 +241,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                 FutureBuilder<List<String>>(
                   //future: getImagesUrls('cliente', mascota.idPersona, mascota.idMascotas),
                   future: getImagesUrls(
-                      'cliente', mascota.idPersona, mascota.idMascotas),
+                      'cliente', widget.mascota.idPersona, widget.mascota.idMascotas),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<String>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -256,7 +322,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    mascota.nombre,
+                                    widget.mascota.nombre,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -279,7 +345,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    mascota.raza,
+                                    widget.mascota.raza,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -302,7 +368,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    mascota.edad.toString(),
+                                    widget.mascota.edad.toString(),
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -325,7 +391,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    mascota.color,
+                                    widget.mascota.color,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -348,7 +414,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    mascota.descripcion,
+                                    widget.mascota.descripcion,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -371,13 +437,113 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    mascota.sexo,
+                                    widget.mascota.sexo=='M'?'Macho':'Hembra',
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
                               ),
                             ],
                           ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.pets,
+                              ),
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Especie:',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    widget.mascota.especie=='P'?'Perro':'Gato',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.cut,
+                              ),
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Castrado:',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    widget.mascota.castrado==1?'Si':'No',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                              ),
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Fecha Ultima Vacuna:',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    widget.mascota.fechaUltimaVacuna==null?'Sin Vacuna':
+                                    DateFormat('yyyy-MM-dd').format(widget.mascota.fechaUltimaVacuna!),
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          if(_fotoCarnetVacunacion!=null)
+                          Center(child: ElevatedButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: _fotoCarnetVacunacion==null
+                                      ? Center(child: Text('Sin Carnet Registrado'),) 
+                                      : Image.file(_fotoCarnetVacunacion!), 
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text("Cerrar"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop(); 
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                                
+                            },
+                            child: Text('Ver Carnet de Vacunación'),
+                            style: ElevatedButton.styleFrom(
+                              primary: const Color.fromARGB(255, 28, 100, 209), 
+                              onPrimary: Colors.white, 
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),) 
                         ],
                       ),
                     ),
@@ -417,7 +583,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    propietario.nombres,
+                                    widget.propietario.nombres,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -440,7 +606,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    propietario.apellidos,
+                                    widget.propietario.apellidos,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -463,7 +629,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    propietario.correo,
+                                    widget.propietario.correo,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -486,7 +652,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    propietario.telefono.toString(),
+                                    widget.propietario.telefono.toString(),
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -494,7 +660,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                               Spacer(),
                               InkWell(
                                 onTap: () {
-                                  launchWhatsApp(propietario.telefono.toString());
+                                  launchWhatsApp(widget.propietario.telefono.toString());
                                 },
                                 child: Container(
                                   padding: EdgeInsets.all(8), 
@@ -519,7 +685,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                             ],
                           ),
                           SizedBox(height: 10),
-                          if(propietario.latitud!=0.1)_buildMap(propietario.latitud, propietario.longitud),
+                          if(widget.propietario.latitud!=0.1)_buildMap(widget.propietario.latitud, widget.propietario.longitud),
                         ],
                       ),
                     ),
@@ -554,7 +720,7 @@ final ScreenshotController screenshotController = ScreenshotController();
                                 ),
                                 QrImageView(
                                   backgroundColor: Colors.white,
-                                  data: mascota.idMascotas.toString(),
+                                  data: widget.mascota.idMascotas.toString(),
                                   version: QrVersions.auto,
                                   size: 200.0,
                                   padding: const EdgeInsets.only(bottom: 20.0),

@@ -432,7 +432,7 @@ Future<void> addImageUrlsToSelectedImages(
                             color: Colors.white,
                           ),
                         ),
-                        trailing: miembroActual!.role=="Cliente"?null: Icon(
+                        trailing: Icon(
                           Icons.arrow_back_ios,
                           color: Colors.white.withOpacity(0.6),
                           size: 18.0,
