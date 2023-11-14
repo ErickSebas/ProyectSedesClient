@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Campañas',
+      title: 'Actividades',
       theme: ThemeData(
         primarySwatch: myColorMaterial,
       ),
@@ -32,6 +32,8 @@ class ListCampaignPage extends StatefulWidget {
 class _CampaignStateState extends State<ListCampaignPage> {
   List<Campaign> filteredCampaigns = campaigns;
   final ConnectivityService _connectivityService = ConnectivityService();
+  String selectedCategory = 'Vacuna'; 
+  List<String> categories = ['Vacuna', 'Carnetizacion', 'Control de Foco', 'Vacunación Continua', 'Rastrillaje']; 
   
   bool isLoading=false;
   final now = DateTime.now();
@@ -100,7 +102,7 @@ class _CampaignStateState extends State<ListCampaignPage> {
       backgroundColor: Color.fromARGB(255, 241, 245, 255),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 241, 245, 255),
-        title: Text('Campañas', style: TextStyle(color: Color(0xFF5C8ECB))),
+        title: Text('Actividades', style: TextStyle(color: Color(0xFF5C8ECB))),
         centerTitle: true,
         leading: Builder(
           builder: (context) => IconButton(
@@ -122,11 +124,54 @@ class _CampaignStateState extends State<ListCampaignPage> {
         ),*/
         child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: Color.fromARGB(255, 92, 142, 203),
+                  width: 2.0,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: true, 
+                        value: selectedCategory,
+                        icon: const Icon(Icons.arrow_drop_down),
+                        iconSize: 24,
+                        elevation: 16,
+                        style: const TextStyle(color: Color(0xFF4D6596)),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedCategory = newValue!;
+                          });
+                        },
+                        items: categories.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           searchField,
           Expanded(
             child: ListView.builder(
               itemCount: filteredCampaigns.length,
               itemBuilder: (context, index) {
+                if(filteredCampaigns[index].categoria!=selectedCategory){
+                  return SizedBox.shrink();
+                }
                 if (now.isAfter(filteredCampaigns[index].dateEnd)) {
                   return SizedBox.shrink(); 
                 }

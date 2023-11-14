@@ -597,7 +597,7 @@ body: Column(
                         ),
                       ),
                       Text(
-                        'Ver Campañas',
+                        'Ver Actividades',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

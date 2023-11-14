@@ -300,7 +300,7 @@ class CampaignPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Ver Campañas',
+                        'Ver Actividades',
                         style: TextStyle(
                           fontSize: 16,
                           color: Color(0xFF5C8ECB),
