@@ -124,6 +124,7 @@ class _CampaignStateState extends State<ListCampaignPage> {
         ),*/
         child: Column(
         children: [
+          searchField,
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Container(
@@ -164,7 +165,6 @@ class _CampaignStateState extends State<ListCampaignPage> {
               ),
             ),
           ),
-          searchField,
           Expanded(
             child: ListView.builder(
               itemCount: filteredCampaigns.length,
