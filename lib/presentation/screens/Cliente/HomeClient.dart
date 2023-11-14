@@ -183,7 +183,6 @@ Future<File> _downloadImage(String imageUrl) async {
                                     builder: (context) => RegisterUpdate(
                                           isUpdate: true,
                                           userData: miembroActual,
-                                          carnetizadorMember: miembroActual,
                                         )),
                               );
                 },
@@ -253,16 +252,21 @@ Future<File> _downloadImage(String imageUrl) async {
                           
                           return image != null
                             ? InkWell(
-                              onTap: () {
-                                Navigator.push(
+                              onTap: () async {
+                                Navigator.pop(context);
+                                final res = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => RegisterUpdate(
                                       isUpdate: true,
                                       userData: miembroActual,
-                                      carnetizadorMember: miembroActual,
                                     )),
                                 );
+                                if(res!=null){
+                                  setState(() {
+                                    //Navigator.pop(context);
+                                  });
+                                }
                               },
                               child: Stack(
                                 alignment: Alignment.center,
@@ -283,16 +287,21 @@ Future<File> _downloadImage(String imageUrl) async {
                               ),
                             )
                             : InkWell(
-                              onTap: () {
-                                Navigator.push(
+                              onTap: () async {
+                                Navigator.pop(context);
+                                final res = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => RegisterUpdate(
                                       isUpdate: true,
                                       userData: miembroActual,
-                                      carnetizadorMember: miembroActual,
                                     )),
                                 );
+                                if(res!=null){
+                                  setState(() {
+                                    
+                                  });
+                                }
                               },
                               child: Stack(
                                 alignment: Alignment.center,
@@ -615,19 +624,23 @@ body: Column(
                               size: 60,
                               color: Color(0xFF5C8ECB),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (miembroActual!.role == "Carnetizador") {
                                 esCarnetizador = true;
                               }
-                              Navigator.push(
+                              final res = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => RegisterUpdate(
                                           isUpdate: true,
                                           userData: miembroActual,
-                                          carnetizadorMember: miembroActual,
                                         )),
                               );
+                              if(res!=null){
+                                setState(() {
+                                  
+                                });
+                              }
                             },
                           ),
                         ),

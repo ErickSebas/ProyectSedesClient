@@ -333,7 +333,6 @@ class CampaignPage extends StatelessWidget {
                                     builder: (context) => RegisterUpdate(
                                           isUpdate: true,
                                           userData: miembroActual,
-                                          carnetizadorMember: miembroActual,
                                         )),
                               );
                             },

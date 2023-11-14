@@ -50,13 +50,8 @@ class RegisterUpdate extends StatefulWidget {
   RegisterUpdate(
       {required this.isUpdate,
       this.userData,
-      required this.carnetizadorMember}) {
-    print("intentando mandar los datos de name con:");
-    print(carnetizadorMember?.names);
-    carnetizadorglobal = this.carnetizadorMember!;
-
-    print("Esta llegando el ID de Facebook");
-    print(userData?.id);
+      this.carnetizadorMember}) {
+        carnetizadorglobal = carnetizadorMember;
   }
   @override
   _RegisterUpdateState createState() => _RegisterUpdateState();
@@ -107,13 +102,13 @@ class _RegisterUpdateState extends State<RegisterUpdate> {
         imageLocal = image;
         isLoadingImage=false;
       }
+    }else{
+      isLoadingImage=false;
     }
     if (widget.userData?.role == "Cliente") {
       esCliente = true;
-      print(widget.userData?.role);
     } else if (widget.userData?.role == "Carnetizador") {
       esCliente = false;
-      print(widget.userData?.role);
     }else{
       esCliente = false;
     }
@@ -190,8 +185,8 @@ Future<File> _downloadImage(String imageUrl) async {
     final url = Uri.parse('http://181.188.191.35:3000/register');
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
-    } else if (selectedRole == 'Cliente') {
-      idRolSeleccionada = 4;
+    } else if (selectedRole == 'Administrador') {
+      idRolSeleccionada = 1;
     }else if(selectedRole=='Super Admin'){
       idRolSeleccionada = 5;
     }
@@ -199,7 +194,7 @@ Future<File> _downloadImage(String imageUrl) async {
       idRolSeleccionada = 2;
     }
     else {
-      idRolSeleccionada = 1;
+      idRolSeleccionada = 4;
     }
     String md5Password = md5.convert(utf8.encode(password)).toString();
     final response = await http.post(
@@ -235,8 +230,8 @@ Future<File> _downloadImage(String imageUrl) async {
         'http://181.188.191.35:3000/update/' + idPerson.toString()); //
     if (selectedRole == 'Carnetizador') {
       idRolSeleccionada = 3;
-    } else if (selectedRole == 'Cliente') {
-      idRolSeleccionada = 4;
+    } else if (selectedRole == 'Administrador') {
+      idRolSeleccionada = 1;
     }else if(selectedRole=='Super Admin'){
       idRolSeleccionada = 5;
     }
@@ -244,7 +239,7 @@ Future<File> _downloadImage(String imageUrl) async {
       idRolSeleccionada = 2;
     }
     else {
-      idRolSeleccionada = 1;
+      idRolSeleccionada = 4;
     }
     // Calcula el hash MD5 de la contraseña
     final response = await http.put(
@@ -273,22 +268,7 @@ Future<File> _downloadImage(String imageUrl) async {
     }
     miembroActual!.id == idPerson;
 
-    print(widget.userData!.id);
-    print(miembroActual!.id);
     if (miembroActual!.id == idPerson) {
-      if (selectedRole == 'Carnetizador') {
-      idRolSeleccionada = 3;
-      } else if (selectedRole == 'Cliente') {
-        idRolSeleccionada = 4;
-      }else if(selectedRole=='Super Admin'){
-        idRolSeleccionada = 5;
-      }
-      else if(selectedRole=='Jefe de Brigada'){
-        idRolSeleccionada = 2;
-      }
-      else {
-        idRolSeleccionada = 1;
-      }
       miembroActual!.names = nombre;
       miembroActual!.lastnames = apellido;
       miembroActual!.fechaNacimiento = datebirthday;
@@ -650,11 +630,11 @@ Future<void> _getImageFromGallery() async {
                             await updateUser();
                             //deleteImage(idPerson);
                             if(miembroActual!.id==idPerson){image = imageLocal;}
-                            uploadImage(image, idPerson);
+                            await uploadImage(imageLocal, idPerson);
                           });
 
                           showSnackbar(context, "Actualización con éxito");
-                          Navigator.pop(context);
+                          Navigator.pop(context, 1);
                           
                           /*mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                               context,
@@ -664,7 +644,7 @@ Future<void> _getImageFromGallery() async {
                           await showLoadingDialog(context, () async {
                             await registerUser();
                             if(miembroActual!.id==idPerson){image = imageLocal;}
-                            await uploadImage(image, idPerson);
+                            await uploadImage(imageLocal, idPerson);
                           });
                           showSnackbar(context, "Registro Exitoso");
                           Navigator.pop(context, 1);
@@ -701,7 +681,7 @@ Future<void> _getImageFromGallery() async {
                             await uploadImage(imageLocal, idPerson);
                           });
 
-                          if (carnetizadorglobal?.role == 'Carnetizador') {
+                          if (widget.carnetizadorMember?.role == 'Carnetizador') {
                             showSnackbar(context, "Actualización con éxito de Cliente con Carnetizador");
                             /*mostrarMensaje.Mostrar_Finalizados_Carnetizadores(
                                 context,

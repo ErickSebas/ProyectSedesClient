@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart';
 
 class UpdatePet extends StatefulWidget {
   final Mascota mascota; // Agregar este campo para recibir el objeto Mascota
@@ -35,6 +36,10 @@ class LettersOnlyTextFormatter extends TextInputFormatter {
     );
   }
 }
+
+enum Castrado { si, no }
+enum Especie { Perro, Gato }
+enum Sexo { M, H }
 class _UpdatePetState extends State<UpdatePet> {
   ValidadorCamposMascota validador = ValidadorCamposMascota();
   TextEditingController nombreController = TextEditingController();
@@ -42,11 +47,17 @@ class _UpdatePetState extends State<UpdatePet> {
   TextEditingController descripcionController = TextEditingController();
   TextEditingController razaController = TextEditingController();
   TextEditingController colorController = TextEditingController();
+  TextEditingController fechaUltimaVacunaController = TextEditingController();
+  File? _fotoCarnetVacunacion;
   String? mensajeError;
   List<File?> _selectedImages = [];
   Mostrar_Finalizados_Update mostrarFinalizar = Mostrar_Finalizados_Update();
   List<String> _imageUrls = [];
   bool isLoadingImages = true;
+  Castrado? _castrado = Castrado.si;
+  Especie? _especie = Especie.Perro;
+  Sexo? _sexo = Sexo.M;
+  DateTime fechaSeleccionada=DateTime.now();
 
   @override
   void initState() {
@@ -67,6 +78,20 @@ class _UpdatePetState extends State<UpdatePet> {
     razaController.text = widget.mascota.raza;
     colorController.text = widget.mascota.color;
   }
+
+Future<void> _selectDate(BuildContext context) async {
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: fechaSeleccionada, 
+    firstDate: DateTime(2000), 
+    lastDate: DateTime.now(), 
+  );
+  if (picked != null && picked != fechaSeleccionada)
+    setState(() {
+      fechaSeleccionada = picked;
+      fechaUltimaVacunaController.text = DateFormat('yyyy-MM-dd').format(picked); 
+    });
+}
 
   Future<void> Confirmacion_Eliminar_Imagen(int index) async {
     return showDialog<void>(
@@ -234,9 +259,13 @@ class _UpdatePetState extends State<UpdatePet> {
         'Color': colorController.text,
         'Descripcion': descripcionController.text,
         'IdPersona': widget
-            .mascota.idPersona, // Asegúrate de tener este valor disponible
-        'Sexo': valorSeleccionado,
-        'IdQr': widget.mascota.idQr, // Asegúrate de tener este valor disponible
+            .mascota.idPersona, 
+        'Sexo': _sexo,
+        //Especie
+        //Castrado
+        //Fecha Ultima Vacuna
+        //Foto Carnet Vacunacion
+        'IdQr': widget.mascota.idQr, 
       }),
       headers: {'Content-Type': 'application/json'},
     );
@@ -285,64 +314,129 @@ class _UpdatePetState extends State<UpdatePet> {
                 "assets/Univallenavbar.png",
               ),
               SizedBox(height: 10),
-              TextField(
-              style: TextStyle(color: Colors.black), 
-              decoration: InputDecoration(
-                icon: Icon(Icons.pets, color: Color.fromARGB(255, 92, 142, 203)),
-                labelText: 'Nombre de la Mascota',
-                errorText: validador.mensajeErrorNombreMascota,
-                labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  style: TextStyle(color: Colors.black), 
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.pets, color: Color.fromARGB(255, 92, 142, 203)),
+                    labelText: 'Nombre de la Mascota',
+                    errorText: validador.mensajeErrorNombreMascota,
+                    labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                  ),
+                  controller: nombreController,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(30),
+                    LettersOnlyTextFormatter(),
+                  ],
+                  maxLength: 30,
+                ),
               ),
-              controller: nombreController,
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(30),
-                LettersOnlyTextFormatter(),
-              ],
-              maxLength: 30,
-            ),
-            TextFormField(
-              style: TextStyle(color: Colors.black),
-              controller: descripcionController,
-              decoration: InputDecoration(
-                icon: Icon(Icons.description, color: Color.fromARGB(255, 92, 142, 203)),
-                labelText: 'Descripción de la Mascota',
-                errorText: validador.mensajeErrorDescripcionMascota,
-                labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
-                counterText: '',
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child:TextFormField(
+                  style: TextStyle(color: Colors.black),
+                  controller: descripcionController,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.description, color: Color.fromARGB(255, 92, 142, 203)),
+                    labelText: 'Descripción de la Mascota',
+                    errorText: validador.mensajeErrorDescripcionMascota,
+                    labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                    counterText: '',
+                  ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  maxLength: 200,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                ),
               ),
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              maxLength: 200,
-              maxLengthEnforcement: MaxLengthEnforcement.enforced,
-            ),
-            TextField(
-              style: TextStyle(color: Colors.black),
-              controller: edadController,
-              maxLength: 2,
-              decoration: InputDecoration(
-                icon: Icon(Icons.cake, color: Color.fromARGB(255, 92, 142, 203)),
-                labelText: 'Edad de la Mascota',
-                errorText: validador.mensajeErrorEdadMascota,
-                labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+              
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  style: TextStyle(color: Colors.black),
+                  controller: edadController,
+                  maxLength: 2,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.cake, color: Color.fromARGB(255, 92, 142, 203)),
+                    labelText: 'Edad de la Mascota',
+                    errorText: validador.mensajeErrorEdadMascota,
+                    labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
               ),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              style: TextStyle(color: Colors.black),
-              controller: razaController,
-              decoration: InputDecoration(
-                icon: Icon(Icons.pets, color: Color.fromARGB(255, 92, 142, 203),),
-                labelText: 'Raza de la Mascota',
-                errorText: validador.mensajeErrorRazaMascota,
-                labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+
+            ListTile(
+              leading: Icon(Icons.pets, color: Color.fromARGB(255, 92, 142, 203)),
+              title: const Text('Especie'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Radio<Especie>(
+                    value: Especie.Perro,
+                    groupValue: _especie,
+                    onChanged: (Especie? value) {
+                      setState(() { _especie = value; });
+                    },
+                  ),
+                  Text('Perro'),
+                  Radio<Especie>(
+                    value: Especie.Gato,
+                    groupValue: _especie,
+                    onChanged: (Especie? value) {
+                      setState(() { _especie = value; });
+                    },
+                  ),
+                  Text('Gato'),
+                ],
               ),
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(30),
-                LettersOnlyTextFormatter(),
-              ],
-              maxLength: 30,
             ),
-            Row(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                style: TextStyle(color: Colors.black),
+                controller: razaController,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.pets, color: Color.fromARGB(255, 92, 142, 203),),
+                  labelText: 'Raza de la Mascota',
+                  errorText: validador.mensajeErrorRazaMascota,
+                  labelStyle: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                ),
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(30),
+                  LettersOnlyTextFormatter(),
+                ],
+                maxLength: 30,
+              ),
+            ),
+            
+            ListTile(
+              leading: Icon(Icons.people, color: Color.fromARGB(255, 92, 142, 203)),
+              title: const Text('Sexo'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Radio<Sexo>(
+                    value: Sexo.M,
+                    groupValue: _sexo,
+                    onChanged: (Sexo? value) {
+                      setState(() { _sexo = value; });
+                    },
+                  ),
+                  Text('Macho'),
+                  Radio<Sexo>(
+                    value: Sexo.H,
+                    groupValue: _sexo,
+                    onChanged: (Sexo? value) {
+                      setState(() { _sexo = value; });
+                    },
+                  ),
+                  Text('Hembra'),
+                ],
+              ),
+            ),
+            /*Row(
               children: [
                 Icon(Icons.people, color: Color.fromARGB(255, 92, 142, 203)),
                 SizedBox(width: 10), 
@@ -368,8 +462,9 @@ class _UpdatePetState extends State<UpdatePet> {
                   ],
                 ),
               ],
-            ),
-            TextField(
+            ),*/
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
               style: TextStyle(color: Colors.black),
               controller: colorController,
               decoration: InputDecoration(
@@ -383,7 +478,90 @@ class _UpdatePetState extends State<UpdatePet> {
                 LettersOnlyTextFormatter(),
               ],
               maxLength: 30,
+            ),),
+            
+            ListTile(
+              leading: Icon(Icons.cut, color: Color.fromARGB(255, 92, 142, 203)),
+              title: const Text('Castrado'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Radio<Castrado>(
+                    value: Castrado.si,
+                    groupValue: _castrado,
+                    onChanged: (Castrado? value) {
+                      setState(() { _castrado = value; });
+                    },
+                  ),
+                  Text('Sí'),
+                  Radio<Castrado>(
+                    value: Castrado.no,
+                    groupValue: _castrado,
+                    onChanged: (Castrado? value) {
+                      setState(() { _castrado = value; });
+                    },
+                  ),
+                  Text('No'),
+                ],
+              ),
             ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: GestureDetector(
+                onTap: () => _selectDate(context), 
+                child: AbsorbPointer( 
+                  child: TextField(
+                    controller: fechaUltimaVacunaController,
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.calendar_today, color: Color.fromARGB(255, 92, 142, 203)),
+                      labelText: 'Fecha de última vacuna',
+                    ),
+                    keyboardType: TextInputType.datetime,
+                  ),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.camera_alt, color: Color.fromARGB(255, 92, 142, 203)),
+                    onPressed: () {
+                      showPicker(context, (File file) {
+                        setState(() {
+                          _fotoCarnetVacunacion = file;
+                        });
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      'Foto del carnet de vacunación',
+                      style: TextStyle(color: Color.fromARGB(255, 92, 142, 203)),
+                    ),
+                  ),
+                  
+                ],
+              ),
+            ),
+                        _fotoCarnetVacunacion != null
+                  ? Container(
+                      child: Image.file(
+                        _fotoCarnetVacunacion!,
+                        //width: 100, 
+                        //height: 200, 
+                        fit: BoxFit.cover, 
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Color.fromARGB(255, 92, 142, 203)), 
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    )
+                  : Container(), 
 
               SizedBox(height: 10),
               ElevatedButton(

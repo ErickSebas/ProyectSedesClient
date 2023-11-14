@@ -13,6 +13,7 @@ import 'package:fluttapp/presentation/screens/ChangePassword.dart';
 import 'package:fluttapp/presentation/screens/Cliente/HomeClient.dart';
 
 import 'package:fluttapp/presentation/screens/Register.dart';
+import 'package:fluttapp/presentation/screens/RegisterUpdate.dart';
 
 import 'package:fluttapp/presentation/services/auth_google.dart';
 
@@ -435,6 +436,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextField(
                       controller: correoController,
                       maxLength: 45, // Establece el máximo de caracteres a 45
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: 'Correo electrónico',
                         counterText:
@@ -469,7 +471,7 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Register()),
+                                  builder: (context) => RegisterUpdate(isUpdate: false,)),
                             );
                           },
                           child: Text(
@@ -508,14 +510,14 @@ class _LoginPageState extends State<LoginPage> {
                         }
 
                         // Validación de formato de correo electrónico
-                        if (!isValidEmail(correoController.text)) {
+                        /*if (!isValidEmail(correoController.text)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content: Text(
                                     'Ingrese un correo electrónico válido.')),
                           );
                           return; // Sale de la función si el correo es inválido
-                        }
+                        }*/
 
                         setState(() {
                           isloading = true;
@@ -603,7 +605,7 @@ class _LoginPageState extends State<LoginPage> {
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton.icon(
+                    /*ElevatedButton.icon(
                       onPressed: () {
                         _facebookLogin();
                       },
@@ -615,7 +617,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    SizedBox(width: 16),*/
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

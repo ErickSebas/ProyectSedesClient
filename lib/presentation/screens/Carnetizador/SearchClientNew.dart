@@ -377,7 +377,7 @@ class _ListMembersScreenState extends State<ListMembersScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => RegisterUpdate(
-                    isUpdate: false, carnetizadorMember: miembroActual)),
+                    isUpdate: false, userData: miembroActual)),
           );
         },
         child: Icon(Icons.add),

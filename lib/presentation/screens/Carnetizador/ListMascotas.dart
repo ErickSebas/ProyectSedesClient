@@ -140,8 +140,8 @@ class _ListMascotasState extends State<ListMascotas> {
                   ),
                   centerTitle: true,
                 ):null,
-                body: mascotas.isEmpty? Center(child: Text("No tienes Mascotas"),): CampaignPage(mascotas: mascotas),
-                floatingActionButton: miembroActual!.role=="Cliente"?null: FloatingActionButton(
+                body: mascotas.isEmpty? Center(child: Text("No tienes Mascotas"),): CampaignPage(mascotas: mascotas, userId: widget.userId),
+                floatingActionButton: /*miembroActual!.role=="Cliente"?null:*/ FloatingActionButton(
                   onPressed: () async {
                     if (miembroMascota?.latitud == 0.1) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -175,9 +175,10 @@ class _ListMascotasState extends State<ListMascotas> {
 }
 
 class CampaignPage extends StatefulWidget {
-  final List<Mascota> mascotas;
+  List<Mascota> mascotas;
+  int userId;
 
-  CampaignPage({required this.mascotas});
+  CampaignPage({required this.mascotas, required this.userId});
 
   @override
   _CampaignPageState createState() => _CampaignPageState();
@@ -327,7 +328,7 @@ Future<void> addImageUrlsToSelectedImages(
                   }
 
                   return  Slidable(
-                    endActionPane: miembroActual!.role=="Cliente"?null: ActionPane(
+                    endActionPane: /*miembroActual!.role=="Cliente"?null:*/ ActionPane(
                       motion: StretchMotion(),
                       children: [
                         SlidableAction(
@@ -383,6 +384,8 @@ Future<void> addImageUrlsToSelectedImages(
                               ),
                             );
                             if(res!=null){
+                              await loadAllImages();
+                              widget.mascotas = await fetchMembers(widget.userId);
                               setState(() {
                                 
                               });
