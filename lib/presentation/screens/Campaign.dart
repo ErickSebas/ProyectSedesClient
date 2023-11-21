@@ -51,6 +51,11 @@ class _CampaignStateState extends State<ListCampaignPage> {
   @override
   void initState() {
     super.initState();
+    fetchCampaigns().then((value) => {
+      setState((){
+        campaigns = value;
+      })
+    });
     _connectivityService.initialize(context);
   }
 
