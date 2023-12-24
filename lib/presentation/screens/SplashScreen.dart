@@ -3,37 +3,79 @@
 /// Nombre del desarrollador: Equipo-Sedes-Univalle
 /// Fecha de creación: 18/08/2023
 /// </summary>
-/// 
+///
 // <copyright file="SplashScreen.dart" company="Sedes-Univalle">
 // Esta clase está restringida para su uso, sin la previa autorización de Sedes-Univalle.
 // </copyright>
 
+import 'package:fluttapp/Models/CampaignModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'HomeClient.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'Login.dart';
+import 'package:fluttapp/services/firebase_service.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
-
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  late SharedPreferences prefs;
-  bool esPrimeraVez = true;
+/// Llamamos al metodo al inicio del programa para poder usar los URLs de la aplicacion
+Activar_Links(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'No se encuentra un URL valido $url';
+  }
+}
 
+class _SplashScreenState extends State<SplashScreen> {
+  int versionactual = 1;
+  late SharedPreferences preferencias;
+  bool esPrimeraVez = true;
   @override
   void initState() {
+    
+    socket =
+        IO.io('http://181.188.191.35:3000', <String, dynamic>{
+      //192.168.14.112
+      'transports': ['websocket'],
+      'autoConnect': false,
+    });
+
+    socket.connect();
+    socket.onConnect((_) {
+      print('Conectado');
+    });
+    socket.onConnectError((data) => print("Error de conexión: $data"));
+    socket.onError((data) => print("Error: $data"));
+
     super.initState();
     Iniciar_Ver_Primera_Vez();
   }
 
-  Future<void> Iniciar_Ver_Primera_Vez() async {
-    prefs = await SharedPreferences.getInstance();
-    esPrimeraVez = prefs.getBool('isFirstTime') ?? true;
+  /// Al inicio de la pantalla de inicio te pediran permisos para el uso de la aplicacion
+  void Permisos() async {
+    LocationPermission permiso;
+    permiso = await Geolocator.checkPermission();
+    if (permiso == LocationPermission.denied) {
+      permiso = await Geolocator.requestPermission();
+      if (permiso == LocationPermission.denied) {
+        return Future.error('error');
+      }
+    }
+  }
 
+  ///Se usa para que la primera vez que se inicie la aplicacion en el
+  ///dispositivo abra una ventana de confirmacion y si no. ingresa
+  ///de manera normal
+  Future<void> Iniciar_Ver_Primera_Vez() async {
+    preferencias = await SharedPreferences.getInstance();
+    esPrimeraVez = preferencias.getBool('isFirstTime') ?? true;
     if (esPrimeraVez) {
       Mostrar_Confirmacion();
     } else {
@@ -41,6 +83,8 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
+  ///Crea una ventana emergente en la pantalla que te indica el uso de ubicacion
+  ///en tiempo real en el dispositivo
   Future<void> Mostrar_Confirmacion() async {
     await showDialog(
       context: context,
@@ -52,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: 10),
-              Image.asset("assets/LogoAplicacion.png",height: 150 ,width: 150),
+              Image.asset("assets/Univallenavbar.png", height: 150, width: 150),
               Text(
                 'MaYpiVaC necesita acceder a tu ubicación para mostrarte los puntos de vacunación en la ciudad de Cochabamba.',
                 style: TextStyle(fontSize: 16),
@@ -69,8 +113,9 @@ class _SplashScreenState extends State<SplashScreen> {
           actions: <Widget>[
             TextButton(
               child: Text('Sí, permitir acceso'),
-              onPressed: () {
-                prefs.setBool('isFirstTime', false);
+              onPressed: () async {
+                preferencias.setBool('isFirstTime', false);
+                Permisos();
                 Navigator.of(context).pop();
                 Navegar_Pantalla_Main();
               },
@@ -78,7 +123,7 @@ class _SplashScreenState extends State<SplashScreen> {
             TextButton(
               child: Text('No, denegar acceso'),
               onPressed: () {
-                prefs.setBool('isFirstTime', true);
+                preferencias.setBool('isFirstTime', true);
                 Navigator.of(context).pop();
                 SystemNavigator.pop();
               },
@@ -89,12 +134,54 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  Future<void> Navegar_Pantalla_Main() async {
-    await Future.delayed(const Duration(seconds: 2));
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomeClient()),
+  Future<void> Verificar_Version() async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: Center(child: Text('¡ACTUALIZAR!')),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 10),
+                Image.asset("assets/Univallenavbar.png",
+                    height: 150, width: 150),
+                Text(
+                  'Parece que estas usando una version antigua de la aplicacion , Necesitas actualizarla',
+                  style: TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                TextButton(
+                  child: Text('Aceptar'),
+                  onPressed: () {
+                    Activar_Links("https://sedescochabamba.gob.bo");
+                  },
+                ),
+              ],
+            ));
+      },
     );
+  }
+
+  /// Te lleva a la pantalla de inicio
+  Future<void> Navegar_Pantalla_Main() async {
+    lstlinks = await Obtener_Links();
+    
+    lstVersions = await Obtener_Version();
+    campaigns = await fetchCampaigns();
+    print("lstVersions: $lstVersions");
+    if (int.tryParse(lstVersions[0]["version"]) != versionactual) {
+      print("La versión NO es igual a 1 inicializando verificarversion");
+      Verificar_Version();
+    } else {
+      print("La versión es igual a 1, navegando a la pantalla de inicio.");
+      // Continuar con la navegación normal
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
   }
 
   @override
@@ -109,32 +196,53 @@ class _SplashScreenState extends State<SplashScreen> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 500,
-              width: 500,
-              child: Column(
-                children: [
-                  Image.asset("assets/Gobernacion.png",height: 150 ,width: 150),
-                  SizedBox(height: 10),
-                  Image.asset("assets/LogoAplicacion.png",height: 150 ,width: 150),
-                  SizedBox(height:10),
-                  Image.asset("assets/LogoSedes.png",height: 150 ,width: 150),
-                  SizedBox(height: 10)
-                ],
+        body: WillPopScope(
+      onWillPop: () async {
+        return false; // Devuelve 'true' si quieres prevenir el cierre de la aplicación
+      },
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/Splash.png"),
+                fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 50),
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
-            )
-          ],
-        ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    Image.asset("assets/Salud.png",
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: 150,
+                        fit: BoxFit.contain),
+                    Image.asset("assets/Univallenavbar.png",
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: 150,
+                        fit: BoxFit.contain),
+                    Image.asset("assets/LogoSede.png",
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: 150,
+                        fit: BoxFit.contain),
+                    Image.asset("assets/LogoUniv.png",
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: 150,
+                        fit: BoxFit.contain),
+                  ],
+                ),
+                SizedBox(height: 50),
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF86ABF9)),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-    );
+    ));
   }
 }

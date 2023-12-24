@@ -22,6 +22,12 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def keystoreProperties = new Properties()
+   def keystorePropertiesFile = rootProject.file('key.properties')
+   if (keystorePropertiesFile.exists()) {
+       keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+   }
+
 android {
     namespace "com.sedes.maypivac"
     compileSdkVersion flutter.compileSdkVersion
@@ -52,17 +58,30 @@ android {
         versionName flutterVersionName
     }
 
-    buildTypes {
+    signingConfigs {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            keyAlias 'sedes'
+            keyPassword 'android'
+            storeFile file('release.keystore')
+            storePassword 'android'
         }
     }
+
+    buildTypes {
+       release {
+           signingConfig signingConfigs.release
+       }
+    }
+
 }
+   
+
+
 
 flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+}
